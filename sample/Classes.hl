@@ -1,0 +1,24 @@
+(extension MultiParamTypeClasses)
+
+(defmodule Classes)
+
+(import Prelude (not) :hiding)
+(require Prelude (not))
+(import Data.Maybe)
+
+(class (HasNot a) ()
+  ((not (-> a Bool))
+   (or (-> a a a)))
+  (((or x y) (if (not x) y x))))
+
+(instance (HasNot Bool) () ((not Prelude.not)))
+
+(instance (HasNot (Maybe a)) () ((not isNothing)))
+
+
+(class (Category cat) ()
+  ((id (cat a a))
+   (compose (-> (cat b c) (cat a b) (cat a c)))))
+
+(class (Functor f cat cat') ((Category cat) (Category cat'))
+  ((fmap (-> (cat a b) (cat' (f a) (f b))))))
