@@ -44,6 +44,16 @@
     ((graphic-char-p x) (format t "'~c'" x))
     (t (format t "'\\x~x'" (char-code x)))))
 
+(defmethod haskell ((x string))
+  (format t "\"")
+  (loop for c across x
+    do (cond
+         ((char= c #\") (format t "\\\""))
+         ((char= c #\\) (format t "\\\\"))
+         ((graphic-char-p c) (format t "~c" c))
+         (t (format t "\\x~x\\&" (char-code c)))))
+  (format t "\""))
+
 (defmethod haskell ((x null)) (format t "()"))
 
 (defmethod haskell ((x cons))
