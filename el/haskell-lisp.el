@@ -24,7 +24,7 @@
    ("\\<\\(?:d\\(?:ef\\(?:ine\\|module\\|type\\)\\|ata\\)\\|type\\|class\\|i\\(?:nstance\\|mport\\)\\|where\\)\\>" . font-lock-keyword-face)
    ("\\<\\(?:define\\s-+?(?\\|type\\s-\\)\\s-*?\\([^()[:space:]]*\\)" 1 font-lock-function-name-face)
    ("\\<type\\s-+?(\\([^)]*\\))" 1 font-lock-function-name-face)
-   ("\\<extension\\>" . font-lock-preprocessor-face)))
+   ("(\\(extension\\s-[^)]*\\))" 1 font-lock-preprocessor-face t)))
 
 (define-key haskell-lisp-mode-map (kbd "C-c C-c") 'to-haskell)
 
