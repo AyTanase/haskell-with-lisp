@@ -74,28 +74,34 @@
   `(%class '|instance| ',name ',derive ,svar nil ',defs))
 
 
-(defun %module (module suppliedp names)
-  (format t " ~a" module)
+(defun module-names (suppliedp names)
   (when suppliedp
     (format t " ")
     (with-paren (arrange names))))
 
 (defun %defmodule (module suppliedp names)
-  (format t "module")
-  (%module module suppliedp names)
+  (format t "module ~a" module)
+  (module-names suppliedp names)
   (format t " where")
   (fresh-line))
 
 (defmacro |defmodule| (module &optional (names nil suppliedp))
   `(%defmodule ',module ,suppliedp ',names))
 
-(defun %import (module suppliedp names)
+(defun %import (module suppliedp names qualifiedp hidingp)
   (format t "import")
-  (%module module suppliedp names)
+  (if qualifiedp (format t " qualified"))
+  (format t " ~a" module)
+  (if hidingp (format t " hiding"))
+  (module-names suppliedp names)
   (fresh-line))
 
-(defmacro |import| (module &optional (names nil suppliedp))
-  `(%import ',module ,suppliedp ',names))
+(defmacro defimport (name qualifiedp)
+  `(defmacro ,name (module &optional (names nil suppliedp) hidingp)
+     `(%import ',module ,suppliedp ',names ',',qualifiedp ',hidingp)))
+
+(defimport |import| nil)
+(defimport |require| t)
 
 
 (defsyntax => (constraints type)
