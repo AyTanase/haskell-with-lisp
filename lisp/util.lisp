@@ -32,7 +32,7 @@
       (load src))))
 
 (defun lazy-compile (src &optional (out (default-out src)))
-  (if (and (not (probe-file out))
-           (< (file-write-date out)
-              (file-write-date src)))
+  (if (or (not (probe-file out))
+          (< (file-write-date out)
+             (file-write-date src)))
     (compile src out)))
