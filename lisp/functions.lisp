@@ -1,5 +1,9 @@
 (in-package :hs)
 
+(defsyntax function (x)
+  (if (atom x)
+    (haskell x)
+    (with-paren (rechask x))))
 
 (defhasq |compose| "(.)")
 (defhasq |nil| "[]")
@@ -23,25 +27,26 @@
     `(progn
        (defsyntax ,name (&rest args)
          (cond
-           ((null args)
-            ,(or zero `(format t ,printed)))
+           ((null args) (format t ,(or zero printed)))
            ((null (cdr args))
-            ,(or one `(with-paren (rechask (cons ',name args)))))
+            ,(or one '(haskell (car args))))
            (t ,(or many `(with-paren (rechask args ,(format nil " ~a " op)))))))
        (defhasq ,name ,printed))))
 
 (defmacro defbinop (op &rest args) `(def-binop-as ,op ,op ,@args))
 
 (defbinop ->)
-(defbinop + :one (haskell (car args)))
+(defbinop + :zero "(fromInteger 0)")
 (defbinop - :one (with-paren (format t "negate ") (haskell (car args))))
+(defbinop * :zero "(fromInteger 1)")
+(defbinop / :one (with-paren (format t "recip ") (haskell (car args))))
 
 
-(defmacro shadow-binop (name op &rest args)
+(defmacro shadow-binop (name &rest args)
   `(progn
-     (def-binop-as ,name ,op ,@args)
+     (def-binop-as ,name ,@args)
      (shadow-haskell ',name)))
 
-(shadow-binop |and| &&)
-(shadow-binop |or| "||")
-(shadow-binop |concat| ++)
+(shadow-binop |and| && :zero "True")
+(shadow-binop |or| "||" :zero "False")
+(shadow-binop |concat| ++ :zero "[]")
