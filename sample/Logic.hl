@@ -119,3 +119,6 @@ const const  :: (-> (-> a b c) b a b)
 |#
 (type flip (-> (-> a b c) b a c))
 (define flip (apply3 const (const const)))
+
+(type join (-> (-> a a b) a b))
+(define join (flip apply id))
