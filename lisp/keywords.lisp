@@ -156,6 +156,10 @@
           (fresh-line)))
 
 
+(defmacro |defconstant| (name expr)
+  `(defhasq ,name (load-time-value (strhask ',expr) t)))
+
+
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote with-paren) (quote (&body)))
 ;; End:
