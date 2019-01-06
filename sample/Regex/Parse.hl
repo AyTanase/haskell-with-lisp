@@ -1,0 +1,66 @@
+(defmodule Parse (parse))
+
+(import Common)
+(import Data.Bifunctor)
+
+
+(deftype (QMaker a) (-> (BinOp (End a)) (End (End a))))
+
+(type (makeStar makePlus makeOpt) (QMaker a))
+
+(define (makeStar method f)
+  (let ((g (method (compose f g) id))) g))
+
+(define (makePlus method f)
+  (compose f (makeStar method f)))
+
+(define (makeOpt method) (flip method id))
+
+
+
+(deftype (Parser a b) (-> (End b) (list a) (tuple (End b) (list a))))
+(type parse' (Parser Char NFA))
+
+
+(type checkQ'' (-> (QMaker NFA) (Parser Char NFA)))
+
+(define (checkQ'' make f (list* #\? xs))
+  (tuple (make (flip (destribute Split)) f) xs))
+
+(define (checkQ'' make f xs)
+  (tuple (make (destribute Split) f) xs))
+
+
+(type checkQ' (Parser Char NFA))
+(define (checkQ' f (list* #\* xs)) (checkQ'' makeStar f xs))
+(define (checkQ' f (list* #\+ xs)) (checkQ'' makePlus f xs))
+(define (checkQ' f (list* #\? xs)) (checkQ'' makeOpt f xs))
+(define (checkQ' f xs) (tuple f xs))
+
+(type checkQ (-> (End NFA) (Parser Char NFA)))
+(define (checkQ f g xs)
+  (let (((tuple h ys) (checkQ' g xs)))
+    (parse' (compose f h) ys)))
+
+(type parseChar (-> (End NFA) Char (list Char) (tuple (End NFA) (list Char))))
+(define (parseChar f x xs) (checkQ f (Compare x) xs))
+
+
+(define (parse' f nil) (tuple f nil))
+
+(define (parse' f (list* #\\ x xs)) (parseChar f x xs))
+
+(define (parse' f (list* #\( xs))
+  (let (((tuple g ys) (parse' id xs)))
+    (checkQ f g ys)))
+
+(define (parse' f (list* #\) xs)) (tuple f xs))
+
+(define (parse' f (list* #\| xs))
+  (first (destribute Split f) (parse' id xs)))
+
+(define (parse' f (list* x xs)) (parseChar f x xs))
+
+
+(type parse (-> (list Char) NFA))
+(define (parse xs) (fst (parse' id xs) Finite))

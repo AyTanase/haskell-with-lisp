@@ -1,0 +1,11 @@
+(defmodule Common)
+
+(data NFA (or Finite (Compare Char NFA) (Split NFA NFA)))
+
+(instance (Show NFA) () ((show (const "#<NFA>"))))
+
+(deftype (End a) (-> a a))
+(deftype (BinOp a) (-> a (End a)))
+
+(type destribute (-> (-> b c d) (-> a b) (-> a c) a d))
+(define (destribute f g h x) (f (g x) (h x)))
