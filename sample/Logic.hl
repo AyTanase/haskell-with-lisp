@@ -15,25 +15,28 @@
          ,@(loop for i from 2 to n
              collect (generate-1 fix name i)))))
 
+#?(defhasq |apply'| "(<*>)")
+(defconstant apply (type apply' (-> (-> a b c) (-> a b) a c)))
+
 
 (defmodule Logic)
 
-(import Prelude (const))
+(import Prelude (const apply'))
 
-;; const :: (-> a b a)
-
-(type axiom (-> (-> a b c) (-> a b) a c))
-(define (axiom f g x) (f x (g x)))
+#|
+const :: (-> a b a)
+apply :: (-> (-> a b c) (-> a b) a c)
+|#
 
 
 #|
-axiom       :: (-> (-> a b a) (-> a b) a a)
+apply       :: (-> (-> a b a) (-> a b) a a)
 const       :: (-> a b a)
-axiom const :: ((-> a b) a a)
+apply const :: ((-> a b) a a)
             :: ((-> a b a) a a)
 |#
 (type id (-> a a))
-(define id (axiom const const))
+(define id (apply const const))
 
 
 #|
@@ -44,20 +47,20 @@ f       :: (-> b c)
 f (g x) :: c
 
 const f         :: (-> a b c)
-axiom           :: (-> (-> a b c) (-> a b) a c)
-axiom (const f) :: (-> (-> a b) a c)
+apply           :: (-> (-> a b c) (-> a b) a c)
+apply (const f) :: (-> (-> a b) a c)
 
-const axiom
+const apply
   :: (-> (-> b c) (-> a b c) (-> a b) a c)
-axiom
+apply
   :: (-> (-> (-> b c) (-> a b c) (-> a b) a c) (-> (-> b c) a b c) (-> b c) (-> a b) a c)
-axiom (const axiom)
+apply (const apply)
   :: (-> (-> (-> b c) a b c) (-> b c) (-> a b) a c)
 const
   :: (-> (-> b c) a b c)
 |#
 (type compose (-> (-> b c) (-> a b) a c))
-(define compose (axiom (const axiom) const))
+(define compose (apply (const apply) const))
 
 #|
 compose :: (-> (-> c d) (-> b c) b d)
@@ -75,19 +78,19 @@ composeN'       = compose compose composeN
 
 
 #|
-axiom :: (-> (-> b c d) (-> b c) b d)
-axiom f g y = f y (g y)
+apply :: (-> (-> b c d) (-> b c) b d)
+apply f g y = f y (g y)
 
-axiom2 :: (-> (-> a b c d) (-> a b c) a b d)
-axiom2 f g x = axiom (f x) (g x)
+apply2 :: (-> (-> a b c d) (-> a b c) a b d)
+apply2 f g x = apply (f x) (g x)
 
-axiomN' f g x = axiomN (f x) (g x)
-              = compose axiomN f x (g x)
-axiomN' f     = axiom (compose axiomN f)
-axiomN'       = compose2 axiom compose axiomN
+applyN' f g x = applyN (f x) (g x)
+              = compose applyN f x (g x)
+applyN' f     = apply (compose applyN f)
+applyN'       = compose2 apply compose applyN
 |#
-(define fixaxiom (compose2 axiom compose))
-(generate axiom 3)
+(define fixapply (compose2 apply compose))
+(generate apply 3)
 
 
 #|
@@ -98,21 +101,21 @@ x     :: b
 f y x :: c
 
 f                 :: (-> a b c)
-axiom             :: (-> (-> a b c) (-> a b) a c)
-axiom f           :: (-> (-> a b) a c)
+apply             :: (-> (-> a b c) (-> a b) a c)
+apply f           :: (-> (-> a b) a c)
 const x           :: (-> a b)
-axiom f (const x) :: (-> a c)
+apply f (const x) :: (-> a c)
 
 const f                :: (-> b a b c)
-axiom2                 :: (-> (-> b a b c) (-> b a b) b a c)
-axiom2 (const f)       :: (-> (-> b a b) b a c)
+apply2                 :: (-> (-> b a b c) (-> b a b) b a c)
+apply2 (const f)       :: (-> (-> b a b) b a c)
 const                  :: (-> b a b)
-axiom2 (const f) const :: (-> b a c)
+apply2 (const f) const :: (-> b a c)
 
 const        :: (-> (-> a b c) b a b c)
-axiom3       :: (-> (-> (-> a b c) b a b c) (-> (-> a b c) b a b) (-> a b c) b a c)
-axiom3 const :: (-> (-> (-> a b c) b a b) (-> a b c) b a c)
+apply3       :: (-> (-> (-> a b c) b a b c) (-> (-> a b c) b a b) (-> a b c) b a c)
+apply3 const :: (-> (-> (-> a b c) b a b) (-> a b c) b a c)
 const const  :: (-> (-> a b c) b a b)
 |#
 (type flip (-> (-> a b c) b a c))
-(define flip (axiom3 const (const const)))
+(define flip (apply3 const (const const)))
