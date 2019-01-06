@@ -41,12 +41,6 @@
 (defbinop * :zero "1")
 (defbinop / :one (with-paren (format t "recip ") (haskell (car args))))
 
-
-(defmacro shadow-binop (name &rest args)
-  `(progn
-     (def-binop-as ,name ,@args)
-     (shadow-haskell ',name)))
-
-(shadow-binop |and| && :zero "True")
-(shadow-binop |or| "||" :zero "False")
-(shadow-binop |append| ++ :zero "[]")
+(def-binop-as |and| && :zero "True")
+(def-binop-as |or| "||" :zero "False")
+(def-binop-as |append| ++ :zero "[]")
