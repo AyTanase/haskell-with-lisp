@@ -81,5 +81,10 @@
      (setf (gethash ',name *patterns*) t)))
 
 
+(defpackage :|haskell| (:nicknames :|hs|))
+(defun shadow-haskell (x)
+  (export (intern (string x) :|hs|) :|hs|))
+
+
 (load-relative "keywords.lisp")
 (load-relative "functions.lisp")
