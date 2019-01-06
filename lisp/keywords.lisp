@@ -33,9 +33,9 @@
   `(progn (%define ',var ',val) (fresh-line)))
 
 (defun local-definitions (defs)
-  (loop for def in defs
-    do (apply #'%define def)
-       (format t "; ")))
+  (dolist (def defs)
+    (apply #'%define def)
+    (format t "; ")))
 
 (defsyntax |where| (defs val)
   (haskell val)
