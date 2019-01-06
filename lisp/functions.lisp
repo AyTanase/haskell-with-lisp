@@ -35,3 +35,13 @@
 (defbinop ->)
 (defbinop + :one (haskell (car args)))
 (defbinop - :one (with-paren (format t "negate ") (haskell (car args))))
+
+
+(defmacro shadow-binop (name op &rest args)
+  `(progn
+     (def-binop-as ,name ,op ,@args)
+     (shadow-haskell ',name)))
+
+(shadow-binop |and| &&)
+(shadow-binop |or| "||")
+(shadow-binop |concat| ++)
