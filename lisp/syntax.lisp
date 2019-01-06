@@ -67,5 +67,9 @@
       (with-paren (rechask x)))))
 
 
+(defmacro defhasq (name body)
+  `(defmethod haskell ((x (eql ',name))) (format t ,body)))
+
+
 (load-relative "keywords.lisp")
 (load-relative "functions.lisp")

@@ -1,9 +1,6 @@
 (in-package :hs)
 
 
-(defmacro defhasq (name body)
-  `(defmethod haskell ((x (eql ',name))) (format t ,body)))
-
 (defhasq |compose| "(.)")
 (defhasq |nil| "[]")
 (defhasq 1+ "((+) 1)")
