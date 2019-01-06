@@ -36,9 +36,9 @@
 (defmacro defbinop (op &rest args) `(def-binop-as ,op ,op ,@args))
 
 (defbinop ->)
-(defbinop + :zero "(fromInteger 0)")
+(defbinop + :zero "0")
 (defbinop - :one (with-paren (format t "negate ") (haskell (car args))))
-(defbinop * :zero "(fromInteger 1)")
+(defbinop * :zero "1")
 (defbinop / :one (with-paren (format t "recip ") (haskell (car args))))
 
 
