@@ -3,20 +3,27 @@
 
 (defvar *hs-readtable* (copy-readtable *readtable*))
 
-(defun set-haskell-case (case-name)
-  (setf (readtable-case *hs-readtable*) case-name))
+(define-symbol-macro *haskell-case* (readtable-case *hs-readtable*))
 
-(defun read-as-lisp (stream &rest _)
-  (declare (ignore _))
-  (unwind-protect
-       (progn
-         (set-haskell-case :upcase)
-         (read stream t nil t))
-    (set-haskell-case :preserve)))
+(defmacro def-read-as (name case-name)
+  `(defun ,name (stream &rest args)
+     (declare (ignore args))
+     (let ((default *haskell-case*))
+       (unwind-protect
+            (progn
+              (setf *haskell-case* ,case-name)
+              (read stream t nil t))
+         (setf *haskell-case* default)))))
 
-(set-haskell-case :preserve)
-(set-macro-character #\' (get-macro-character #\') t *hs-readtable*)
-(set-dispatch-macro-character #\# #\? #'read-as-lisp *hs-readtable*)
+(def-read-as read-as-lisp :upcase)
+(def-read-as read-as-haskell :preserve)
+
+(let ((*readtable* *hs-readtable*))
+  (set-macro-character #\' (get-macro-character #\') t)
+  (set-dispatch-macro-character #\# #\? #'read-as-lisp)
+  (set-dispatch-macro-character #\# #\! #'read-as-haskell))
+
+(setf *haskell-case* :preserve)
 
 
 (defun default-out (src)
