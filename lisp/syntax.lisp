@@ -9,6 +9,10 @@
 (defgeneric haskell (x)
   (:documentation "Convert to Haskell code"))
 
+(defun strhask (x)
+  (with-output-to-string (*standard-output*)
+    (haskell x)))
+
 
 (defmacro with-paren (&body body)
   `(progn
