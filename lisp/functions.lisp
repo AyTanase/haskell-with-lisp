@@ -49,4 +49,4 @@
 
 (shadow-binop |and| && :zero "True")
 (shadow-binop |or| "||" :zero "False")
-(shadow-binop |concat| ++ :zero "[]")
+(shadow-binop |append| ++ :zero "[]")
