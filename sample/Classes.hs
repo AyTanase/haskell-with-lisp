@@ -5,8 +5,8 @@ import qualified Prelude (not)
 import Data.Maybe
 class HasNot a where
   not :: (a -> Bool)
-  or :: (a -> a -> a)
-  or x y = (if (not x) then y else x)
+  (||) :: (a -> a -> a)
+  (||) x y = (if (not x) then y else x)
 instance HasNot Bool where
   not = Prelude.not
 instance HasNot (Maybe a) where
