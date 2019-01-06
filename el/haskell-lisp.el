@@ -20,11 +20,11 @@
 
 (font-lock-add-keywords
  'haskell-lisp-mode
- '(("\\<[A-Z]\\w*\\>" . font-lock-type-face)
-   ("\\<\\(?:d\\(?:ef\\(?:ine\\|module\\|type\\)\\|ata\\)\\|type\\|class\\|i\\(?:nstance\\|mport\\)\\|where\\)\\>" . font-lock-keyword-face)
+ '(("\\<\\(?:d\\(?:ef\\(?:ine\\|module\\|type\\)\\|ata\\)\\|type\\|class\\|i\\(?:nstance\\|mport\\)\\|where\\)\\>" . font-lock-keyword-face)
    ("\\<\\(?:define\\s-+?(?\\|type\\s-\\)\\s-*?\\([^()[:space:]]*\\)" 1 font-lock-function-name-face)
    ("\\<type\\s-+?(\\([^)]*\\))" 1 font-lock-function-name-face)
-   ("(\\(extension\\s-[^)]*\\))" 1 font-lock-preprocessor-face t)))
+   ("(\\(extension\\s-[^)]*\\))" 1 font-lock-preprocessor-face)
+   ("\\<[A-Z]\\w*\\>" . font-lock-type-face)))
 
 (define-key haskell-lisp-mode-map (kbd "C-c C-c") 'to-haskell)
 
