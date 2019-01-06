@@ -18,17 +18,19 @@
   (format t "]"))
 
 
-(defmacro defbinop (op &key zero one many)
+(defmacro def-binop-as (name op &key zero one many)
   (let ((printed (format nil "(~a)" op)))
     `(progn
-       (defsyntax ,op (&rest args)
+       (defsyntax ,name (&rest args)
          (cond
            ((null args)
             ,(or zero `(format t ,printed)))
            ((null (cdr args))
-            ,(or one `(with-paren (rechask `(,',op ,@args)))))
+            ,(or one `(with-paren (rechask (cons ',name args)))))
            (t ,(or many `(with-paren (rechask args ,(format nil " ~a " op)))))))
-       (defhasq ,op ,printed))))
+       (defhasq ,name ,printed))))
+
+(defmacro defbinop (op &rest args) `(def-binop-as ,op ,op ,@args))
 
 (defbinop ->)
 (defbinop + :one (haskell (car args)))
