@@ -9,10 +9,10 @@
 (defhasq |cons| "(:)")
 (defhasq |pair| "(,)")
 
-(defsyntax |list*| (&rest args)
+(defpattern |list*| (&rest args)
   (with-paren (rechask args ":")))
 
-(defsyntax |list| (&rest args)
+(defpattern |list| (&rest args)
   (format t "[")
   (rechask args ", ")
   (format t "]"))

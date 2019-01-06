@@ -16,11 +16,11 @@
 (defun tuple (xs)
   (with-paren (rechask xs ", ")))
 
-(defsyntax |tuple| (&rest xs) (tuple xs))
+(defpattern |tuple| (&rest xs) (tuple xs))
 
 
 (defun %define-left (var)
-  (if (or (atom var) (gethash (car var) *syntax*))
+  (if (or (atom var) (patternp (car var)))
     (haskell var)
     (rechask var)))
 

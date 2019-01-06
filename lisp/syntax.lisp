@@ -71,5 +71,15 @@
   `(defmethod haskell ((x (eql ',name))) (format t ,body)))
 
 
+(defvar *patterns* (make-hash-table :test 'eq))
+
+(defun patternp (x) (gethash x *patterns*))
+
+(defmacro defpattern (name &body body)
+  `(progn
+     (defsyntax ,name ,@body)
+     (setf (gethash ',name *patterns*) t)))
+
+
 (load-relative "keywords.lisp")
 (load-relative "functions.lisp")
