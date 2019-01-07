@@ -4,7 +4,7 @@
   (:nicknames :hs)
   (:use :cl)
   (:shadow :compile)
-  (:export :compile :lazy-compile))
+  (:export :compile :compile-all :lazy-compile))
 
 (in-package :haskell)
 

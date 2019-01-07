@@ -56,6 +56,8 @@
                      :if-exists :supersede)
       (load src))))
 
+(defun compile-all (&rest args) (mapc #'compile args))
+
 (defun lazy-compile (src &optional (out (default-out src)))
   (if (or (not (probe-file out))
           (< (file-write-date out)
