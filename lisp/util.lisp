@@ -10,12 +10,38 @@
        (let ((*readtable* ,readtable))
          (read stream t nil t))))
 
+(defun make-fillptr-string (&optional initial-contents)
+  (make-array (length initial-contents)
+              :element-type 'character
+              :initial-contents initial-contents
+              :fill-pointer t))
+
+(defun read-hs-string (stream &rest args)
+  (declare (ignore args))
+  (let ((str (make-fillptr-string '(#\"))))
+    (labels ((read-1 ()
+               (let ((c (read-char stream t nil t)))
+                 (if (char= c #\Return) (read-1) c)))
+             (vpush (c) (vector-push-extend c str))
+             (recread ()
+               (let ((c (read-1)))
+                 (vpush c)
+                 (unless (char= c #\")
+                   (if (char= c #\\) (vpush (read-1)))
+                   (recread)))))
+      (recread))
+    str))
+
 (set-dispatch-macro-character #\# #\? (read-by *cl-readtable*))
 (set-dispatch-macro-character #\# #\! (read-by *hs-readtable*))
 
 (setf *hs-readtable* (copy-readtable *cl-readtable*))
+
+(let ((*readtable* *hs-readtable*))
+  (set-macro-character #\' (get-macro-character #\') t)
+  (set-macro-character #\" #'read-hs-string))
+
 (setf (readtable-case *hs-readtable*) :preserve)
-(set-macro-character #\' (get-macro-character #\') t *hs-readtable*)
 
 
 (defun default-out (src)

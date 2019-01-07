@@ -48,8 +48,6 @@
     ((graphic-char-p x) (format t "'~c'" x))
     (t (format t "'\\x~x'" (char-code x)))))
 
-(defmethod haskell ((x string)) (format t "~s" x))
-
 (defmethod haskell ((x null)) (format t "()"))
 
 (defmethod haskell ((x cons))
