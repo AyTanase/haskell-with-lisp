@@ -4,9 +4,9 @@ import Data.Bifunctor
 type QMaker a = ((BinOp (End a)) -> (End (End a)))
 makeStar, makePlus, makeOpt :: (QMaker a)
 makeStar method f = let
-  g = (method ((.) f g) id)
+  g = (method (f . g) id)
   in g
-makePlus method f = ((.) f (makeStar method f))
+makePlus method f = (f . (makeStar method f))
 makeOpt method = (flip method id)
 type Parser a b = ((End b) -> [a] -> ((End b), [a]))
 parse' :: (Parser Char NFA)
@@ -21,7 +21,7 @@ checkQ' f xs = (f, xs)
 checkQ :: ((End NFA) -> (Parser Char NFA))
 checkQ f g xs = let
   (h, ys) = (checkQ' g xs)
-  in (parse' ((.) f h) ys)
+  in (parse' (f . h) ys)
 parseChar :: ((End NFA) -> Char -> [Char] -> ((End NFA), [Char]))
 parseChar f x xs = (checkQ f (Compare x) xs)
 parse' f [] = (f, [])
