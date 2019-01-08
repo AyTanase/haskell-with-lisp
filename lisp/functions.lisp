@@ -21,6 +21,16 @@
   (rechask args ", ")
   (format t "]"))
 
+(defsyntax 1+ (x)
+  (with-paren
+    (haskell x)
+    (format t " + 1")))
+
+(defsyntax 1- (x)
+  (with-paren
+    (haskell x)
+    (format t " - 1")))
+
 
 (defmacro def-binop-as (name op &key zero one many)
   (let ((printed (format nil "(~a)" op)))
@@ -44,3 +54,7 @@
 (def-binop-as |and| && :zero "True")
 (def-binop-as |or| "||" :zero "False")
 (def-binop-as |append| ++ :zero "[]")
+
+;; Local Variables:
+;; eval: (add-cl-indent-rule (quote with-paren) (quote (&body)))
+;; End:
