@@ -9,7 +9,6 @@ exit /b
 set "FILES="
 call :collect-files .
 call runcl %SRC% --eval "(hs:compile-all %FILES%)"
-rem echo %FILES%
 exit /b
 
 :collect-files
