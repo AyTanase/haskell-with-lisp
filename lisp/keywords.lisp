@@ -1,6 +1,21 @@
 (in-package :hs)
 
 
+(defvar *indent* 0)
+
+(defun indent (&optional (n *indent*))
+  (fresh-line)
+  (loop repeat n do (format t "  ")))
+
+(defmacro with-indent (n &body body)
+  `(let ((*indent* (+ *indent* ,n))) ,@body))
+
+(defun map-indent (fn list &optional (n *indent*))
+  (dolist (x list)
+    (indent n)
+    (apply fn x)))
+
+
 (defun %type (vars type)
   (rechask vars ", ")
   (format t " :: ")
@@ -32,28 +47,19 @@
 (defmacro |define| (var val)
   `(progn (%define ',var ',val) (fresh-line)))
 
-(defun local-definitions (defs)
-  (dolist (def defs)
-    (apply #'%define def)
-    (format t "; ")))
-
 (defsyntax |where| (defs val)
   (haskell val)
-  (format t " where { ")
-  (local-definitions defs)
-  (format t "}"))
+  (format t " where")
+  (with-indent 1 (map-indent #'%define defs)))
 
 (defsyntax |let| (defs val)
-  (format t "let { ")
-  (local-definitions defs)
-  (format t "} in ")
-  (haskell val))
+  (format t "let")
+  (with-indent 1
+    (map-indent #'%define defs)
+    (indent)
+    (format t "in ")
+    (haskell val)))
 
-
-(defun %class-declare (fn lst)
-  (dolist (args lst)
-    (format t "~%  ")
-    (apply fn args)))
 
 (defun %class (key name derive svar decs defs)
   (format t "~a " key)
@@ -63,8 +69,9 @@
   (rechask name)
   (when svar
     (format t " where")
-    (%class-declare #'%type decs)
-    (%class-declare #'%define defs))
+    (with-indent 1
+      (map-indent #'%type decs)
+      (map-indent #'%define defs)))
   (fresh-line))
 
 (defmacro |class| (name &optional derive (decs nil svar) defs)
