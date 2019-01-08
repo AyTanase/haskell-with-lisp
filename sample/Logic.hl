@@ -9,19 +9,21 @@
 #?(defun generate-1 (fix name n)
     `(|define| ,(nth-name name n) (,fix ,(nth-name name (1- n)))))
 
-#?(defmacro |generate| (name n)
+#?(defun generate (name m n)
     (let ((fix (format-symbol "fix~a" name)))
-      `(progn
-         ,@(loop for i from 2 to n
-             collect (generate-1 fix name i)))))
+      (loop for i from m to n
+        collect (generate-1 fix name i))))
 
-#?(defhasq |apply'| "(<*>)")
-(defconstant apply (type apply' (-> (-> a b c) (-> a b) a c)))
+#?(defmacro |generate| (name m &optional n)
+    `(progn ,@(generate name (if n m 2) (if n n m))))
+
+#?(defhasq |apply| "(<*>)")
+(defconstant apply' (type apply (-> (-> a b c) (-> a b) a c)))
 
 
 (defmodule Logic)
 
-(import Prelude (const apply'))
+(import Prelude (const apply))
 
 #|
 const :: (-> a b a)
@@ -90,7 +92,8 @@ applyN' f     = apply (compose applyN f)
 applyN'       = compose2 apply compose applyN
 |#
 (define fixapply (compose2 apply compose))
-(generate apply 3)
+(define apply2 (fixapply apply'))
+(generate apply 3 3)
 
 
 #|
