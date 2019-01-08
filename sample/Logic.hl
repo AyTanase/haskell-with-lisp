@@ -75,7 +75,7 @@ composeN' f g x = composeN f (g x)
 composeN' f     = compose (composeN f)
 composeN'       = compose compose composeN
 |#
-(define fixcompose (compose compose))
+(define fixcompose #'(compose compose))
 (generate compose 2)
 
 
