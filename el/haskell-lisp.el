@@ -25,7 +25,7 @@
    ("\\<type\\s-+?(\\([^)]*\\))" 1 font-lock-function-name-face)
    ("(\\(extension\\s-[^)]*\\))" 1 font-lock-preprocessor-face)
    ("(\\(a\\(?:ppe\\)?nd\\|or\\|compose\\|->?\\|[+*/]\\)\\s-" 1 font-lock-variable-name-face)
-   ("\\<\\(?:[A-Z][^().[:space:]]*\\|list\\*?\\s-\\|\\(?:tuple\\|nil\\|cons\\|pair\\)\\>\\)" . font-lock-type-face)))
+   ("\\<\\(?:[A-Z][^().[:space:]]*\\|list\\(?:\\*\\s-\\|\\>\\)\\|\\(?:tuple\\|nil\\|cons\\|pair\\)\\>\\)" . font-lock-type-face)))
 
 (define-key haskell-lisp-mode-map (kbd "C-c C-c") 'to-haskell)
 
