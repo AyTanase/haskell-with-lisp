@@ -5,13 +5,24 @@
     (haskell x)
     (with-paren (rechask x))))
 
-(defhasq |compose| "(.)")
-(defhasq |nil| "[]")
-(defhasq 1+ "((+) 1)")
-(defhasq 1- "((+) (negate 1))")
 (defhasq = "(==)")
-(defhasq |cons| "(:)")
+
+(defhasq 1+ "((+) 1)")
+(defsyntax 1+ (x)
+  (with-paren
+    (haskell x)
+    (format t " + 1")))
+
+(defhasq 1- "((+) (negate 1))")
+(defsyntax 1- (x)
+  (with-paren
+    (haskell x)
+    (format t " - 1")))
+
 (defhasq |pair| "(,)")
+
+(defhasq |nil| "[]")
+(defhasq |cons| "(:)")
 
 (defpattern |list*| (&rest args)
   (with-paren (rechask args ":")))
@@ -20,16 +31,6 @@
   (format t "[")
   (rechask args ", ")
   (format t "]"))
-
-(defsyntax 1+ (x)
-  (with-paren
-    (haskell x)
-    (format t " + 1")))
-
-(defsyntax 1- (x)
-  (with-paren
-    (haskell x)
-    (format t " - 1")))
 
 
 (defmacro def-binop-as (name op &key zero one many)
@@ -54,6 +55,7 @@
 (def-binop-as |and| && :zero "True")
 (def-binop-as |or| "||" :zero "False")
 (def-binop-as |append| ++ :zero "[]")
+(def-binop-as |compose| |.| :zero "id")
 
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote with-paren) (quote (&body)))
