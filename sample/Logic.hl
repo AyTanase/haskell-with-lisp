@@ -34,8 +34,8 @@ apply :: (-> (-> a b c) (-> a b) a c)
 #|
 apply       :: (-> (-> a b a) (-> a b) a a)
 const       :: (-> a b a)
-apply const :: ((-> a b) a a)
-            :: ((-> a b a) a a)
+apply const :: (-> (-> a b) a a)
+            :: (-> (-> a b a) a a)
 |#
 (type id (-> a a))
 (define id (apply const const))
