@@ -1,15 +1,15 @@
 @echo off
+setlocal
 set SRC="%~dp0\..\lisp\haskell.lisp"
 if %~1==all (call :compile-all) else (call runcl %SRC% --eval "(hs:compile \"%~1\")")
+endlocal
 exit /b
 
 :compile-all
-setlocal
 set "FILES="
 call :collect-files .
 call runcl %SRC% --eval "(hs:compile-all %FILES%)"
 rem echo %FILES%
-endlocal
 exit /b
 
 :collect-files
