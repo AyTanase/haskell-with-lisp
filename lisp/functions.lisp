@@ -3,7 +3,10 @@
 (defsyntax function (x)
   (if (atom x)
     (haskell x)
-    (with-paren (rechask x))))
+    (with-paren
+      (haskell (car x))
+      (format t " ")
+      (haskell x))))
 
 (defhasq = "(==)")
 
