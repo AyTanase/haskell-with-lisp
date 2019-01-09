@@ -13,7 +13,7 @@
 
 (defun load-relative (file) (load (true-path file)))
 
-(load-relative "syntax.lisp")
 (load-relative "util.lisp")
+(load-relative "syntax.lisp")
 
 (provide :haskell)

@@ -10,13 +10,13 @@
 
 (defhasq = "(==)")
 
-(defhasq 1+ "((+) 1)")
+#!(defconstant 1+ #'(+ 1))
 (defsyntax 1+ (x)
   (with-paren
     (haskell x)
     (format t " + 1")))
 
-(defhasq 1- "((+) (negate 1))")
+#!(defconstant 1- #'(+ (- 1)))
 (defsyntax 1- (x)
   (with-paren
     (haskell x)
