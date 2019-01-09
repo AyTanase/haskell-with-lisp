@@ -18,7 +18,6 @@
     `(progn ,@(generate name (if n m 2) (if n n m))))
 
 #?(defhasq |apply| "(<*>)")
-(defconstant apply' (type apply (-> (-> a b c) (-> a b) a c)))
 
 
 (defmodule Logic)
@@ -92,8 +91,8 @@ applyN' f     = apply (compose applyN f)
 applyN'       = compose2 apply compose applyN
 |#
 (define fixapply (compose2 apply compose))
-(define apply2 (fixapply apply'))
-(generate apply 3 3)
+(type apply2 (-> (-> a b c d) (-> a b c) a b d))
+(generate apply 3)
 
 
 #|
