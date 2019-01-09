@@ -14,7 +14,7 @@
 (define (makePlus method f)
   (compose f (makeStar method f)))
 
-(define (makeOpt method) (flip method id))
+(define (makeOpt method f) (method f id))
 
 
 

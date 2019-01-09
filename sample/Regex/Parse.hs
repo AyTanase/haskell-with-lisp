@@ -7,7 +7,7 @@ makeStar method f = let
   g = (method (f . g) id)
   in g
 makePlus method f = (f . (makeStar method f))
-makeOpt method = (flip method id)
+makeOpt method f = (method f id)
 type Parser a b = ((End b) -> [a] -> ((End b), [a]))
 parse' :: (Parser Char NFA)
 checkQ'' :: ((QMaker NFA) -> (Parser Char NFA))
