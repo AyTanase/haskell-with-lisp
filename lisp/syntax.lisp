@@ -7,10 +7,13 @@
   (export (intern (string x) :|hs|) :|hs|))
 
 
-(defmacro defkeyword (name args &body body)
+(defmacro def-lisp-keyword (name &body body)
   (shadow-haskell name)
-  `(defmacro ,name ,args
-     `(progn ,,@body (fresh-line))))
+  `(defmacro ,name ,@body))
+
+(defmacro defkeyword (name args &body body)
+  `(def-lisp-keyword ,name ,args
+     `(progn ,(progn ,@body) (fresh-line))))
 
 
 (defvar *syntax* (make-hash-table :test 'eq))
