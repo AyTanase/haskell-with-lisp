@@ -1,9 +1,21 @@
 (in-package :hs)
 
 
+(defpackage :|haskell| (:nicknames :|hs|))
+
+(defun shadow-haskell (x)
+  (export (intern (string x) :|hs|) :|hs|))
+
+
+(defmacro defkeyword (name &body body)
+  (shadow-haskell name)
+  `(defmacro ,name ,@body))
+
+
 (defvar *syntax* (make-hash-table :test 'eq))
 
 (defmacro defsyntax (name &body body)
+  (shadow-haskell name)
   `(setf (gethash ',name *syntax*) #'(lambda ,@body)))
 
 (defgeneric haskell (x)
@@ -62,20 +74,13 @@
 (defun patternp (x) (gethash x *patterns*))
 
 (defmacro defpattern (name &body body)
-  `(progn
-     (defsyntax ,name ,@body)
-     (setf (gethash ',name *patterns*) t)))
-
-
-(defpackage :|haskell| (:nicknames :|hs|))
-(defun shadow-haskell (x)
-  (export (intern (string x) :|hs|) :|hs|))
+  (setf (gethash name *patterns*) t)
+  `(defsyntax ,name ,@body))
 
 
 (defmacro defhasq (name body)
-  `(progn
-     (defmethod haskell ((x (eql ',name))) (format t ,body))
-     (shadow-haskell ',name)))
+  (shadow-haskell name)
+  `(defmethod haskell ((x (eql ',name))) (format t ,body)))
 
 
 (load-relative "keywords.lisp")

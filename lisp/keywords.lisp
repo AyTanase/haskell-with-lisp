@@ -21,7 +21,7 @@
   (format t " :: ")
   (haskell type))
 
-(defmacro |type| (vars type)
+(defkeyword |type| (vars type)
   `(progn (%type ',vars ',type) (fresh-line)))
 
 (defsyntax |type| (var type)
@@ -44,7 +44,7 @@
   (format t " = ")
   (haskell val))
 
-(defmacro |define| (var val)
+(defkeyword |define| (var val)
   `(progn (%define ',var ',val) (fresh-line)))
 
 (defsyntax |where| (defs val)
@@ -74,10 +74,10 @@
       (map-indent #'%define defs)))
   (fresh-line))
 
-(defmacro |class| (name &optional derive (decs nil svar) defs)
+(defkeyword |class| (name &optional derive (decs nil svar) defs)
   `(%class '|class| ',name ',derive ,svar ',decs ',defs))
 
-(defmacro |instance| (name &optional derive (defs nil svar))
+(defkeyword |instance| (name &optional derive (defs nil svar))
   `(%class '|instance| ',name ',derive ,svar nil ',defs))
 
 
@@ -92,7 +92,7 @@
   (format t " where")
   (fresh-line))
 
-(defmacro |defmodule| (module &optional (names nil suppliedp))
+(defkeyword |defmodule| (module &optional (names nil suppliedp))
   `(%defmodule ',module ,suppliedp ',names))
 
 (defun %import (module suppliedp names qualifiedp hidingp)
@@ -104,7 +104,7 @@
   (fresh-line))
 
 (defmacro defimport (name qualifiedp)
-  `(defmacro ,name (module &optional (names nil suppliedp) hidingp)
+  `(defkeyword ,name (module &optional (names nil suppliedp) hidingp)
      `(%import ',module ,suppliedp ',names ',',qualifiedp ',hidingp)))
 
 (defimport |import| nil)
@@ -126,7 +126,7 @@
   (haskell type)
   (fresh-line))
 
-(defmacro |deftype| (name type) `(%deftype ',name ',type))
+(defkeyword |deftype| (name type) `(%deftype ',name ',type))
 
 
 (defun %data (name body deriving)
@@ -141,7 +141,7 @@
     (with-paren (arrange deriving)))
   (fresh-line))
 
-(defmacro |data| (name body &optional deriving)
+(defkeyword |data| (name body &optional deriving)
   `(%data ',name ',body ',deriving))
 
 
@@ -158,12 +158,12 @@
   (haskell (if xs `(|if| ,@x (|cond| ,@xs)) (second x))))
 
 
-(defmacro |extension| (&rest args)
+(defkeyword |extension| (&rest args)
   `(progn (format t "{-# LANGUAGE ~{~a~^, ~} #-}" ',args)
           (fresh-line)))
 
 
-(defmacro |defconstant| (name expr)
+(defkeyword |defconstant| (name expr)
   `(defhasq ,name (load-time-value (strhask ',expr) t)))
 
 
