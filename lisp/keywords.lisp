@@ -157,7 +157,7 @@
   `(format t "{-# LANGUAGE ~{~a~^, ~} #-}" ',args))
 
 
-(defkeyword |defconstant| (name expr)
+(def-lisp-keyword |defconstant| (name expr)
   `(defhasq ,name (load-time-value (strhask ',expr) t)))
 
 
