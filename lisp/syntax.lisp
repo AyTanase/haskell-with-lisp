@@ -7,9 +7,10 @@
   (export (intern (string x) :|hs|) :|hs|))
 
 
-(defmacro defkeyword (name &body body)
+(defmacro defkeyword (name args &body body)
   (shadow-haskell name)
-  `(defmacro ,name ,@body))
+  `(defmacro ,name ,args
+     `(progn ,,@body (fresh-line))))
 
 
 (defvar *syntax* (make-hash-table :test 'eq))

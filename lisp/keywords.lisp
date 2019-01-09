@@ -22,7 +22,7 @@
   (haskell type))
 
 (defkeyword |type| (vars type)
-  `(progn (%type ',vars ',type) (fresh-line)))
+  `(%type ',vars ',type))
 
 (defsyntax |type| (var type)
   (with-paren (%type var type)))
@@ -45,7 +45,7 @@
   (haskell val))
 
 (defkeyword |define| (var val)
-  `(progn (%define ',var ',val) (fresh-line)))
+  `(%define ',var ',val))
 
 (defsyntax |where| (defs val)
   (haskell val)
@@ -71,8 +71,7 @@
     (format t " where")
     (with-indent 1
       (map-indent #'%type decs)
-      (map-indent #'%define defs)))
-  (fresh-line))
+      (map-indent #'%define defs))))
 
 (defkeyword |class| (name &optional derive (decs nil svar) defs)
   `(%class '|class| ',name ',derive ,svar ',decs ',defs))
@@ -89,8 +88,7 @@
 (defun %defmodule (module suppliedp names)
   (format t "module ~a" module)
   (module-names suppliedp names)
-  (format t " where")
-  (fresh-line))
+  (format t " where"))
 
 (defkeyword |defmodule| (module &optional (names nil suppliedp))
   `(%defmodule ',module ,suppliedp ',names))
@@ -100,8 +98,7 @@
   (if qualifiedp (format t " qualified"))
   (format t " ~a" module)
   (if hidingp (format t " hiding"))
-  (module-names suppliedp names)
-  (fresh-line))
+  (module-names suppliedp names))
 
 (defmacro defimport (name qualifiedp)
   `(defkeyword ,name (module &optional (names nil suppliedp) hidingp)
@@ -123,8 +120,7 @@
   (format t "type ")
   (rechask name)
   (format t " = ")
-  (haskell type)
-  (fresh-line))
+  (haskell type))
 
 (defkeyword |deftype| (name type) `(%deftype ',name ',type))
 
@@ -138,8 +134,7 @@
     (rechask body))
   (when deriving
     (format t " deriving ")
-    (with-paren (arrange deriving)))
-  (fresh-line))
+    (with-paren (arrange deriving))))
 
 (defkeyword |data| (name body &optional deriving)
   `(%data ',name ',body ',deriving))
@@ -159,8 +154,7 @@
 
 
 (defkeyword |extension| (&rest args)
-  `(progn (format t "{-# LANGUAGE ~{~a~^, ~} #-}" ',args)
-          (fresh-line)))
+  `(format t "{-# LANGUAGE ~{~a~^, ~} #-}" ',args))
 
 
 (defkeyword |defconstant| (name expr)
