@@ -8,8 +8,9 @@
 
 
 (defmacro def-lisp-keyword (name &body body)
-  (shadow-haskell name)
-  `(defmacro ,name ,@body))
+  `(progn
+     (shadow-haskell ',name)
+     (defmacro ,name ,@body)))
 
 (defmacro defkeyword (name args &body body)
   `(def-lisp-keyword ,name ,args
@@ -19,8 +20,9 @@
 (defvar *syntax* (make-hash-table :test 'eq))
 
 (defmacro defsyntax (name &body body)
-  (shadow-haskell name)
-  `(setf (gethash ',name *syntax*) #'(lambda ,@body)))
+  `(progn
+     (shadow-haskell ',name)
+     (setf (gethash ',name *syntax*) #'(lambda ,@body))))
 
 (defgeneric haskell (x)
   (:documentation "Convert to Haskell code"))
@@ -78,13 +80,15 @@
 (defun patternp (x) (gethash x *patterns*))
 
 (defmacro defpattern (name &body body)
-  (setf (gethash name *patterns*) t)
-  `(defsyntax ,name ,@body))
+  `(progn
+     (setf (gethash ',name *patterns*) t)
+     (defsyntax ,name ,@body)))
 
 
 (defmacro defhasq (name body)
-  (shadow-haskell name)
-  `(defmethod haskell ((x (eql ',name))) (format t ,body)))
+  `(progn
+     (shadow-haskell ',name)
+     (defmethod haskell ((x (eql ',name))) (format t ,body))))
 
 
 (load-relative "keywords.lisp")
