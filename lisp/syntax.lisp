@@ -12,9 +12,34 @@
      (shadow-haskell ',name)
      (defmacro ,name ,@body)))
 
+
+(defun pick-out-decs-doc (body &optional (doc-allowed t))
+  "Pick out declarations and a documentation."
+  (labels ((pick-out-1 (decs body doc-allowed)
+             (flet ((return-values ()
+                      (values (nreverse decs) body))
+                    (recurse (doc-allowed)
+                      (pick-out-1 (cons (car body) decs)
+                                  (cdr body)
+                                  doc-allowed)))
+               (if (atom body)
+                 (return-values)
+                 (cond
+                   ((and doc-allowed
+                         (stringp (car body))
+                         (cdr body))
+                    (recurse nil))
+                   ((and (consp (car body))
+                         (eq (caar body) 'declare))
+                    (recurse doc-allowed))
+                   (t (return-values)))))))
+    (pick-out-1 nil body doc-allowed)))
+
 (defmacro defkeyword (name args &body body)
-  `(def-hs-macro ,name ,args
-     `(progn ,(progn ,@body) (fresh-line))))
+  (multiple-value-bind (decs rest) (pick-out-decs-doc body)
+    `(def-hs-macro ,name ,args
+       ,@decs
+       `(progn ,(progn ,@rest) (fresh-line)))))
 
 
 (defvar *syntax* (make-hash-table :test 'eq))
