@@ -7,13 +7,13 @@
   (export (intern (string x) :|hs|) :|hs|))
 
 
-(defmacro def-lisp-keyword (name &body body)
+(defmacro def-hs-macro (name &body body)
   `(progn
      (shadow-haskell ',name)
      (defmacro ,name ,@body)))
 
 (defmacro defkeyword (name args &body body)
-  `(def-lisp-keyword ,name ,args
+  `(def-hs-macro ,name ,args
      `(progn ,(progn ,@body) (fresh-line))))
 
 

@@ -14,7 +14,7 @@
       (loop for i from m to n
         collect (generate-1 fix name i))))
 
-#?(def-lisp-keyword |generate| (name m &optional n)
+#?(def-hs-macro |generate| (name m &optional n)
     `(progn ,@(generate name (if n m 2) (if n n m))))
 
 #?(defhasq |apply| "(<*>)")
