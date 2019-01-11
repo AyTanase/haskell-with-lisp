@@ -24,6 +24,12 @@
 (def-binop-as |append| ++ :zero "[]")
 (def-binop-as |compose| |.| :zero "id")
 
+(macrolet ((define-operators (&rest args)
+             `(progn
+                ,@(loop for op in args
+                    collect `(defhasq ,op ,(format nil "(~a)" op))))))
+  (define-operators <= >= < > /=))
+
 
 (defsyntax function (x)
   (if (atom x)
