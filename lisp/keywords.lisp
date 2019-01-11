@@ -161,6 +161,9 @@
   `(defhasq ,name (load-time-value (strhask ',expr) t)))
 
 
+(def-hs-macro |defun| (name args &body body)
+  `(|define| (,name ,@args) ,@body))
+
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote with-paren) (quote (&body)))
 ;; End:
