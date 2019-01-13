@@ -5,10 +5,12 @@
 (defvar *hs-readtable*)
 
 (defmacro read-by (readtable)
-  `#'(lambda (stream &rest args)
-       (declare (ignore args))
-       (let ((*readtable* ,readtable))
-         (read stream t nil t))))
+  (let ((stream (gensym))
+        (args (gensym)))
+    `#'(lambda (,stream &rest ,args)
+         (declare (ignore ,args))
+         (let ((*readtable* ,readtable))
+           (read ,stream t nil t)))))
 
 (defun read-hs-string (stream &rest args)
   (declare (ignore args))
