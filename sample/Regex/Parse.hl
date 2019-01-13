@@ -51,8 +51,7 @@
 (define (parse' f (list* #\\ x xs)) (parseChar f x xs))
 
 (define (parse' f (list* #\( xs))
-  (let (((tuple g ys) (parse' id xs)))
-    (checkQ f g ys)))
+  (uncurry (checkQ f) (parse' id xs)))
 
 (define (parse' f (list* #\) xs)) (tuple f xs))
 
