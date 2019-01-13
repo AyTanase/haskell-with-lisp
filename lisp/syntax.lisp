@@ -75,8 +75,10 @@
       (t (haskell x)))))
 
 (defmacro defrechask (name fn default)
-  `(defun ,name (x &optional (between ,default))
-     (%rechask x ,fn between)))
+  (let ((x (gensym))
+        (between (gensym)))
+    `(defun ,name (,x &optional (,between ,default))
+       (%rechask ,x ,fn ,between))))
 
 (defrechask rechask #'haskell " ")
 (defrechask arrange #'rechask ", ")
