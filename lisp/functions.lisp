@@ -24,11 +24,20 @@
 (def-binop-as |append| ++ :zero "[]")
 (def-binop-as |compose| |.| :zero "id")
 
-(macrolet ((define-operators (&rest args)
-             `(progn
-                ,@(loop for op in args
-                    collect `(defhasq ,op ,(format nil "(~a)" op))))))
-  (define-operators <= >= < > /=))
+
+(defmacro defoperator (name &optional (op name))
+  `(def-binop-as ,name ,op
+     :one (haskell `(,,(format nil "(~a)" op) ,@args))
+     :many (destructuring-bind (x y) args
+             (format t "(~a ~a ~a)" x ',op y))))
+
+(defoperator = ==)
+(defoperator /=)
+(defoperator <=)
+(defoperator >=)
+(defoperator <)
+(defoperator >)
+(defoperator |strict| $!)
 
 
 (defsyntax function (x)
@@ -38,9 +47,6 @@
       (haskell (car x))
       (format t " ")
       (haskell x))))
-
-(defhasq = "(==)")
-(defhasq |strict| "($!)")
 
 #!(defconstant 1+ #'(+ 1))
 (defsyntax 1+ (x)
