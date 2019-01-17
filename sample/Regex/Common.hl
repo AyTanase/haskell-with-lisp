@@ -2,7 +2,8 @@
 
 (data NFA (or Finite (Compare Char NFA) (Split NFA NFA)))
 
-(instance (Show NFA) () ((show (const "#<NFA>"))))
+(instance (Show NFA) ()
+  (show (const "#<NFA>")))
 
 (deftype (End a) (-> a a))
 (deftype (BinOp a) (-> a (End a)))

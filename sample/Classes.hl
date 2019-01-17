@@ -9,11 +9,13 @@
 (class (HasNot a) ()
   ((not (-> a Bool))
    (or (-> a a a)))
-  (((or x y) (if (not x) y x))))
+  ((or x y) (if (not x) y x)))
 
-(instance (HasNot Bool) () ((not Prelude.not)))
+(instance (HasNot Bool) ()
+  (not Prelude.not))
 
-(instance (HasNot (Maybe a)) () ((not isNothing)))
+(instance (HasNot (Maybe a)) ()
+  (not isNothing))
 
 
 (class (Category cat) ()
