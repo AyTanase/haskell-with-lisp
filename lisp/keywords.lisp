@@ -89,11 +89,11 @@
       (map-indent #'%type decs)
       (map-indent #'%define defs))))
 
-(defkeyword |class| (name &optional derive (decs nil svar) defs)
+(defkeyword |class| (name &optional derive (decs nil svar) &rest defs)
   `(%class '|class| ',name ',derive ,svar ',decs ',defs))
 
-(defkeyword |instance| (name &optional derive (defs nil svar))
-  `(%class '|instance| ',name ',derive ,svar nil ',defs))
+(defkeyword |instance| (name &optional derive &rest defs)
+  `(%class '|instance| ',name ',derive ,(not (null defs)) nil ',defs))
 
 
 (defun module-names (suppliedp names)
