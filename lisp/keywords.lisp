@@ -141,13 +141,27 @@
 (defkeyword |deftype| (name type) `(%deftype ',name ',type))
 
 
+(defun %data-body (body)
+  (cond
+    ((atom body) (haskell body))
+    ((and (consp (cdr body))
+          (eq (cadr body) :|name|))
+     (haskell (car body))
+     (format t " { ")
+     (%rechask (cddr body)
+               #'(lambda (args)
+                   (apply #'%type args))
+               ", ")
+     (format t " }"))
+    (t (rechask body))))
+
 (defun %data (name body deriving)
   (format t "data ")
   (rechask name)
   (format t " = ")
   (if (and (consp body) (eq (car body) '|or|))
-    (arrange (cdr body) " | ")
-    (rechask body))
+    (%rechask (cdr body) #'%data-body " | ")
+    (%data-body body))
   (when deriving
     (format t " deriving ")
     (with-paren (arrange deriving))))
