@@ -173,6 +173,9 @@
   `(format t "{-# LANGUAGE ~{~a~^, ~} #-}" ',args))
 
 
+(defhasq :|as| "@")
+
+
 (def-hs-macro |defconstant| (name expr)
   `(defhasq ,name (load-time-value (strhask ',expr) t)))
 
