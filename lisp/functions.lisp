@@ -56,7 +56,6 @@
 
 (defhasq |pair| "(,)")
 
-(defhasq |nil| "[]")
 (defhasq |cons| "(:)")
 
 (defpattern |list*| (&rest args)
@@ -66,6 +65,8 @@
   (format t "[")
   (rechask args ", ")
   (format t "]"))
+
+#!(defconstant nil (list))
 
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote with-paren) (quote (&body)))
