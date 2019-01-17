@@ -1,4 +1,4 @@
-#?(defhasq |alt| "(<|>)")
+#?(def-binop-as |alt| "<|>" :zero "empty")
 
 (defmodule Exec)
 
