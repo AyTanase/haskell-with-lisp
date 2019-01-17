@@ -29,7 +29,10 @@
   `(def-binop-as ,name ,op
      :one (haskell `(,,(format nil "(~a)" op) ,@args))
      :many (destructuring-bind (x y) args
-             (format t "(~a ~a ~a)" x ',op y))))
+             (with-paren
+               (haskell x)
+               (format t ,(format nil " ~a " op))
+               (haskell y)))))
 
 (defoperator = ==)
 (defoperator /=)
