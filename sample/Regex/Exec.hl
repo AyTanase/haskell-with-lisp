@@ -21,11 +21,9 @@
 
 (type match (=> (Num a) (-> NFA (list Char) (Maybe (tuple a a)))))
 (define match
-  (labels ((match'' (n rx xs)
-             (fmap (pair n) (matchHead rx xs)))
-           (match' (n rx nil)
-             (match'' n rx nil))
-           (match' (n rx xs)
-             (alt (match'' n rx xs)
-                  (match' (1+ n) rx (tail xs)))))
+  (labels ((match' (n rx xs)
+             (alt (fmap (pair n) (matchHead rx xs))
+                  (if (null xs)
+                    Nothing
+                    (match' (1+ n) rx (tail xs))))))
     (match' 0)))

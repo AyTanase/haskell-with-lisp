@@ -10,6 +10,4 @@ matchHead = (matchHead' 0) where
   matchHead' n (Split p q) xs = ((matchHead' n p xs) <|> (matchHead' n q xs))
 match :: Num a => (NFA -> [Char] -> (Maybe (a, a)))
 match = (match' 0) where
-  match'' n rx xs = (fmap ((,) n) (matchHead rx xs))
-  match' n rx [] = (match'' n rx [])
-  match' n rx xs = ((match'' n rx xs) <|> (match' (n + 1) rx (tail xs)))
+  match' n rx xs = ((fmap ((,) n) (matchHead rx xs)) <|> (if (null xs) then Nothing else (match' (n + 1) rx (tail xs))))
