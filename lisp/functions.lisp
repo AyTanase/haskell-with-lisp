@@ -40,6 +40,7 @@
       (haskell x))))
 
 (defhasq = "(==)")
+(defhasq |strict| "($!)")
 
 #!(defconstant 1+ #'(+ 1))
 (defsyntax 1+ (x)
