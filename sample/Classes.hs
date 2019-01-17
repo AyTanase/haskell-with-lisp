@@ -6,7 +6,9 @@ import Data.Maybe
 class HasNot a where
   not :: (a -> Bool)
   (||) :: (a -> a -> a)
-  (||) x y = (if (not x) then y else x)
+  (||) x y
+    | (not x) = y
+    | otherwise = x
 instance HasNot Bool where
   not = Prelude.not
 instance HasNot (Maybe a) where
