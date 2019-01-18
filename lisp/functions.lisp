@@ -40,7 +40,6 @@
 (defoperator >=)
 (defoperator <)
 (defoperator >)
-(defoperator |strict| $!)
 
 
 (defsyntax function (x)
@@ -50,6 +49,8 @@
       (haskell (car x))
       (format t " ")
       (haskell x))))
+
+(defhasq |strict| "($!)")
 
 #!(defconstant 1+ #'(+ 1))
 (defsyntax 1+ (x)
