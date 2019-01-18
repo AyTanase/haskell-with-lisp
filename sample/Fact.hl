@@ -6,7 +6,7 @@
 (define fact1
   (labels ((fact' (p 0) p)
            (fact' (p n)
-             (fact' (strict * p n) (1- n))))
+             (fact' (* p n) (1- n))))
     (fact' 1)))
 
 (define (fact2 n) (product (enum-from 1 :to n)))
