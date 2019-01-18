@@ -39,9 +39,9 @@
     (haskell var)
     (rechask var)))
 
-(defun %define (var val)
+(defun %define (var val &optional (assign " = "))
   (labels ((gendef (value)
-             (format t " = ")
+             (format t assign)
              (haskell value))
            (guard (condition value)
              (with-indent 1
@@ -181,6 +181,14 @@
 
 (defsyntax |cond| (x &rest xs)
   (haskell (if xs `(|if| ,@x (|cond| ,@xs)) (second x))))
+
+
+(defsyntax |case| (x &rest xs)
+  (format t "case ")
+  (haskell x)
+  (format t " of")
+  (with-indent 1
+    (map-indent #'(lambda (x y) (%define x y " -> ")) xs)))
 
 
 (defkeyword |extension| (&rest args)
