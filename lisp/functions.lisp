@@ -70,13 +70,35 @@
 (defpattern |list*| (&rest args)
   (with-paren (rechask args ":")))
 
+
+(defmacro with-square-brackets (&body body)
+  `(progn
+     (format t "[")
+     ,@body
+     (format t "]")))
+
 (defpattern |list| (&rest args)
-  (format t "[")
-  (rechask args ", ")
-  (format t "]"))
+  (with-square-brackets
+    (rechask args ", ")))
 
 #!(defconstant nil (list))
 
+(defsyntax |enum-from| (x &rest xs)
+  (labels ((rec (xs)
+             (cond
+               ((atom xs) (format t ".."))
+               ((eq (car xs) :|to|)
+                (format t "..")
+                (if (consp (cdr xs))
+                  (haskell (cadr xs))))
+               (t (format t ",")
+                  (haskell (car xs))
+                  (rec (cdr xs))))))
+    (with-square-brackets
+      (haskell x)
+      (rec xs))))
+
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote with-paren) (quote (&body)))
+;; eval: (add-cl-indent-rule (quote with-square-brackets) (quote (&body)))
 ;; End:
