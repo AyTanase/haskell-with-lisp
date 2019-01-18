@@ -20,7 +20,7 @@
 
 (font-lock-add-keywords
  'haskell-lisp-mode
- '(("\\<\\(?:d\\(?:ef\\(?:ine\\|module\\|type\\)\\|ata\\)\\|type\\|class\\|i\\(?:nstance\\|mport\\)\\|module\\|where\\)\\>" . font-lock-keyword-face)
+ '(("\\<\\(?:d\\(?:ef\\(?:ine\\|module\\|type\\)\\|ata\\)\\|type\\|enum-from\\|class\\|i\\(?:nstance\\|mport\\)\\|module\\|where\\)\\>" . font-lock-keyword-face)
    ("\\<\\(?:define\\s-+?(?\\|type\\s-\\)\\s-*?\\([^()[:space:]]*\\)" 1 font-lock-function-name-face)
    ("\\<type\\s-+?(\\([^)]*\\))" 1 font-lock-function-name-face)
    ("(\\(extension\\s-[^)]*\\))" 1 font-lock-preprocessor-face)
