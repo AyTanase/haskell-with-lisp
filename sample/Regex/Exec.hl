@@ -1,4 +1,5 @@
 #?(def-binop-as |alt| "<|>" :zero "empty")
+#?(defhasq |join-fmap| "(=<<)")
 
 (defmodule Exec)
 
@@ -23,7 +24,5 @@
 (define match
   (labels ((match' (n rx xs)
              (alt (fmap (pair n) (matchHead rx xs))
-                  (if (null xs)
-                    Nothing
-                    (match' (1+ n) rx (tail xs))))))
+                  (join-fmap (match' (1+ n) rx) (safeTail xs)))))
     (match' 0)))

@@ -6,3 +6,6 @@ type End a = (a -> a)
 type BinOp a = (a -> (End a))
 destribute :: ((b -> c -> d) -> (a -> b) -> (a -> c) -> a -> d)
 destribute f g h x = (f (g x) (h x))
+safeTail :: ([a] -> (Maybe [a]))
+safeTail [] = Nothing
+safeTail xs = (Just (tail xs))
