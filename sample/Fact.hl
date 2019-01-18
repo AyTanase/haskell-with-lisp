@@ -9,6 +9,8 @@
              (fact' (* p n) (1- n))))
     (fact' 1)))
 
-(define (fact2 n) (product (enum-from 1 :to n)))
+(defun fact2 (n)
+  (product (enum-from 1 :to n)))
 
-(define (fact3 n) (product (take n (enum-from 1))))
+(defun fact3 (n)
+  (product (take n (enum-from 1))))
