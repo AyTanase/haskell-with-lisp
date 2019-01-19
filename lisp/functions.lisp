@@ -43,12 +43,13 @@
 
 
 (defsyntax function (x)
-  (if (atom x)
-    (haskell x)
-    (with-paren
-      (haskell (car x))
-      (format t " ")
-      (haskell x))))
+  (cond
+    ((atom x) (haskell x))
+    ((atom (cdr x)) (haskell (car x)))
+    (t (with-paren
+         (haskell (car x))
+         (format t " ")
+         (haskell (if (atom (cddr x)) (cadr x) x))))))
 
 (defhasq |strict| "($!)")
 
