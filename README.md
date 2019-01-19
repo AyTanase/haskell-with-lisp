@@ -16,5 +16,7 @@ Regex/Common
 Classes
 ### Language extensions
 Classes
+### Overlapping instances
+Algebra
 ### Embedding Lisp
 Logic
