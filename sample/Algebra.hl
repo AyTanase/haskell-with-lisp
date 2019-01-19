@@ -1,4 +1,4 @@
-(extension FlexibleInstances MultiParamTypeClasses UndecidableInstances)
+(extension FlexibleInstances UndecidableInstances)
 
 (defmodule Algebra ((module Algebra) (module Prelude)))
 

@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleInstances, MultiParamTypeClasses, UndecidableInstances #-}
+{-# LANGUAGE FlexibleInstances, UndecidableInstances #-}
 module Algebra (module Algebra, module Prelude) where
 import Prelude hiding (Monoid, (+), negate, (-))
 import qualified Prelude
