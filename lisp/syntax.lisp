@@ -57,11 +57,18 @@
     (haskell x)))
 
 
-(defmacro with-paren (&body body)
-  `(progn
-     (format t "(")
-     ,@body
-     (format t ")")))
+(defmacro defparen (name open close)
+  (let ((body (gensym)))
+    `(defmacro ,name (&body ,body)
+       `(progn
+          (format t ,,open)
+          ,@,body
+          (format t ,,close)))))
+
+(defparen with-paren "(" ")")
+(defparen with-square-brackets "[" "]")
+(defparen with-pragma "{-# " " #-}")
+
 
 (defun %rechask (x fn between)
   (labels ((rec (x xs)

@@ -77,11 +77,22 @@
     (haskell val)))
 
 
+(defun %class-derive (derive)
+  (flet ((print-derive (derive)
+           (with-paren (arrange derive))))
+    (when (consp derive)
+      (if (symbolp (car derive))
+        (progn
+          (with-pragma
+            (format t "~@:(~a~)" (car derive)))
+          (format t " ")
+          (print-derive (cdr derive)))
+        (print-derive derive))
+      (format t " => "))))
+
 (defun %class (key name derive svar decs defs)
   (format t "~a " key)
-  (when derive
-    (with-paren (arrange derive))
-    (format t " => "))
+  (%class-derive derive)
   (rechask name)
   (when svar
     (format t " where")
@@ -192,7 +203,8 @@
 
 
 (defkeyword |extension| (&rest args)
-  `(format t "{-# LANGUAGE ~{~a~^, ~} #-}" ',args))
+  `(with-pragma
+     (format t "LANGUAGE ~{~a~^, ~}" ',args)))
 
 
 (defhasq :|as| "@")
@@ -212,4 +224,5 @@
 
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote with-paren) (quote (&body)))
+;; eval: (add-cl-indent-rule (quote with-pragma) (quote (&body)))
 ;; End:

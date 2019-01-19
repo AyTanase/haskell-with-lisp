@@ -73,12 +73,6 @@
   (with-paren (rechask args ":")))
 
 
-(defmacro with-square-brackets (&body body)
-  `(progn
-     (format t "[")
-     ,@body
-     (format t "]")))
-
 (defpattern |list| (&rest args)
   (with-square-brackets
     (rechask args ", ")))
