@@ -1,0 +1,36 @@
+(extension FlexibleInstances MultiParamTypeClasses UndecidableInstances)
+
+(defmodule Algebra ((module Algebra) (module Prelude)))
+
+(import Prelude (Monoid + negate -) :hiding)
+(require Prelude)
+(import GHC.Base (liftA2))
+
+
+(class (Monoid m) ()
+  ((zero m)
+   (+ (-> m m m))))
+
+(class (Group g) ((Monoid g))
+  ((negate (-> g g))
+   (- (-> g g g)))
+  (negate #'(- zero))
+  ((- x y) (+ x (- y))))
+
+
+(instance (Monoid (f m)) (:overlapping (Monoid m) (Applicative f))
+  (zero (pure zero))
+  (+ (liftA2 +)))
+
+(instance (Group (f g)) ((Group g) (Applicative f))
+  (negate (fmap negate))
+  (- (liftA2 -)))
+
+
+(instance (Monoid a) ((Num a))
+  (zero 0)
+  (+ (Prelude.+)))
+
+(instance (Group a) ((Num a))
+  (negate Prelude.negate)
+  (- (Prelude.-)))
