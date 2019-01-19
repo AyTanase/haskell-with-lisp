@@ -13,10 +13,8 @@ Classes, Regex/Regex
 ### Types
 Regex/Common
 ### Typeclasses
-Classes
+Algebra, Classes
 ### Language extensions
 Classes
-### Overlapping instances
-Algebra
 ### Embedding Lisp
 Logic
