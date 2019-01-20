@@ -8,12 +8,12 @@
 
 
 (class (Monoid m) ()
-  ((zero m)
-   (+ (-> m m m))))
+  (type zero m)
+  (type + (-> m m m)))
 
 (class (Group g) ((Monoid g))
-  ((negate (-> g g))
-   (- (-> g g g)))
+  (type negate (-> g g))
+  (type - (-> g g g))
   (negate #'(- zero))
   ((- x y) (+ x (- y))))
 
