@@ -39,7 +39,7 @@
     (haskell var)
     (rechask var)))
 
-(defun %define (var val &optional (assign " = "))
+(defun %define-right (val assign)
   (labels ((gendef (value)
              (format t assign)
              (haskell value))
@@ -49,7 +49,6 @@
                (format t "| ")
                (haskell condition)
                (gendef value))))
-    (%define-left var)
     (if (consp val)
       (case (car val)
         (|if| (destructuring-bind (x y &optional z) (cdr val)
@@ -59,6 +58,13 @@
                   (apply #'guard args)))
         (t (gendef val)))
       (gendef val))))
+
+(defun %define (var val &optional (assign " = "))
+  (if (eq var '|type|)
+    (apply #'%type val)
+    (progn
+      (%define-left var)
+      (%define-right val assign))))
 
 (defkeyword |define| (var val)
   `(%define ',var ',val))
