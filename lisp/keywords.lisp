@@ -61,7 +61,7 @@
 
 (defun %define (var val &optional (assign " = "))
   (if (eq var '|type|)
-    (apply #'%type val)
+    (%type val assign)
     (progn
       (%define-left var)
       (%define-right val assign))))
