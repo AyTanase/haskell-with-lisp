@@ -25,7 +25,7 @@
   `(%type ',vars ',type))
 
 (defsyntax |type| (var type)
-  (with-paren (%type var type)))
+  (with-paren (%type (list var) type)))
 
 
 (defun tuple (xs)
