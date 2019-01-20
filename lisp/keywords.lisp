@@ -222,10 +222,11 @@
 (def-hs-macro |defun| (name args &body body)
   `(|define| (,name ,@args) ,@body))
 
-(defsyntax |labels| (fns &rest body)
-  (haskell `(|where| ,(loop for (name args . values) in fns
-                        collect `((,name ,@args) ,@values))
-                     ,@body)))
+(defsyntax |labels| (fs &rest body)
+  (flet ((f->def (f)
+           (destructuring-bind (name args . values) f
+             (if (eq name '|type|) f `((,name ,@args) ,@values)))))
+    (haskell `(|where| ,(mapcar #'f->def fs) ,@body))))
 
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote with-paren) (quote (&body)))
