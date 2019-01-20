@@ -96,21 +96,20 @@
         (print-derive derive))
       (format t " => "))))
 
-(defun %class (key name derive svar decs defs)
+(defun %class (key name derive defs)
   (format t "~a " key)
   (%class-derive derive)
   (rechask name)
-  (when svar
+  (when defs
     (format t " where")
     (with-indent 1
-      (map-indent #'%type decs)
       (map-indent #'%define defs))))
 
-(defkeyword |class| (name &optional derive (decs nil svar) &rest defs)
-  `(%class '|class| ',name ',derive ,svar ',decs ',defs))
+(defkeyword |class| (name &optional derive &rest defs)
+  `(%class '|class| ',name ',derive ',defs))
 
 (defkeyword |instance| (name &optional derive &rest defs)
-  `(%class '|instance| ',name ',derive ,(not (null defs)) nil ',defs))
+  `(%class '|instance| ',name ',derive ',defs))
 
 
 (defun module-names (suppliedp names)
