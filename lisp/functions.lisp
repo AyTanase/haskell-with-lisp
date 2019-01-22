@@ -79,6 +79,8 @@
 
 #!(defconstant nil (list))
 
+#!(defconstant list (flip cons nil))
+
 (defsyntax |enum-from| (x &rest xs)
   (labels ((rec (xs)
              (cond
