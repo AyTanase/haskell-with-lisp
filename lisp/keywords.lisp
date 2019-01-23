@@ -142,6 +142,8 @@
 (defimport |import| nil)
 (defimport |require| t)
 
+(defhasq :|all| "(..)")
+
 
 (defsyntax => (constraints type)
   (if (consp (car constraints))
