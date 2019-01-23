@@ -20,12 +20,13 @@
 
 (font-lock-add-keywords
  'haskell-lisp-mode
- '(("\\<\\(?:d\\(?:ef\\(?:ine\\|module\\|type\\)\\|ata\\)\\|type\\|enum-from\\|class\\|i\\(?:nstance\\|mport\\)\\|module\\|where\\)\\>" . font-lock-keyword-face)
-   ("\\<\\(?:define\\s-+?(?\\|type\\s-\\)\\s-*?\\([^()[:space:]]*\\)" 1 font-lock-function-name-face)
-   ("\\<type\\s-+?(\\([^)]*\\))" 1 font-lock-function-name-face)
+ '(("(\\(d\\(?:ef\\(?:ine\\|module\\|data\\)\\|ata\\)\\|type\\|enum-from\\|class\\|i\\(?:nstance\\|mport\\)\\|module\\|where\\)\\_>"
+    1 font-lock-keyword-face)
+   ("(\\(?:define\\s-+(?\\|type\\s-\\)\\s-*\\([[:lower:]][[:word:]']*\\)" 1 font-lock-function-name-face)
+   ("(type\\s-+(\\([^)]*\\))" 1 font-lock-function-name-face)
    ("(\\(extension\\s-[^)]*\\))" 1 font-lock-preprocessor-face)
-   ("(\\(a\\(?:ppe\\)?nd\\|or\\|compose\\|->?\\|[+*/]\\)[)[:space:]]" 1 font-lock-variable-name-face)
-   ("\\<\\(?:[A-Z][^().[:space:]]*\\|list\\(?:\\*\\s-\\|\\>\\)\\|\\(?:tuple\\|nil\\|cons\\|pair\\)\\>\\)" . font-lock-type-face)))
+   ("(\\(a\\(?:ppe\\)?nd\\|or\\|compose\\|->?\\|[+*/]\\)\\_>" 1 font-lock-variable-name-face)
+   ("\\_<\\([[:upper:]][[:word:]']*\\|list\\*?\\|tuple\\|nil\\|cons\\|pair\\)\\_>" 1 font-lock-type-face)))
 
 (define-key haskell-lisp-mode-map (kbd "C-c C-c") 'to-haskell)
 
