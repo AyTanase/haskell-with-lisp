@@ -6,6 +6,9 @@
 (defun string-tail (s)
   (coerce (cdr (coerce s 'list)) 'string))
 
+(defun symbol-tail (s)
+  (intern (string-tail (string s))))
+
 (defun uvarp (x)
   (and (symbolp x) (char= (char (string x) 0) #\?)))
 
@@ -24,7 +27,7 @@
        (if vs
          (values (format-symbol "~a~a" (second vs) (incf (third vs)))
                  context)
-         (let ((v (intern (string-tail (string expr)))))
+         (let ((v (symbol-tail expr)))
            (values v (cons (list expr v 0) context))))))
     (t (values expr context))))
 
@@ -55,6 +58,17 @@
 
 (def-hs-macro |udef| (var val)
   `(|define| ,@(%udef var val)))
+
+
+(defun %ulet (name defs val)
+  (list name (mapcar (const (curry #'apply #'%udef)) defs) val))
+
+(defmacro defulet (name)
+  `(def-syntax-macro ,name (defs val)
+     (%ulet ',(symbol-tail name) defs val)))
+
+(defulet |ulet|)
+(defulet |uwhere|)
 
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote with-unifying) (quote (6 4 4 &body)))
