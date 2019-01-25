@@ -70,6 +70,9 @@
 (defulet |ulet|)
 (defulet |uwhere|)
 
+(def-syntax-macro |ulabels| (defs &rest values)
+  `(|uwhere| ,(mapcar #'defun->define defs) ,@values))
+
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote with-unifying) (quote (6 4 4 &body)))
 ;; End:
