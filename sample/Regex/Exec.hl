@@ -11,7 +11,7 @@
   (ulabels ((matchHead' (n Finite _)
               (Just n))
             (matchHead' (n (Compare ?x rx) (list* ?x xs))
-              (matchHead' (1+ n) rx ys))
+              (matchHead' (1+ n) rx xs))
             (matchHead' (_ (Compare _ _) _)
               Nothing)
             (matchHead' (n (Split p q) xs)
