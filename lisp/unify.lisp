@@ -83,6 +83,9 @@
 (defuclass |uclass|)
 (defuclass |uinstance|)
 
+(def-hs-macro |udefdata| (name &body defs)
+  `(|defdata| ,name ,@(map-udef defs)))
+
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote with-unifying) (quote (6 4 4 &body)))
 ;; End:
