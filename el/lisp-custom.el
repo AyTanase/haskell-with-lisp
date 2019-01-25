@@ -1,8 +1,13 @@
 (defun add-cl-indent-rule (symbol rule)
   "Add an indentation RULE of SYMBOL in `common-lisp-indent-function'."
-  (interactive "SSymbol to add: \nxRule to add: ")
+  (interactive "SSymbol: \nxRule: ")
   (eval-after-load 'cl-indent
     `(put ',symbol 'common-lisp-indent-function ',rule)))
+
+(defun cl-indent-rules (rule &rest symbols)
+  (mapc (lambda (symbol)
+          (add-cl-indent-rule symbol rule))
+        symbols))
 
 (defun lisp-indent-let-method
     (path state indent-point sexp-column normal-indent)
@@ -31,8 +36,7 @@
 (add-cl-indent-rule 'if '(4 &rest 2))
 (add-cl-indent-rule 'with-open-file '(&lambda &body))
 (add-cl-indent-rule 'ftype '((&whole 4 &lambda 2) &rest 2))
-(add-cl-indent-rule 'let 'lisp-indent-let-method)
-(add-cl-indent-rule 'let* 'lisp-indent-let-method)
+(cl-indent-rules 'lisp-indent-let-method 'let 'let*)
 
 (modify-syntax-entry ?. "'2" lisp-mode-syntax-table)
 

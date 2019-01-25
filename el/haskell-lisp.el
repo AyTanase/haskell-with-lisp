@@ -12,11 +12,11 @@
   :after-hook
   (setq-local font-lock-keywords-case-fold-search nil))
 
-(add-cl-indent-rule 'define '(4 &body))
-(add-cl-indent-rule 'defmodule '(4 &body))
-(add-cl-indent-rule 'where '((&whole 4 &rest (&whole 1 &body)) &body))
-(add-cl-indent-rule 'class '(4 &lambda &body))
-(add-cl-indent-rule 'instance '(4 &lambda &body))
+(cl-indent-rules '(4 &body) 'define 'udef 'defdata 'udefdata 'defmodule)
+(cl-indent-rules '((&whole 4 &rest (&whole 1 &body)) &body) 'where 'uwhere)
+(cl-indent-rules '(4 &lambda &body) 'class 'uclass 'instance 'uinstance)
+(add-cl-indent-rule 'ulet 'lisp-indent-let-method)
+(add-cl-indent-rule 'ulabels '((&whole 4 &rest (&whole 1 &lambda &body)) &body))
 
 (font-lock-add-keywords
  'haskell-lisp-mode
