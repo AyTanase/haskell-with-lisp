@@ -35,8 +35,13 @@
                    (t (return-values)))))))
     (pick-out-1 nil body doc-allowed)))
 
+(defmacro with-picking-out (args code &body body)
+  `(multiple-value-bind ,args (pick-out-decs-dec ,code)
+     ,@body))
+
+
 (defmacro defkeyword (name args &body body)
-  (multiple-value-bind (decs rest) (pick-out-decs-doc body)
+  (with-picking-out (decs rest) body
     `(def-hs-macro ,name ,args
        ,@decs
        `(progn ,(progn ,@rest) (fresh-line)))))
@@ -48,6 +53,12 @@
   `(progn
      (shadow-haskell ',name)
      (setf (gethash ',name *syntax*) #'(lambda ,@body))))
+
+(defmacro def-syntax-macro (name args &body body)
+  (with-picking-out (decs rest) body
+    `(defsyntax ,name ,args
+       (haskell (progn ,@rest)))))
+
 
 (defgeneric haskell (x)
   (:documentation "Convert to Haskell code"))
@@ -128,3 +139,7 @@
 (load-relative "keywords.lisp")
 (load-relative "unify.lisp")
 (load-relative "functions.lisp")
+
+;; Local Variables:
+;; eval: (add-cl-indent-rule (quote with-picking-out) (quote (6 4 &body)))
+;; End:
