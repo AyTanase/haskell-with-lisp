@@ -73,6 +73,9 @@
 (def-syntax-macro |ulabels| (defs &rest values)
   `(|uwhere| ,(mapcar #'defun->define defs) ,@values))
 
+(def-syntax-macro |ucase| (val &rest defs)
+  `(|case| ,val ,@(map-udef defs)))
+
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote with-unifying) (quote (6 4 4 &body)))
 ;; End:
