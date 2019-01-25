@@ -52,9 +52,9 @@
            ,(%udef-guard-body expr val))
     val))
 
-(defun %udef (var val)
+(defun %udef (var val &rest args)
   (with-unifying (expr context) var nil
-    (list expr (%udef-body expr (%udef-guard context) val))))
+    (list* expr (%udef-body expr (%udef-guard context) val) args)))
 
 (def-hs-macro |udef| (var val)
   `(|define| ,@(%udef var val)))
