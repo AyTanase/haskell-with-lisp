@@ -64,8 +64,8 @@
   (mapcar (const (curry #'apply #'%udef)) defs))
 
 (defmacro defulet (name)
-  `(def-syntax-macro ,name (defs val)
-     `(,',(symbol-tail name) ,(map-udef defs) ,val)))
+  `(def-syntax-macro ,name (defs &rest values)
+     `(,',(symbol-tail name) ,(map-udef defs) ,@values)))
 
 (defulet |ulet|)
 (defulet |uwhere|)
