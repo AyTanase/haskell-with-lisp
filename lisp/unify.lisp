@@ -60,12 +60,12 @@
   `(|define| ,@(%udef var val)))
 
 
-(defun %ulet (name defs val)
-  (list name (mapcar (const (curry #'apply #'%udef)) defs) val))
+(defun map-udef (defs)
+  (mapcar (const (curry #'apply #'%udef)) defs))
 
 (defmacro defulet (name)
   `(def-syntax-macro ,name (defs val)
-     (%ulet ',(symbol-tail name) defs val)))
+     `(,',(symbol-tail name) ,(map-udef defs) ,val)))
 
 (defulet |ulet|)
 (defulet |uwhere|)
