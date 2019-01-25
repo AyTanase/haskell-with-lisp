@@ -76,6 +76,13 @@
 (def-syntax-macro |ucase| (val &rest defs)
   `(|case| ,val ,@(map-udef defs)))
 
+(defmacro defuclass (name)
+  `(def-hs-macro ,name (dec &optional derive &body defs)
+     `(,',(symbol-tail name) ,dec ,derive ,@(map-udef defs))))
+
+(defuclass |uclass|)
+(defuclass |uinstance|)
+
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote with-unifying) (quote (6 4 4 &body)))
 ;; End:
