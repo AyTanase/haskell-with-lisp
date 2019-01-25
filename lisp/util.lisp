@@ -1,6 +1,14 @@
 (in-package :hs)
 
 
+(defun curry (f x)
+  #'(lambda (y)
+      (funcall f x y)))
+
+(defmacro const (x)
+  `(load-time-value ,x t))
+
+
 (defvar *cl-readtable* *readtable*)
 (defvar *hs-readtable*)
 

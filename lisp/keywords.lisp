@@ -173,10 +173,7 @@
           (eq (cadr body) :|name|))
      (haskell (car body))
      (format t " { ")
-     (%rechask (cddr body)
-               #'(lambda (args)
-                   (apply #'%type args))
-               ", ")
+     (%rechask (cddr body) (const (curry #'apply #'%type)) ", ")
      (format t " }"))
     (t (rechask body))))
 
@@ -225,7 +222,7 @@
 
 
 (def-hs-macro |defconstant| (name expr)
-  `(defhasq ,name (load-time-value (strhask ',expr) t)))
+  `(defhasq ,name (const (strhask ',expr))))
 
 
 (defun defun->define (def)
