@@ -50,13 +50,12 @@
            ,(%udef-guard-body expr val))
     val))
 
-(defun %udef (var val &optional (assign " = "))
+(defun %udef (var val)
   (with-unifying (expr context) var nil
-    (let ((guard (%udef-guard context)))
-      (%define expr (%udef-body expr guard val) assign))))
+    (list expr (%udef-body expr (%udef-guard context) val))))
 
 (defkeyword |udef| (var val)
-  `(%udef ',var ',val))
+  `(|define| ,@(%udef var val)))
 
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote with-unifying) (quote (6 4 4 &body)))
