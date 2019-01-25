@@ -1,6 +1,3 @@
-#?(defun format-symbol (&rest args)
-    (intern (apply #'format nil args)))
-
 #?(defun nth-name (name n)
     (if (= n 1)
       name

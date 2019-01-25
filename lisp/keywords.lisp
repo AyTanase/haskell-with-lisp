@@ -34,6 +34,11 @@
 (defpattern |tuple| (&rest xs) (tuple xs))
 
 
+(defun has-guard-p (expr)
+  (and (consp expr)
+       (case (car expr)
+         ((|if| |cond|) t))))
+
 (defun %define-left (var)
   (if (or (atom var) (patternp (car var)))
     (haskell var)
@@ -49,14 +54,13 @@
                (format t "| ")
                (haskell condition)
                (gendef value))))
-    (if (consp val)
+    (if (has-guard-p val)
       (case (car val)
         (|if| (destructuring-bind (x y &optional z) (cdr val)
                 (guard x y)
                 (if z (guard '|otherwise| z))))
         (|cond| (dolist (args (cdr val))
-                  (apply #'guard args)))
-        (t (gendef val)))
+                  (apply #'guard args))))
       (gendef val))))
 
 (defun %define (var val &optional (assign " = "))
