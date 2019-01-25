@@ -35,9 +35,8 @@
             collect `(= ,v ,(format-symbol "~a~a" v i)))))
 
 (defun %udef-nest-guard (expr val)
-  (let* ((name (format-symbol "~aUnified" (car expr)))
-         (vars (cons name (cdr expr))))
-    `(|where| ((,vars ,val)) ,vars)))
+  (let ((name (format-symbol "_~a" (car expr))))
+    `(|let| ((,name ,val)) ,name)))
 
 (defun %udef-guard-body (expr val)
   (if (has-guard-p val)
@@ -54,7 +53,7 @@
   (with-unifying (expr context) var nil
     (list expr (%udef-body expr (%udef-guard context) val))))
 
-(defkeyword |udef| (var val)
+(def-hs-macro |udef| (var val)
   `(|define| ,@(%udef var val)))
 
 ;; Local Variables:
