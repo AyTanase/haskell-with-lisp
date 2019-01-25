@@ -36,7 +36,7 @@
     (pick-out-1 nil body doc-allowed)))
 
 (defmacro with-picking-out (args code &body body)
-  `(multiple-value-bind ,args (pick-out-decs-dec ,code)
+  `(multiple-value-bind ,args (pick-out-decs-doc ,code)
      ,@body))
 
 
@@ -57,6 +57,7 @@
 (defmacro def-syntax-macro (name args &body body)
   (with-picking-out (decs rest) body
     `(defsyntax ,name ,args
+       ,@decs
        (haskell (progn ,@rest)))))
 
 
