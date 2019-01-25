@@ -204,8 +204,8 @@
     (format t " else ")
     (haskell z)))
 
-(defsyntax |cond| (x &rest xs)
-  (haskell (if xs `(|if| ,@x (|cond| ,@xs)) (second x))))
+(def-syntax-macro |cond| (x &rest xs)
+  (if xs `(|if| ,@x (|cond| ,@xs)) (second x)))
 
 
 (defsyntax |case| (x &rest xs)
@@ -228,14 +228,15 @@
   `(defhasq ,name (load-time-value (strhask ',expr) t)))
 
 
-(def-hs-macro |defun| (name args &body body)
-  `(|define| (,name ,@args) ,@body))
+(defun defun->define (def)
+  (destructuring-bind (name args &body body) def
+    (if (eq name '|type|) def `((,name ,@args) ,@body))))
 
-(defsyntax |labels| (fs &rest body)
-  (flet ((f->def (f)
-           (destructuring-bind (name args . values) f
-             (if (eq name '|type|) f `((,name ,@args) ,@values)))))
-    (haskell `(|where| ,(mapcar #'f->def fs) ,@body))))
+(def-hs-macro |defun| (&body body)
+  `(|define| ,@(defun->define body)))
+
+(def-syntax-macro |labels| (fs &rest body)
+  `(|where| ,(mapcar #'defun->define fs) ,@body))
 
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote with-paren) (quote (&body)))
