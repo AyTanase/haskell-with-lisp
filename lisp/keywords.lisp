@@ -236,6 +236,5 @@
   `(|where| ,(mapcar #'defun->define fs) ,@body))
 
 ;; Local Variables:
-;; eval: (add-cl-indent-rule (quote with-paren) (quote (&body)))
-;; eval: (add-cl-indent-rule (quote with-pragma) (quote (&body)))
+;; eval: (cl-indent-rules (quote (&body)) (quote with-paren) (quote with-pragma))
 ;; End:

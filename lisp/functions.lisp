@@ -97,6 +97,5 @@
       (rec xs))))
 
 ;; Local Variables:
-;; eval: (add-cl-indent-rule (quote with-paren) (quote (&body)))
-;; eval: (add-cl-indent-rule (quote with-square-brackets) (quote (&body)))
+;; eval: (cl-indent-rules (quote (&body)) (quote with-paren) (quote with-square-brackets))
 ;; End:
