@@ -16,9 +16,9 @@
 
 (defbinop -> :zero "()")
 (defbinop + :zero "0")
-(defbinop - :one (with-paren (format t "negate ") (haskell (car args))))
+(defbinop - :one (haskell `(|negate| ,(car args))))
 (defbinop * :zero "1")
-(defbinop / :one (with-paren (format t "recip ") (haskell (car args))))
+(defbinop / :one (haskell `(|recip| ,(car args))))
 
 (def-binop-as |and| && :zero "True")
 (def-binop-as |or| "||" :zero "False")
@@ -48,23 +48,15 @@
     ((atom x) (haskell x))
     ((atom (cdr x)) (haskell (car x)))
     (t (with-paren
-         (haskell (car x))
-         (format t " ")
-         (haskell (if (atom (cddr x)) (cadr x) x))))))
+         (rechask `(,(car x) ,(if (cddr x) x (cadr x))))))))
 
 (defhasq |strict| "($!)")
 
 #!(defconstant 1+ #'(+ 1))
-(defsyntax 1+ (x)
-  (with-paren
-    (haskell x)
-    (format t " + 1")))
+(def-syntax-macro 1+ (x) `(+ ,x 1))
 
 #!(defconstant 1- #'(+ (- 1)))
-(defsyntax 1- (x)
-  (with-paren
-    (haskell x)
-    (format t " - 1")))
+(def-syntax-macro 1- (x) `(- ,x 1))
 
 (defhasq |pair| "(,)")
 
