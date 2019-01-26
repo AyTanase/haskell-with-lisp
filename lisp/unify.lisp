@@ -1,5 +1,6 @@
 (in-package :hs)
 
+(declaim (inline format-symbol))
 (defun format-symbol (&rest args)
   (intern (apply #'format nil args)))
 
