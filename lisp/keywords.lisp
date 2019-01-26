@@ -186,9 +186,7 @@
           (eq (cadr body) :|name|))
      (haskell (car body))
      (format t " { ")
-     (%rechask (cddr body)
-               (const (curry #'apply #'%type))
-               ", ")
+     (%rechask (cddr body) (curry #'apply #'%type) ", ")
      (format t " }"))
     (t (rechask body))))
 

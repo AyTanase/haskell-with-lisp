@@ -1,6 +1,7 @@
 (in-package :hs)
 
 
+(declaim (inline curry))
 (defun curry (f x)
   #'(lambda (y) (funcall f x y)))
 
