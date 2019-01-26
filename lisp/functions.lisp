@@ -5,7 +5,7 @@
     `(progn
        (defsyntax ,name (&rest args)
          (cond
-           ((null args) (format t ,(or zero printed)))
+           ((null args) (write-string ,(or zero printed)))
            ((null (cdr args))
             ,(or one '(haskell (car args))))
            (t ,(or many `(with-paren
@@ -32,7 +32,7 @@
      :many (destructuring-bind (x y) args
              (with-paren
                (haskell x)
-               (format t ,(format nil " ~a " op))
+               (write-string ,(format nil " ~a " op))
                (haskell y)))))
 
 (defoperator = ==)
@@ -78,12 +78,12 @@
 (defsyntax |enum-from| (x &rest xs)
   (labels ((rec (xs)
              (cond
-               ((atom xs) (format t ".."))
+               ((atom xs) (write-string ".."))
                ((eq (car xs) :|to|)
-                (format t "..")
+                (write-string "..")
                 (if (consp (cdr xs))
                   (haskell (cadr xs))))
-               (t (format t ",")
+               (t (write-string ",")
                   (haskell (car xs))
                   (rec (cdr xs))))))
     (with-square-brackets

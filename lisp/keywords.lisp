@@ -6,7 +6,7 @@
 (defun indent (&optional (n *indent*))
   (fresh-line)
   (loop repeat n
-    do (format t "  ")))
+    do (write-string "  ")))
 
 (defmacro with-indent (n &body body)
   `(let ((*indent* (+ *indent* ,n)))
@@ -20,7 +20,7 @@
 
 (defun %type (vars type)
   (rechask vars ", ")
-  (format t " :: ")
+  (write-string " :: ")
   (haskell type))
 
 (defkeyword |type| (vars type)
@@ -51,12 +51,12 @@
 
 (defun %define-right (val assign)
   (labels ((gendef (value)
-             (format t assign)
+             (write-string assign)
              (haskell value))
            (guard (condition value)
              (with-indent 1
                (indent)
-               (format t "| ")
+               (write-string "| ")
                (haskell condition)
                (gendef value))))
     (if (has-guard-p val)
@@ -81,16 +81,16 @@
 
 (defsyntax |where| (defs val)
   (haskell val)
-  (format t " where")
+  (write-string " where")
   (with-indent 1
     (map-indent #'%define defs)))
 
 (defsyntax |let| (defs val)
-  (format t "let")
+  (write-string "let")
   (with-indent 1
     (map-indent #'%define defs)
     (indent)
-    (format t "in ")
+    (write-string "in ")
     (haskell val)))
 
 
@@ -103,17 +103,17 @@
         (progn
           (with-pragma
             (format t "~@:(~a~)" (car derive)))
-          (format t " ")
+          (write-string " ")
           (print-derive (cdr derive)))
         (print-derive derive))
-      (format t " => "))))
+      (write-string " => "))))
 
 (defun %class (key name derive defs)
   (format t "~a " key)
   (%class-derive derive)
   (rechask name)
   (when defs
-    (format t " where")
+    (write-string " where")
     (with-indent 1
       (map-indent #'%define defs))))
 
@@ -129,25 +129,25 @@
 
 (defun module-names (suppliedp names)
   (when suppliedp
-    (format t " ")
+    (write-string " ")
     (with-paren
       (arrange names))))
 
 (defun %defmodule (module suppliedp names)
   (format t "module ~a" module)
   (module-names suppliedp names)
-  (format t " where"))
+  (write-string " where"))
 
 (defkeyword |defmodule| (module &optional (names nil suppliedp))
   `(%defmodule ',module ,suppliedp ',names))
 
 (defun %import (module suppliedp names qualifiedp hidingp)
-  (format t "import")
+  (write-string "import")
   (if qualifiedp
-    (format t " qualified"))
+    (write-string " qualified"))
   (format t " ~a" module)
   (if hidingp
-    (format t " hiding"))
+    (write-string " hiding"))
   (module-names suppliedp names))
 
 (defmacro defimport (name qualifiedp)
@@ -165,14 +165,14 @@
     (with-paren
       (arrange constraints))
     (rechask constraints))
-  (format t " => ")
+  (write-string " => ")
   (haskell type))
 
 
 (defun %deftype (name type)
-  (format t "type ")
+  (write-string "type ")
   (rechask name)
-  (format t " = ")
+  (write-string " = ")
   (haskell type))
 
 (defkeyword |deftype| (name type)
@@ -185,21 +185,21 @@
     ((and (consp (cdr body))
           (eq (cadr body) :|name|))
      (haskell (car body))
-     (format t " { ")
+     (write-string " { ")
      (%rechask (cddr body) (curry #'apply #'%type) ", ")
-     (format t " }"))
+     (write-string " }"))
     (t (rechask body))))
 
 (defun %data (name body deriving)
-  (format t "data ")
+  (write-string "data ")
   (rechask name)
-  (format t " = ")
+  (write-string " = ")
   (if (and (consp body)
            (eq (car body) '|or|))
     (%rechask (cdr body) #'%data-body " | ")
     (%data-body body))
   (when deriving
-    (format t " deriving ")
+    (write-string " deriving ")
     (with-paren
       (arrange deriving))))
 
@@ -209,11 +209,11 @@
 
 (defsyntax |if| (x y z)
   (with-paren
-    (format t "if ")
+    (write-string "if ")
     (haskell x)
-    (format t " then ")
+    (write-string " then ")
     (haskell y)
-    (format t " else ")
+    (write-string " else ")
     (haskell z)))
 
 (def-syntax-macro |cond| (x &rest xs)
@@ -223,9 +223,9 @@
 
 
 (defsyntax |case| (x &rest xs)
-  (format t "case ")
+  (write-string "case ")
   (haskell x)
-  (format t " of")
+  (write-string " of")
   (with-indent 1
     (map-indent #'(lambda (x y)
                     (%define x y " -> "))

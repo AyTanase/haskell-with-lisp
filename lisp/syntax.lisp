@@ -73,9 +73,9 @@
   (with-gensyms (body)
     `(defmacro ,name (&body ,body)
        `(progn
-          (format t ,,open)
+          (write-string ,,open)
           ,@,body
-          (format t ,,close)))))
+          (write-string ,,close)))))
 
 (defparen with-paren "(" ")")
 (defparen with-square-brackets "[" "]")
@@ -86,7 +86,7 @@
   (labels ((rec (x xs)
              (funcall fn x)
              (when xs
-               (format t between)
+               (write-string between)
                (rec (car xs) (cdr xs)))))
     (typecase x
       (null)
@@ -102,7 +102,7 @@
 (defrechask arrange #'rechask ", ")
 
 
-(defmethod haskell (x) (format t "~a" x))
+(defmethod haskell (x) (princ x))
 
 (defmethod haskell ((x character))
   (cond
@@ -111,7 +111,8 @@
     ((graphic-char-p x) (format t "'~c'" x))
     (t (format t "'\\x~x'" (char-code x)))))
 
-(defmethod haskell ((x null)) (format t "()"))
+(defmethod haskell ((x null))
+  (write-string "()"))
 
 (defmethod haskell ((x cons))
   (let ((rule (gethash (car x) *syntax*)))
@@ -134,7 +135,7 @@
   `(progn
      (shadow-haskell ',name)
      (defmethod haskell ((x (eql ',name)))
-       (format t ,body))))
+       (write-string ,body))))
 
 
 (load-relative "keywords.lisp")
