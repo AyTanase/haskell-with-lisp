@@ -7,13 +7,17 @@
 (defmacro const (x)
   `(load-time-value ,x t))
 
+(defmacro with-gensyms (args &body body)
+  `(let ,(loop for x in args
+           collect `(,x (gensym)))
+     ,@body))
+
 
 (defvar *cl-readtable* *readtable*)
 (defvar *hs-readtable*)
 
 (defmacro read-by (readtable)
-  (let ((stream (gensym))
-        (args (gensym)))
+  (with-gensyms (stream args)
     `#'(lambda (,stream &rest ,args)
          (declare (ignore ,args))
          (let ((*readtable* ,readtable))

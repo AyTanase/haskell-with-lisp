@@ -70,7 +70,7 @@
 
 
 (defmacro defparen (name open close)
-  (let ((body (gensym)))
+  (with-gensyms (body)
     `(defmacro ,name (&body ,body)
        `(progn
           (format t ,,open)
@@ -94,8 +94,7 @@
       (t (haskell x)))))
 
 (defmacro defrechask (name fn default)
-  (let ((x (gensym))
-        (between (gensym)))
+  (with-gensyms (x between)
     `(defun ,name (,x &optional (,between ,default))
        (%rechask ,x ,fn ,between))))
 
