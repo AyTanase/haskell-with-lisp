@@ -2,8 +2,7 @@
 
 
 (defun curry (f x)
-  #'(lambda (y)
-      (funcall f x y)))
+  #'(lambda (y) (funcall f x y)))
 
 (defmacro const (x)
   `(load-time-value ,x t))
@@ -29,7 +28,8 @@
              (let ((c (read-1)))
                (write-char c)
                (unless (char= c #\")
-                 (if (char= c #\\) (write-char (read-1)))
+                 (if (char= c #\\)
+                   (write-char (read-1)))
                  (recread)))))
     (with-output-to-string (*standard-output*)
       (write-char #\")

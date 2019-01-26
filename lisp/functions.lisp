@@ -8,7 +8,8 @@
            ((null args) (format t ,(or zero printed)))
            ((null (cdr args))
             ,(or one '(haskell (car args))))
-           (t ,(or many `(with-paren (rechask args ,(format nil " ~a " op)))))))
+           (t ,(or many `(with-paren
+                           (rechask args ,(format nil " ~a " op)))))))
        (defhasq ,name ,printed))))
 
 (defmacro defbinop (op &rest args) `(def-binop-as ,op ,op ,@args))
@@ -70,7 +71,8 @@
 (defhasq |cons| "(:)")
 
 (defpattern |list*| (&rest args)
-  (with-paren (rechask args ":")))
+  (with-paren
+    (rechask args ":")))
 
 
 (defpattern |list| (&rest args)

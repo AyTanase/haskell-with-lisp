@@ -11,7 +11,8 @@
 (defun true-path (path)
   (merge-pathnames path *load-truename*))
 
-(defun load-relative (file) (load (true-path file)))
+(defun load-relative (file)
+  (load (true-path file)))
 
 (load-relative "util.lisp")
 (load-relative "syntax.lisp")

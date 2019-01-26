@@ -134,7 +134,8 @@
 (defmacro defhasq (name body)
   `(progn
      (shadow-haskell ',name)
-     (defmethod haskell ((x (eql ',name))) (format t ,body))))
+     (defmethod haskell ((x (eql ',name)))
+       (format t ,body))))
 
 
 (load-relative "keywords.lisp")

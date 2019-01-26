@@ -10,7 +10,9 @@
   (intern (string-tail (string s))))
 
 (defun uvarp (x)
-  (and (symbolp x) (char= (char (string x) 0) #\?)))
+  (and (symbolp x)
+       (char= (char (string x) 0)
+              #\?)))
 
 (defmacro with-unifying (args expr context &body body)
   `(multiple-value-bind ,args (unify ,expr ,context)
@@ -54,7 +56,9 @@
 
 (defun %udef (var val &rest args)
   (with-unifying (expr context) var nil
-    (list* expr (%udef-body expr (%udef-guard context) val) args)))
+    (list* expr
+           (%udef-body expr (%udef-guard context) val)
+           args)))
 
 (def-hs-macro |udef| (var val)
   `(|define| ,@(%udef var val)))

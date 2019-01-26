@@ -5,10 +5,12 @@
 
 (defun indent (&optional (n *indent*))
   (fresh-line)
-  (loop repeat n do (format t "  ")))
+  (loop repeat n
+    do (format t "  ")))
 
 (defmacro with-indent (n &body body)
-  `(let ((*indent* (+ *indent* ,n))) ,@body))
+  `(let ((*indent* (+ *indent* ,n)))
+     ,@body))
 
 (defun map-indent (fn list &optional (n *indent*))
   (dolist (x list)
@@ -25,11 +27,13 @@
   `(%type ',vars ',type))
 
 (defsyntax |type| (var type)
-  (with-paren (%type (list var) type)))
+  (with-paren
+    (%type (list var) type)))
 
 
 (defun tuple (xs)
-  (with-paren (rechask xs ", ")))
+  (with-paren
+    (rechask xs ", ")))
 
 (defpattern |tuple| (&rest xs) (tuple xs))
 
@@ -40,7 +44,8 @@
          ((|if| |cond|) t))))
 
 (defun %define-left (var)
-  (if (or (atom var) (patternp (car var)))
+  (if (or (atom var)
+          (patternp (car var)))
     (haskell var)
     (rechask var)))
 
@@ -58,7 +63,8 @@
       (case (car val)
         (|if| (destructuring-bind (x y &optional z) (cdr val)
                 (guard x y)
-                (if z (guard '|otherwise| z))))
+                (if z
+                  (guard '|otherwise| z))))
         (|cond| (dolist (args (cdr val))
                   (apply #'guard args))))
       (gendef val))))
@@ -76,7 +82,8 @@
 (defsyntax |where| (defs val)
   (haskell val)
   (format t " where")
-  (with-indent 1 (map-indent #'%define defs)))
+  (with-indent 1
+    (map-indent #'%define defs)))
 
 (defsyntax |let| (defs val)
   (format t "let")
@@ -89,7 +96,8 @@
 
 (defun %class-derive (derive)
   (flet ((print-derive (derive)
-           (with-paren (arrange derive))))
+           (with-paren
+             (arrange derive))))
     (when (consp derive)
       (if (symbolp (car derive))
         (progn
@@ -122,7 +130,8 @@
 (defun module-names (suppliedp names)
   (when suppliedp
     (format t " ")
-    (with-paren (arrange names))))
+    (with-paren
+      (arrange names))))
 
 (defun %defmodule (module suppliedp names)
   (format t "module ~a" module)
@@ -134,9 +143,11 @@
 
 (defun %import (module suppliedp names qualifiedp hidingp)
   (format t "import")
-  (if qualifiedp (format t " qualified"))
+  (if qualifiedp
+    (format t " qualified"))
   (format t " ~a" module)
-  (if hidingp (format t " hiding"))
+  (if hidingp
+    (format t " hiding"))
   (module-names suppliedp names))
 
 (defmacro defimport (name qualifiedp)
@@ -151,7 +162,8 @@
 
 (defsyntax => (constraints type)
   (if (consp (car constraints))
-    (with-paren (arrange constraints))
+    (with-paren
+      (arrange constraints))
     (rechask constraints))
   (format t " => ")
   (haskell type))
@@ -163,7 +175,8 @@
   (format t " = ")
   (haskell type))
 
-(defkeyword |deftype| (name type) `(%deftype ',name ',type))
+(defkeyword |deftype| (name type)
+  `(%deftype ',name ',type))
 
 
 (defun %data-body (body)
@@ -173,7 +186,9 @@
           (eq (cadr body) :|name|))
      (haskell (car body))
      (format t " { ")
-     (%rechask (cddr body) (const (curry #'apply #'%type)) ", ")
+     (%rechask (cddr body)
+               (const (curry #'apply #'%type))
+               ", ")
      (format t " }"))
     (t (rechask body))))
 
@@ -181,12 +196,14 @@
   (format t "data ")
   (rechask name)
   (format t " = ")
-  (if (and (consp body) (eq (car body) '|or|))
+  (if (and (consp body)
+           (eq (car body) '|or|))
     (%rechask (cdr body) #'%data-body " | ")
     (%data-body body))
   (when deriving
     (format t " deriving ")
-    (with-paren (arrange deriving))))
+    (with-paren
+      (arrange deriving))))
 
 (defkeyword |data| (name body &optional deriving)
   `(%data ',name ',body ',deriving))
@@ -202,7 +219,9 @@
     (haskell z)))
 
 (def-syntax-macro |cond| (x &rest xs)
-  (if xs `(|if| ,@x (|cond| ,@xs)) (second x)))
+  (if xs `
+    (|if| ,@x (|cond| ,@xs))
+    (second x)))
 
 
 (defsyntax |case| (x &rest xs)
@@ -210,7 +229,9 @@
   (haskell x)
   (format t " of")
   (with-indent 1
-    (map-indent #'(lambda (x y) (%define x y " -> ")) xs)))
+    (map-indent #'(lambda (x y)
+                    (%define x y " -> "))
+                xs)))
 
 
 (defkeyword |extension| (&rest args)
