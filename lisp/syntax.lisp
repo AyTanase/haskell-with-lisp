@@ -118,7 +118,8 @@
   (let ((rule (gethash (car x) *syntax*)))
     (if rule
       (apply rule (cdr x))
-      (with-paren (rechask x)))))
+      (with-paren
+        (rechask x)))))
 
 
 (defvar *patterns* (make-hash-table :test 'eq))
@@ -145,4 +146,5 @@
 
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote with-picking-out) (quote (6 4 &body)))
+;; eval: (add-cl-indent-rule (quote with-paren) (quote (&body)))
 ;; End:
