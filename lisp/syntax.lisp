@@ -139,6 +139,7 @@
 
 
 (load-relative "keywords.lisp")
+(load-relative "cl-keywords.lisp")
 (load-relative "unify.lisp")
 (load-relative "functions.lisp")
 
