@@ -63,10 +63,8 @@
       (case (car val)
         (|if| (destructuring-bind (x y &optional z) (cdr val)
                 (guard x y)
-                (if z
-                  (guard '|otherwise| z))))
-        (|cond| (dolist (args (cdr val))
-                  (apply #'guard args))))
+                (if z (guard '|otherwise| z))))
+        (|cond| (mapc (curry #'apply #'guard) (cdr val))))
       (gendef val))))
 
 (defun %define (var val &optional (assign " = "))
