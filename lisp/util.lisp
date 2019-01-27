@@ -13,6 +13,10 @@
            collect `(,x (gensym)))
      ,@body))
 
+(declaim (inline filter))
+(defun filter (item sequence &key (test #'eql) (key #'identity))
+  (remove-if (complement (curry test item)) sequence :key key))
+
 
 (defvar *cl-readtable* *readtable*)
 (defvar *hs-readtable*)
