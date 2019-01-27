@@ -217,8 +217,8 @@
     (haskell z)))
 
 (def-syntax-macro |cond| (x &rest xs)
-  (if xs `
-    (|if| ,@x (|cond| ,@xs))
+  (if xs
+    `(|if| ,@x (|cond| ,@xs))
     (second x)))
 
 
