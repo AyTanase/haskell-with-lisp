@@ -17,9 +17,8 @@
 #?(defhasq |apply| "(<*>)")
 
 
-(defmodule Logic)
-
-(import Prelude (const apply))
+(defpackage Logic
+  (:import Prelude const apply))
 
 #|
 const :: (-> a b a)

@@ -1,7 +1,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 module Classes where
 import Prelude hiding (not)
-import qualified Prelude (not)
+import qualified Prelude
 import Data.Maybe
 class HasNot a where
   not :: (a -> Bool)

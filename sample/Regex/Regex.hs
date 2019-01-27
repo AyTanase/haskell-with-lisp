@@ -1,4 +1,4 @@
-module Regex (module Regex, NFA (), module Parse, module Exec) where
+module Regex (module Regex, NFA, module Parse, module Exec) where
 import Common
 import Parse
 import Exec

@@ -1,10 +1,8 @@
 (extension MultiParamTypeClasses)
 
-(defmodule Classes)
-
-(import Prelude (not) :hiding)
-(require Prelude (not))
-(import Data.Maybe)
+(defpackage Classes
+  (:shadow Prelude not)
+  (:use (:q Prelude) Data.Maybe))
 
 (class (HasNot a) ()
   (type not (-> a Bool))

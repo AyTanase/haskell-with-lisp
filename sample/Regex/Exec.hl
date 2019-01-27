@@ -1,10 +1,8 @@
 #?(def-binop-as |alt| "<|>" :zero "empty")
 #?(defhasq |join-fmap| "(=<<)")
 
-(defmodule Exec)
-
-(import Common)
-(import Control.Applicative)
+(defpackage Exec
+  (:use Common Control.Applicative))
 
 (type matchHead (=> (Num a) (-> NFA (list Char) (Maybe a))))
 (define matchHead

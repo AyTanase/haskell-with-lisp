@@ -1,7 +1,6 @@
-(defmodule Parse (parse))
-
-(import Common)
-(import Data.Bifunctor)
+(defpackage Parse
+  (:use Common Data.Bifunctor)
+  (:export parse))
 
 
 (deftype (QMaker a) (-> (BinOp (End a)) (End (End a))))

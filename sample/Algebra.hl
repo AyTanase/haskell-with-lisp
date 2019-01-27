@@ -1,10 +1,10 @@
 (extension FlexibleInstances UndecidableInstances)
 
-(defmodule Algebra ((module Algebra) (module Prelude)))
-
-(import Prelude (Monoid + negate -) :hiding)
-(require Prelude)
-(import GHC.Base (liftA2))
+(defpackage Algebra
+  (:shadow Prelude Monoid + negate -)
+  (:use (:q Prelude))
+  (:import GHC.Base liftA2)
+  (:export (module Algebra) (module Prelude)))
 
 
 (class (Monoid m) ()

@@ -1,8 +1,6 @@
-(defmodule Regex ((module Regex) (NFA ()) (module Parse) (module Exec)))
-
-(import Common)
-(import Parse)
-(import Exec)
+(defpackage Regex
+  (:use Common Parse Exec)
+  (:export (module Regex) NFA (module Parse) (module Exec)))
 
 (type regex (=> (Num a) (-> (list Char) (list Char) (Maybe (tuple a a)))))
 (define regex (compose match parse))
