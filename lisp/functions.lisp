@@ -24,15 +24,16 @@
 (def-binop-as |append| ++ :zero "[]")
 (def-binop-as |compose| |.| :zero "id")
 
+(defun print-infix (op x y)
+  (with-paren
+    (haskell x)
+    (format t " ~a " op)
+    (haskell y)))
 
 (defmacro defoperator (name &optional (op name))
   `(def-binop-as ,name ,op
      :one `(,,(format nil "(~a)" op) ,@args)
-     :many (destructuring-bind (x y) args
-             (with-paren
-               (haskell x)
-               (write-string ,(format nil " ~a " op))
-               (haskell y)))))
+     :many (apply #'print-infix ',op args)))
 
 (defoperator = ==)
 (defoperator /=)
