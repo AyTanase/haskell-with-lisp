@@ -79,16 +79,19 @@
 
 (defsyntax |where| (defs val)
   (haskell val)
-  (write-string " where")
-  (with-indent 1
-    (map-indent #'%define defs)))
+  (when defs
+    (write-string " where")
+    (with-indent 1
+      (map-indent #'%define defs))))
 
 (defsyntax |let| (defs val)
-  (write-string "let")
-  (with-indent 1
-    (map-indent #'%define defs)
-    (indent)
-    (write-string "in ")
+  (if defs
+    (with-indent 1
+      (write-string "let")
+      (map-indent #'%define defs)
+      (indent)
+      (write-string "in ")
+      (haskell val))
     (haskell val)))
 
 
