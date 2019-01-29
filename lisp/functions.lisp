@@ -6,8 +6,7 @@
        (defsyntax ,name (&rest args)
          (cond
            ((null args) (write-string ,(or zero printed)))
-           ((null (cdr args))
-            ,(or one '(haskell (car args))))
+           ((null (cdr args)) (haskell ,(or one '(car args))))
            (t ,(or many `(with-paren
                            (rechask args ,(format nil " ~a " op)))))))
        (defhasq ,name ,printed))))
@@ -16,9 +15,9 @@
 
 (defbinop -> :zero "()")
 (defbinop + :zero "0")
-(defbinop - :one (haskell `(|negate| ,(car args))))
+(defbinop - :one `(|negate| ,(car args)))
 (defbinop * :zero "1")
-(defbinop / :one (haskell `(|recip| ,(car args))))
+(defbinop / :one `(|recip| ,(car args)))
 
 (def-binop-as |and| && :zero "True")
 (def-binop-as |or| "||" :zero "False")
@@ -28,7 +27,7 @@
 
 (defmacro defoperator (name &optional (op name))
   `(def-binop-as ,name ,op
-     :one (haskell `(,,(format nil "(~a)" op) ,@args))
+     :one `(,,(format nil "(~a)" op) ,@args)
      :many (destructuring-bind (x y) args
              (with-paren
                (haskell x)
