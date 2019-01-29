@@ -24,6 +24,7 @@
 (def-binop-as |append| ++ :zero "[]")
 (def-binop-as |compose| |.| :zero "id")
 
+
 (defun print-infix (op x y)
   (with-paren
     (haskell x)
@@ -35,12 +36,29 @@
      :one `#'(,',name ,(car args))
      :many (apply #'print-infix ',op args)))
 
-(defoperator = ==)
 (defoperator /=)
-(defoperator <=)
-(defoperator >=)
-(defoperator <)
-(defoperator >)
+
+
+(defun expand-ord-op (op args)
+  (let ((vs (loop for i from 1 to (- (length args) 2)
+              collect (format-symbol "_~d" i))))
+    `#!(let ,#?(mapcar #'list vs (cdr args))
+         (and ,@#?(loop for (x . xs) on (cons (car args) vs)
+                    collect (list op x (car (or xs (last args)))))))))
+
+(defmacro def-ord-op (name &optional (op name))
+  (with-gensyms (g)
+    `(progn
+       (defsyntax ,g (x y) (print-infix ',op x y))
+       (def-binop-as ,name ,op
+         :one `#'(,',name ,(car args))
+         :many (haskell (expand-ord-op ',g args))))))
+
+(def-ord-op = ==)
+(def-ord-op <=)
+(def-ord-op >=)
+(def-ord-op <)
+(def-ord-op >)
 
 
 (defsyntax function (x)
