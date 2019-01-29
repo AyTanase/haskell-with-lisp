@@ -32,7 +32,7 @@
 
 (defmacro defoperator (name &optional (op name))
   `(def-binop-as ,name ,op
-     :one `(,,(format nil "(~a)" op) ,@args)
+     :one `#'(,',name ,(car args))
      :many (apply #'print-infix ',op args)))
 
 (defoperator = ==)
