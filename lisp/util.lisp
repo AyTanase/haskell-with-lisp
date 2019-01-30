@@ -26,7 +26,7 @@
 
 (let ((i 0))
   (defun genvar ()
-    (format-symbol "_~d" (incf i))))
+    (format-symbol "_v~d" (incf i))))
 
 (defun genvars (n)
   (loop repeat n collect (genvar)))
