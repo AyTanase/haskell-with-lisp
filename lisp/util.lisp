@@ -25,6 +25,9 @@
   (defun genvar ()
     (format-symbol "_~d" (incf i))))
 
+(defun genvars (n)
+  (loop repeat n collect (genvar)))
+
 (defun map-tree (fn tree)
   (if (atom tree)
     (funcall fn tree)
