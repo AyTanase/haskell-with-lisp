@@ -20,8 +20,7 @@
 
 (defun %type (vars type)
   (rechask vars ", ")
-  (write-string " :: ")
-  (haskell type))
+  (writes-haskell " :: " type))
 
 (defkeyword |type| (vars type)
   `(%type ',vars ',type))
@@ -38,10 +37,7 @@
 (defpattern |tuple| (&rest xs) (tuple xs))
 
 
-(defun has-guard-p (expr)
-  (and (consp expr)
-       (case (car expr)
-         ((|if| |cond|) t))))
+(declaim (ftype function %define))
 
 (defun %define-left (var)
   (if (or (atom var)
@@ -49,30 +45,69 @@
     (haskell var)
     (rechask var)))
 
-(defun %define-right (val assign)
-  (labels ((gendef (value)
-             (write-string assign)
-             (haskell value))
-           (guard (condition value)
-             (with-indent 1
-               (indent)
-               (write-string "| ")
-               (haskell condition)
-               (gendef value))))
-    (if (has-guard-p val)
-      (case (car val)
-        (|if| (destructuring-bind (x y &optional z) (cdr val)
-                (guard x y)
-                (if z (guard '|otherwise| z))))
-        (|cond| (mapc (curry #'apply #'guard) (cdr val))))
-      (gendef val))))
+(defun if->cond (expr)
+  (if (and (consp expr)
+           (eq (car expr) '|if|))
+    (destructuring-bind (x y &optional z) (cdr expr)
+      (if z
+        `(|cond| (,x ,y) (|otherwise| ,z))
+        `(|cond| (,x ,y))))
+    expr))
+
+(defun truep (x)
+  (case x ((|True| |otherwise|) t)))
+
+(defun merge-guards (x y)
+  (cond
+    ((truep x) y)
+    ((truep y) x)
+    (t `(|and| ,x ,y))))
+
+(defun reduce-cond-1 (f guard value)
+  (let ((expr (if->cond value)))
+    (if (and (consp expr)
+             (eq (car expr) '|cond|))
+      (let ((vg (if (or (truep guard)
+                        (null (cddr expr)))
+                  guard
+                  (funcall f guard))))
+        (loop for (g v) in (cdr expr)
+          nconc (reduce-cond-1 f (merge-guards vg g) v)))
+      (list (list guard value)))))
+
+(defun reduce-cond (value)
+  (let ((guards nil))
+    (flet ((gpush (g)
+             (let ((v (genvar)))
+               (push (list v g) guards)
+               v)))
+      (let ((expr (mapcan (curry #'apply #'reduce-cond-1 #'gpush)
+                          (cdr value))))
+        (values expr (nreverse guards))))))
+
+(defun %define-right (assign value)
+  (flet ((print-guard (g v)
+           (writes-haskell "| " g)
+           (writes-haskell assign v)))
+    (let ((expr (if->cond value)))
+      (if (and (consp expr)
+               (eq (car expr) '|cond|))
+        (multiple-value-bind (exps gs) (reduce-cond expr)
+          (with-indent 1
+            (map-indent #'print-guard exps)
+            (when gs
+              (indent)
+              (write-string "where")
+              (with-indent 1
+                (map-indent #'%define gs)))))
+        (writes-haskell assign expr)))))
 
 (defun %define (var val &optional (assign " = "))
   (if (eq var '|type|)
     (%type val assign)
     (progn
       (%define-left var)
-      (%define-right val assign))))
+      (%define-right assign val))))
 
 (defkeyword |define| (var val)
   `(%define ',var ',val))
