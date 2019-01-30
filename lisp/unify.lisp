@@ -29,16 +29,9 @@
         (values uexp (nreverse guards))))))
 
 
-(defun %udef-guard-body (val)
-  (if (has-guard-p val)
-    (let ((v (genvar)))
-      `(|let| ((,v ,val)) ,v))
-    val))
-
-(defun %udef-body (guard val)
-  (if guard
-    `#!(if (and ,@#?guard)
-         ,#?(%udef-guard-body val))
+(defun %udef-body (gs val)
+  (if gs
+    `(|if| (|and| ,@gs) ,val)
     val))
 
 (defun %udef (var val &rest args)
