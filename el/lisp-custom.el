@@ -38,6 +38,8 @@
 (add-cl-indent-rule 'ftype '((&whole 4 &lambda 2) &rest 2))
 (cl-indent-rules 'lisp-indent-let-method 'let 'let*)
 
+(font-lock-add-keywords 'lisp-mode '(("#:.+?\\_>" . font-lock-builtin-face)))
+
 (modify-syntax-entry ?. "'2" lisp-mode-syntax-table)
 
 (define-key lisp-mode-map (kbd "C-c C-c") 'runcl-this)
