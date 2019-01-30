@@ -21,7 +21,7 @@
                  ((null y) x)
                  ((find y vars :test #'eq)
                   (let ((v (genvar)))
-                    (push `(= ,v ,y) guards)
+                    (push `(= ,y ,v) guards)
                     v))
                  (t (push y vars)
                     y)))))
