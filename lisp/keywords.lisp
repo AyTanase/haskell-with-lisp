@@ -20,7 +20,7 @@
 
 (defun %type (vars type)
   (rechask vars ", ")
-  (writes-haskell " :: " type))
+  (haskells " :: " type))
 
 (defkeyword |type| (vars type)
   `(%type ',vars ',type))
@@ -87,8 +87,7 @@
 
 (defun %define-right (assign value)
   (flet ((print-guard (g v)
-           (writes-haskell "| " g)
-           (writes-haskell assign v)))
+           (haskells "| " g assign v)))
     (let ((expr (if->cond value)))
       (if (and (consp expr)
                (eq (car expr) '|cond|))
@@ -100,7 +99,7 @@
               (write-string "where")
               (with-indent 1
                 (map-indent #'%define gs)))))
-        (writes-haskell assign expr)))))
+        (haskells assign expr)))))
 
 (defun %define (var val &optional (assign " = "))
   (if (eq var '|type|)
@@ -125,8 +124,7 @@
       (write-string "let")
       (map-indent #'%define defs)
       (indent)
-      (write-string "in ")
-      (haskell val))
+      (haskells "in " val))
     (haskell val)))
 
 
@@ -201,15 +199,13 @@
     (with-paren
       (arrange constraints))
     (rechask constraints))
-  (write-string " => ")
-  (haskell type))
+  (haskells " => " type))
 
 
 (defun %deftype (name type)
   (write-string "type ")
   (rechask name)
-  (write-string " = ")
-  (haskell type))
+  (haskells " = " type))
 
 (defkeyword |deftype| (name type)
   `(%deftype ',name ',type))
@@ -245,12 +241,7 @@
 
 (defsyntax |if| (x y z)
   (with-paren
-    (write-string "if ")
-    (haskell x)
-    (write-string " then ")
-    (haskell y)
-    (write-string " else ")
-    (haskell z)))
+    (haskells "if " x " then " y " else " z)))
 
 (def-syntax-macro |cond| (x &rest xs)
   (if xs
@@ -259,13 +250,11 @@
 
 
 (defsyntax |case| (x &rest xs)
-  (write-string "case ")
-  (haskell x)
-  (write-string " of")
-  (with-indent 1
-    (map-indent #'(lambda (x y)
-                    (%define x y " -> "))
-                xs)))
+  (flet ((case-val (x y)
+           (%define x y " -> ")))
+    (haskells "case " x " of")
+    (with-indent 1
+      (map-indent #'case-val xs))))
 
 
 (defkeyword |extension| (&rest args)

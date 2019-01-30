@@ -68,9 +68,8 @@
   (with-output-to-string (*standard-output*)
     (haskell x)))
 
-(defun writes-haskell (s x)
-  (write-string s)
-  (haskell x))
+(defun haskells (&rest args)
+  (mapc #'haskell args))
 
 
 (defmacro defparen (name open close)

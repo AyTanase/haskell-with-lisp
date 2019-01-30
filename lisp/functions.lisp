@@ -115,8 +115,7 @@
                 (write-string "..")
                 (if (consp (cdr xs))
                   (haskell (cadr xs))))
-               (t (write-string ",")
-                  (haskell (car xs))
+               (t (haskells "," (car xs))
                   (rec (cdr xs))))))
     (with-square-brackets
       (haskell x)
