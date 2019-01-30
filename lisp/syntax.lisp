@@ -68,6 +68,10 @@
   (with-output-to-string (*standard-output*)
     (haskell x)))
 
+(defun writes-haskell (s x)
+  (write-string s)
+  (haskell x))
+
 
 (defmacro defparen (name open close)
   (with-gensyms (body)
