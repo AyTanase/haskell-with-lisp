@@ -1,17 +1,20 @@
 (in-package :hs)
 
 
-(declaim (inline curry))
-(defun curry (f x)
-  #'(lambda (y) (funcall f x y)))
-
-(defmacro const (x)
-  `(load-time-value ,x t))
-
 (defmacro with-gensyms (args &body body)
   `(let ,(loop for x in args
            collect `(,x (gensym)))
      ,@body))
+
+(defun curry (f &rest xs)
+  #'(lambda (&rest ys) (apply f (append xs ys))))
+
+(define-compiler-macro curry (f &rest xs)
+  (with-gensyms (ys)
+    `#'(lambda (&rest ,ys) (apply ,f ,@xs ,ys))))
+
+(defmacro const (x)
+  `(load-time-value ,x t))
 
 (declaim (inline filter))
 (defun filter (item sequence &key (test #'eql) (key #'identity))

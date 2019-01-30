@@ -36,8 +36,6 @@
      :one `#'(,',name ,(car args))
      :many (apply #'print-infix ',op args)))
 
-(defoperator /=)
-
 
 (defun expand-ord-op (op args)
   (let ((vs (genvars (- (length args) 2))))
@@ -59,6 +57,22 @@
 (def-ord-op >=)
 (def-ord-op <)
 (def-ord-op >)
+
+
+(let ((g '#:/=))
+  (labels ((expand-1 (xs)
+             (mapcar (curry #'list g (car xs)) (cdr xs)))
+           (expand-/= (args)
+             (let ((vs (genvars (length args))))
+               `#!(let ,#?(mapcar #'list vs args)
+                    (and ,@#?(mapcon #'expand-1 vs))))))
+    (eval `(defsyntax ,g (x y)
+             (print-infix '/= x y)))
+    (defbinop /=
+      :one `#'(/= ,(car args))
+      :many (haskell (if (cddr args)
+                       (expand-/= args)
+                       (cons g args))))))
 
 
 (defsyntax function (x)
@@ -110,4 +124,5 @@
 
 ;; Local Variables:
 ;; eval: (cl-indent-rules (quote (&body)) (quote with-paren) (quote with-square-brackets))
+;; eval: (add-cl-indent-rule (quote defbinop) (quote (2 &body)))
 ;; End:
