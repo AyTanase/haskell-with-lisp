@@ -1,9 +1,5 @@
 (in-package :hs)
 
-(declaim (inline format-symbol))
-(defun format-symbol (&rest args)
-  (intern (apply #'format nil args)))
-
 (defun string-tail (s)
   (coerce (cdr (coerce s 'list)) 'string))
 
@@ -11,55 +7,43 @@
   (intern (string-tail (string s))))
 
 (defun uvarp (x)
-  (and (symbolp x)
-       (char= (char (string x) 0)
-              #\?)))
+  (if (symbolp x)
+    (let ((s (string x)))
+      (if (char= (char s 0) #\?)
+        (intern (string-tail s))))))
 
-(defmacro with-unifying (args expr context &body body)
-  `(multiple-value-bind ,args (unify ,expr ,context)
-     ,@body))
-
-(defun unify (expr context)
-  (cond
-    ((consp expr)
-     (with-unifying (eh ch) (car expr) context
-       (with-unifying (et ct) (cdr expr) ch
-         (values (cons eh et) ct))))
-    ((uvarp expr)
-     (let ((vs (assoc expr context :test #'eq)))
-       (if vs
-         (values (format-symbol "~a~a" (second vs) (incf (third vs)))
-                 context)
-         (let ((v (symbol-tail expr)))
-           (values v (cons (list expr v 0) context))))))
-    (t (values expr context))))
+(defun unify (expr)
+  (let ((vars nil)
+        (guards nil))
+    (flet ((unify-1 (x)
+             (let ((y (uvarp x)))
+               (cond
+                 ((null y) x)
+                 ((find y vars :test #'eq)
+                  (let ((v (genvar)))
+                    (push `(= ,v ,y) guards)
+                    v))
+                 (t (push y vars)
+                    y)))))
+      (let ((uexp (map-tree #'unify-1 expr)))
+        (values uexp (nreverse guards))))))
 
 
-(defun %udef-guard (context)
-  (loop for (_ v n) in context
-    nconc (loop for i from 1 to n
-            collect `(= ,v ,(format-symbol "~a~a" v i)))))
-
-(defun %udef-nest-guard (expr val)
-  (let ((name (format-symbol "_~a" (car expr))))
-    `(|let| ((,name ,val)) ,name)))
-
-(defun %udef-guard-body (expr val)
+(defun %udef-guard-body (val)
   (if (has-guard-p val)
-    (%udef-nest-guard expr val)
+    (let ((v (genvar)))
+      `(|let| ((,v ,val)) ,v))
     val))
 
-(defun %udef-body (expr guard val)
+(defun %udef-body (guard val)
   (if guard
-    `(|if| (|and| ,@guard)
-           ,(%udef-guard-body expr val))
+    `#!(if (and ,@#?guard)
+         ,#?(%udef-guard-body val))
     val))
 
 (defun %udef (var val &rest args)
-  (with-unifying (expr context) var nil
-    (list* expr
-           (%udef-body expr (%udef-guard context) val)
-           args)))
+  (multiple-value-bind (expr guards) (unify var)
+    (list* expr (%udef-body guards val) args)))
 
 (def-hs-macro |udef| (var val)
   `(|define| ,@(%udef var val)))

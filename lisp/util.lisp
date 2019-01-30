@@ -17,6 +17,20 @@
 (defun filter (item sequence &key (test #'eql) (key #'identity))
   (remove-if (complement (curry test item)) sequence :key key))
 
+(declaim (inline format-symbol))
+(defun format-symbol (&rest args)
+  (intern (apply #'format nil args)))
+
+(let ((i 0))
+  (defun genvar ()
+    (format-symbol "_~d" (incf i))))
+
+(defun map-tree (fn tree)
+  (if (atom tree)
+    (funcall fn tree)
+    (cons (map-tree fn (car tree))
+          (map-tree fn (cdr tree)))))
+
 
 (defvar *cl-readtable* *readtable*)
 (defvar *hs-readtable*)
