@@ -37,6 +37,8 @@
     (mapcar (curry #'map-tree fn) tree)))
 
 
+(declaim (inline get-macro-char set-macro-char))
+
 (defun get-macro-char (char &rest args)
   (apply (if (char= char #\#)
            #'get-dispatch-macro-character
