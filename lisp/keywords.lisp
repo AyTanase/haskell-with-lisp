@@ -246,7 +246,9 @@
 (def-syntax-macro |cond| (x &rest xs)
   (if xs
     `(|if| ,@x (|cond| ,@xs))
-    (second x)))
+    (progn
+      (assert (truep (first x)))
+      (second x))))
 
 
 (defsyntax |case| (x &rest xs)
