@@ -34,8 +34,7 @@
 (defun map-tree (fn tree)
   (if (atom tree)
     (funcall fn tree)
-    (cons (map-tree fn (car tree))
-          (map-tree fn (cdr tree)))))
+    (mapcar (curry #'map-tree fn) tree)))
 
 
 (defun get-macro-char (char &rest args)
