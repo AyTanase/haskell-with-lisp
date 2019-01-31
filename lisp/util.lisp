@@ -38,15 +38,46 @@
           (map-tree fn (cdr tree)))))
 
 
+(defun get-macro-char (char &rest args)
+  (apply (if (char= char #\#)
+           #'get-dispatch-macro-character
+           #'get-macro-character)
+         char args))
+
+(defun set-macro-char (char &rest args)
+  (apply (if (char= char #\#)
+           #'set-dispatch-macro-character
+           #'set-macro-character)
+         char args))
+
 (defvar *cl-readtable* *readtable*)
 (defvar *hs-readtable*)
+(defvar *hs-toplevel*)
 
-(defmacro read-by (readtable)
-  (with-gensyms (stream args)
-    `#'(lambda (,stream &rest ,args)
-         (declare (ignore ,args))
-         (let ((*readtable* ,readtable))
-           (read ,stream t nil t)))))
+(defun read-as-is (stream &rest args)
+  (declare (ignore args))
+  (read stream t nil t))
+
+(defun make-hs-reader (reader)
+  #'(lambda (&rest args)
+      (let ((*readtable* *hs-readtable*))
+        (apply reader args))))
+
+(set-macro-char #\# #\? #'read-as-is)
+(set-macro-char #\# #\! (make-hs-reader #'read-as-is))
+
+
+(setf *hs-readtable* (copy-readtable))
+(setf (readtable-case *hs-readtable*) :preserve)
+
+(defun make-cl-reader (reader)
+  #'(lambda (stream &rest args)
+      (let ((*readtable* *cl-readtable*))
+        (prog1 (apply reader stream args)
+          (peek-char t stream nil nil t)))))
+
+(defmacro cl-macro-char (&rest args)
+  `(set-macro-char ,@args (make-cl-reader (get-macro-char ,@args))))
 
 (defun read-hs-string (stream &rest args)
   (declare (ignore args))
@@ -64,16 +95,34 @@
       (write-char #\")
       (recread))))
 
-(set-dispatch-macro-character #\# #\? (read-by *cl-readtable*))
-(set-dispatch-macro-character #\# #\! (read-by *hs-readtable*))
-
-(setf *hs-readtable* (copy-readtable *cl-readtable*))
-
 (let ((*readtable* *hs-readtable*))
-  (set-macro-character #\' (get-macro-character #\') t)
-  (set-macro-character #\" #'read-hs-string))
+  (cl-macro-char #\# #\?)
+  (set-macro-char #\' (get-macro-char #\') t)
+  (set-macro-char #\" #'read-hs-string))
 
-(setf (readtable-case *hs-readtable*) :preserve)
+
+(setf *hs-toplevel* (copy-readtable *hs-readtable*))
+
+(defun read-hs-lf (stream &rest args)
+  (declare (ignore args))
+  (if (case (peek-char nil stream nil nil t)
+        ((#\Newline #\Return) t))
+    '(terpri)
+    (read stream nil nil t)))
+
+(defun read-hs-cr (stream &rest args)
+  (declare (ignore args))
+  (if (eql (peek-char nil stream nil nil t)
+           #\Newline)
+    (read-char stream t nil t))
+  (read-hs-lf stream))
+
+(let ((*readtable* *hs-toplevel*))
+  (set-macro-char #\Newline #'read-hs-lf)
+  (set-macro-char #\Return #'read-hs-cr)
+  (set-macro-char #\( (make-hs-reader (get-macro-char #\()))
+  (cl-macro-char #\# #\|)
+  (cl-macro-char #\;))
 
 
 (defun default-out (src)
@@ -81,7 +130,7 @@
 
 (defun compile (src &optional (out (default-out src)))
   (let ((*package* (find-package :hs))
-        (*readtable* *hs-readtable*)
+        (*readtable* *hs-toplevel*)
         (*print-right-margin* most-positive-fixnum))
     (with-open-file (*standard-output* out
                      :direction :output
