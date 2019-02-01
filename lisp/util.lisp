@@ -51,6 +51,13 @@
            #'set-macro-character)
          char args))
 
+(defun convert-cr (stream)
+  (if (eql (peek-char nil stream nil nil t)
+           #\Newline)
+    (read-char stream t nil t)
+    #\Newline))
+
+
 (defvar *cl-readtable* *readtable*)
 (defvar *hs-readtable*)
 (defvar *hs-toplevel*)
@@ -84,7 +91,9 @@
   (declare (ignore args))
   (labels ((read-1 ()
              (let ((char (read-char stream t nil t)))
-               (if (char= char #\Return) (read-1) char))))
+               (if (char= char #\Return)
+                 (convert-cr stream)
+                 char))))
     (with-output-to-string (*standard-output*)
       (write-char #\")
       (loop
@@ -111,9 +120,7 @@
 
 (defun read-hs-cr (stream &rest args)
   (declare (ignore args))
-  (if (eql (peek-char nil stream nil nil t)
-           #\Newline)
-    (read-char stream t nil t))
+  (convert-cr stream)
   (read-hs-lf stream))
 
 (let ((*readtable* *hs-toplevel*))
