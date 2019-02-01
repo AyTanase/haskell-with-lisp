@@ -13,9 +13,6 @@
   (with-gensyms (ys)
     `#'(lambda (&rest ,ys) (apply ,f ,@xs ,ys))))
 
-(defmacro const (x)
-  `(load-time-value ,x t))
-
 (declaim (inline filter))
 (defun filter (item sequence &key (test #'eql) (key #'identity))
   (remove-if (complement (curry test item)) sequence :key key))

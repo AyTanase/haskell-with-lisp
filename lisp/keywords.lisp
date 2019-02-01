@@ -268,7 +268,7 @@
 
 
 (def-hs-macro |defconstant| (name expr)
-  `(defhasq ,name (const (strhask ',expr))))
+  `(defhasq ,name ,(strhask expr)))
 
 ;; Local Variables:
 ;; eval: (cl-indent-rules (quote (&body)) (quote with-paren) (quote with-pragma))
