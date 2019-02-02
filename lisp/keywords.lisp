@@ -85,7 +85,8 @@
 
 (defun %define-right (assign value)
   (flet ((print-guard (g v)
-           (haskells "| " g assign v)))
+           (haskells "| " g assign)
+           (haskell-top v)))
     (let ((expr (if->cond value)))
       (if (and (consp expr)
                (eq (car expr) '|cond|))
@@ -97,7 +98,9 @@
               (write-string "where")
               (with-indent 1
                 (map-indent #'%define gs)))))
-        (haskells assign expr)))))
+        (progn
+          (write-string assign)
+          (haskell-top expr))))))
 
 (defun %define (var val &optional (assign " = "))
   (if (eq var '|type|)
