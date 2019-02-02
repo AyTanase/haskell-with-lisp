@@ -235,7 +235,7 @@
 (defun %deftype (name type)
   (write-string "type ")
   (rechask name)
-  (haskells " = " type))
+  (haskell-tops " = " type))
 
 (defkeyword |deftype| (name type)
   `(%deftype ',name ',type))
