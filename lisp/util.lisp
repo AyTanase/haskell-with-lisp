@@ -92,7 +92,7 @@
                  (convert-cr stream)
                  char))))
     (with-output-to-string (s)
-      (write-char #\")
+      (write-char #\" s)
       (loop
         (let ((char (read-1)))
           (write-char char s)
