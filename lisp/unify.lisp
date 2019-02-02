@@ -20,9 +20,9 @@
                (cond
                  ((null y) x)
                  ((find y vars :test #'eq)
-                  (let ((v (genvar)))
-                    (push `(= ,y ,v) guards)
-                    v))
+                   (let ((v (genvar)))
+                     (push `(= ,y ,v) guards)
+                     v))
                  (t (push y vars)
                     y)))))
       (let ((uexp (map-tree #'unify-1 expr)))

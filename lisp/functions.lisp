@@ -123,9 +123,9 @@
              (cond
                ((atom xs) (write-string ".."))
                ((eq (car xs) :|to|)
-                (write-string "..")
-                (if (consp (cdr xs))
-                  (haskell (cadr xs))))
+                 (write-string "..")
+                 (if (consp (cdr xs))
+                   (haskell (cadr xs))))
                (t (haskells "," (car xs))
                   (rec (cdr xs))))))
     (with-square-brackets

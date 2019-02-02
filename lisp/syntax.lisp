@@ -28,10 +28,10 @@
                    ((and doc-allowed
                          (stringp (car body))
                          (cdr body))
-                    (recurse nil))
+                     (recurse nil))
                    ((and (consp (car body))
                          (eq (caar body) 'declare))
-                    (recurse doc-allowed))
+                     (recurse doc-allowed))
                    (t (return-values)))))))
     (pick-out-1 nil body doc-allowed)))
 

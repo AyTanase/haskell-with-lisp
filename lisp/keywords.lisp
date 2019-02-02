@@ -95,10 +95,10 @@
   (flet ((print-guard (g v)
            (haskells "| " g)
            (haskell-tops assign v)))
-  (multiple-value-bind (exps gs) (reduce-cond expr)
-    (with-indent 1
-      (map-indent #'print-guard exps))
-    (%where (append defs gs)))))
+    (multiple-value-bind (exps gs) (reduce-cond expr)
+      (with-indent 1
+        (map-indent #'print-guard exps))
+      (%where (append defs gs)))))
 
 (defun %define-guard (assign defs value)
   (let ((expr (if->cond value)))
@@ -112,9 +112,9 @@
 (defun %define-right (assign value)
   (cond
     ((atom value)
-     (haskell-tops assign value))
+      (haskell-tops assign value))
     ((eq (car value) '|cond|)
-     (%cond assign nil value))
+      (%cond assign nil value))
     (t (let ((expanded (hs-macro-expand value)))
          (if (eq (first expanded) '|where|)
            (%define-guard assign (second expanded) (third expanded))
@@ -247,10 +247,10 @@
     ((atom body) (haskell body))
     ((and (consp (cdr body))
           (eq (cadr body) :|name|))
-     (haskell (car body))
-     (write-string " { ")
-     (%rechask (cddr body) (curry #'apply #'%type) ", ")
-     (write-string " }"))
+      (haskell (car body))
+      (write-string " { ")
+      (%rechask (cddr body) (curry #'apply #'%type) ", ")
+      (write-string " }"))
     (t (rechask body))))
 
 (defun %data (name body deriving)
