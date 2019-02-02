@@ -260,6 +260,17 @@
   `(%data ',name ',body ',deriving))
 
 
+(deftopkey |if| (x y z)
+  (with-indent 1
+    (write-string "if ")
+    (haskell-top x)
+    (indent)
+    (write-string "then ")
+    (haskell-top y)
+    (indent)
+    (write-string "else ")
+    (haskell-top z)))
+
 (defsyntax |if| (x y z)
   (with-paren
     (haskells "if " x " then " y " else " z)))
