@@ -129,13 +129,23 @@
     (haskell val)))
 
 
+(defun %let (defs val)
+  (write-string "let")
+  (with-indent 1
+    (map-indent #'%define defs)
+    (indent)
+    (write-string "in ")
+    (haskell-top val)))
+
+(deftopkey |let| (defs val)
+  (if defs
+    (%let defs val)
+    (haskell-top val)))
+
 (defsyntax |let| (defs val)
   (if defs
-    (with-indent 1
-      (write-string "let")
-      (map-indent #'%define defs)
-      (indent)
-      (haskells "in " val))
+    (with-paren
+      (%let defs val))
     (haskell val)))
 
 
