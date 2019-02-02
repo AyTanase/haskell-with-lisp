@@ -20,7 +20,7 @@
 
 (defun %type (vars type)
   (rechask vars ", ")
-  (haskells " :: " type))
+  (haskell-tops " :: " type))
 
 (defkeyword |type| (vars type)
   `(%type ',vars ',type))
