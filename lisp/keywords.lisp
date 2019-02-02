@@ -84,7 +84,7 @@
         (values expr (nreverse guards))))))
 
 (defun %where-body (defs)
-  (when defs
+  (if defs
     (with-indent 1
       (indent)
       (write-string "where")
