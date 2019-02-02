@@ -91,13 +91,13 @@
                (if (char= char #\Return)
                  (convert-cr stream)
                  char))))
-    (with-output-to-string (*standard-output*)
+    (with-output-to-string (s)
       (write-char #\")
       (loop
         (let ((char (read-1)))
-          (write-char char)
+          (write-char char s)
           (case char
-            (#\\ (write-char (read-1)))
+            (#\\ (write-char (read-1) s))
             (#\" (return))))))))
 
 (let ((*readtable* *hs-readtable*))
