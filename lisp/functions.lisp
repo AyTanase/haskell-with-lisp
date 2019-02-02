@@ -105,7 +105,9 @@
 
 (defpattern |list*| (&rest args)
   (with-paren
-    (rechask args ":")))
+    (if (find-if #'consp args)
+      (rechask args " : ")
+      (rechask args ":"))))
 
 
 (defpattern |list| (&rest args)
