@@ -229,7 +229,7 @@
     (with-paren
       (arrange constraints))
     (rechask constraints))
-  (haskells " => " type))
+  (haskell-tops " => " type))
 
 
 (defun %deftype (name type)
