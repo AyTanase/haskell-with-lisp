@@ -47,47 +47,6 @@
        `(progn ,(progn ,@rest) (fresh-line)))))
 
 
-(defgeneric haskell (x)
-  (:documentation "Convert to Haskell code"))
-
-(defun strhask (x)
-  (with-output-to-string (*standard-output*)
-    (haskell x)))
-
-(defun haskells (&rest args)
-  (mapc #'haskell args))
-
-
-(defmacro def-key-table (table setter)
-  `(progn
-     (defvar ,table (make-hash-table :test 'eq))
-     (defmacro ,setter (name &body body)
-       `(progn
-          (shadow-haskell ',name)
-          (setf (gethash ',name ,',table)
-                #'(lambda ,@body))))))
-
-(def-key-table *syntax* defsyntax)
-(def-key-table *topkeys* deftopkey)
-
-(defun haskell-top (expr)
-  (let ((fn (if (consp expr)
-              (gethash (car expr) *topkeys*))))
-    (if fn
-      (apply fn (cdr expr))
-      (haskell expr))))
-
-(defun haskell-tops (&rest args)
-  (mapc #'haskell-top args))
-
-(defmacro def-syntax-macro (name &body body)
-  `(let ((f #'(lambda ,@body)))
-     (defsyntax ,name (&rest args)
-       (haskell (apply f args)))
-     (deftopkey ,name (&rest args)
-       (haskell-top (apply f args)))))
-
-
 (defmacro defparen (name open close)
   (with-gensyms (body)
     `(defmacro ,name (&body ,body)
@@ -100,6 +59,16 @@
 (defparen with-square-brackets "[" "]")
 (defparen with-pragma "{-# " " #-}")
 
+
+(defgeneric haskell (x)
+  (:documentation "Convert to Haskell code"))
+
+(defun strhask (x)
+  (with-output-to-string (*standard-output*)
+    (haskell x)))
+
+(defun haskells (&rest args)
+  (mapc #'haskell args))
 
 (defun %rechask (x fn between)
   (labels ((rec (x xs)
@@ -121,6 +90,47 @@
 (defrechask arrange #'rechask ", ")
 
 
+(defmacro def-key-table (table setter)
+  `(progn
+     (defvar ,table (make-hash-table :test 'eq))
+     (defmacro ,setter (name &body body)
+       `(progn
+          (shadow-haskell ',name)
+          (setf (gethash ',name ,',table)
+                #'(lambda ,@body))))))
+
+(def-key-table *syntax-macros* def-syntax-macro)
+(def-key-table *syntax* defsyntax)
+(def-key-table *topkeys* deftopkey)
+
+
+(defun hs-macro-expand (expr)
+  (let ((fn (if (consp expr)
+              (gethash (car expr) *syntax-macros*))))
+    (if fn
+      (hs-macro-expand (apply fn (cdr expr)))
+      expr)))
+
+(defun %haskell-cons (expr)
+  (let ((fn (gethash (car expr) *syntax*)))
+    (if fn
+      (apply fn (cdr expr))
+      (with-paren
+        (rechask expr)))))
+
+(defun haskell-top (expr)
+  (if (atom expr)
+    (haskell expr)
+    (let* ((expanded (hs-macro-expand expr))
+           (fn (gethash (car expanded) *topkeys*)))
+      (if fn
+        (apply fn (cdr expanded))
+        (%haskell-cons expanded)))))
+
+(defun haskell-tops (&rest args)
+  (mapc #'haskell-top args))
+
+
 (defmethod haskell (x) (princ x))
 
 (defmethod haskell ((x character))
@@ -134,11 +144,7 @@
   (write-string "()"))
 
 (defmethod haskell ((x cons))
-  (let ((rule (gethash (car x) *syntax*)))
-    (if rule
-      (apply rule (cdr x))
-      (with-paren
-        (rechask x)))))
+  (%haskell-cons (hs-macro-expand x)))
 
 
 (defvar *patterns* (make-hash-table :test 'eq))
