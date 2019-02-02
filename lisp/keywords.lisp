@@ -92,12 +92,18 @@
         (map-indent #'%define defs)))))
 
 (defun %cond (assign defs expr)
-  (flet ((print-guard (g v)
-           (haskells "| " g)
-           (haskell-tops assign v)))
+  (labels ((print-guard (g)
+             (if (and (consp g)
+                      (eq (car g) '|and|))
+               (%rechask (cdr g) #'print-guard ", ")
+               (haskell g)))
+           (print-def (g v)
+             (write-string "| ")
+             (print-guard g)
+             (haskell-tops assign v)))
     (multiple-value-bind (exps gs) (reduce-cond expr)
       (with-indent 1
-        (map-indent #'print-guard exps))
+        (map-indent #'print-def exps))
       (%where (append defs gs)))))
 
 (defun %define-guard (assign defs value)
