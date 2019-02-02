@@ -36,8 +36,6 @@
      :one `#'(,',name ,(car args))
      :many (apply #'print-infix ',op args)))
 
-(defoperator |cons| |:|)
-
 
 (defun expand-ord-op (op args)
   (let ((vs (genvars (- (length args) 2))))
@@ -93,6 +91,15 @@
 (def-syntax-macro 1- (x) `(- ,x 1))
 
 (defhasq |pair| "(,)")
+
+
+(def-binop-as |cons| |:|
+  :one `#'(|cons| ,@args)
+  :many (destructuring-bind (x y) args
+          (with-paren
+            (haskell x)
+            (write-string (if (and (atom x) (atom y)) ":" " : "))
+            (haskell y))))
 
 (defpattern |list*| (&rest args)
   (with-paren
