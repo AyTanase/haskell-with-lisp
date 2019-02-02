@@ -36,7 +36,7 @@
 (add-cl-indent-rule 'if '(4 &rest 2))
 (add-cl-indent-rule 'with-open-file '(&lambda &body))
 (add-cl-indent-rule 'ftype '((&whole 4 &lambda 2) &rest 2))
-(add-cl-indent-rule 'cond '(&rest (&whole 2 &rest 2)))
+(add-cl-indent-rule 'cond '(&rest (&whole 2 &body)))
 (cl-indent-rules 'lisp-indent-let-method 'let 'let*)
 
 (font-lock-add-keywords 'lisp-mode '(("#:.+?\\_>" . font-lock-builtin-face)))
