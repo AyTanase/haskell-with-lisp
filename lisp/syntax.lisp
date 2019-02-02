@@ -47,25 +47,6 @@
        `(progn ,(progn ,@rest) (fresh-line)))))
 
 
-(defmacro def-key-table (table setter)
-  `(progn
-     (defvar ,table (make-hash-table :test 'eq))
-     (defmacro ,setter (name &body body)
-       `(progn
-          (shadow-haskell ',name)
-          (setf (gethash ',name ,',table)
-                #'(lambda ,@body))))))
-
-
-(def-key-table *syntax* defsyntax)
-
-(defmacro def-syntax-macro (name args &body body)
-  (with-picking-out (decs rest) body
-    `(defsyntax ,name ,args
-       ,@decs
-       (haskell (progn ,@rest)))))
-
-
 (defgeneric haskell (x)
   (:documentation "Convert to Haskell code"))
 
@@ -75,6 +56,33 @@
 
 (defun haskells (&rest args)
   (mapc #'haskell args))
+
+
+(defmacro def-key-table (table setter)
+  `(progn
+     (defvar ,table (make-hash-table :test 'eq))
+     (defmacro ,setter (name &body body)
+       `(progn
+          (shadow-haskell ',name)
+          (setf (gethash ',name ,',table)
+                #'(lambda ,@body))))))
+
+(def-key-table *syntax* defsyntax)
+(def-key-table *topkeys* deftopkey)
+
+(defun haskell-top (expr)
+  (let ((fn (if (consp expr)
+              (gethash (car expr) *topkeys*))))
+    (if fn
+      (apply fn (cdr expr))
+      (haskell expr))))
+
+(defmacro def-syntax-macro (name &body body)
+  `(let ((f #'(lambda ,@body)))
+     (defsyntax ,name (&rest args)
+       (haskell (apply f args)))
+     (deftopkey ,name (&rest args)
+       (haskell-top (apply f args)))))
 
 
 (defmacro defparen (name open close)
@@ -145,16 +153,6 @@
      (shadow-haskell ',name)
      (defmethod haskell ((x (eql ',name)))
        (write-string ,body))))
-
-
-(def-key-table *topkeys* deftopkey)
-
-(defun haskell-top (expr)
-  (let ((fn (if (consp expr)
-              (gethash (car expr) *topkeys*))))
-    (if fn
-      (apply fn (cdr expr))
-      (haskell expr))))
 
 
 (load-relative "keywords.lisp")
