@@ -290,6 +290,18 @@
     (apply #'%case x xs)))
 
 
+(defsyntax |setf| (x y)
+  (%define-left x)
+  (haskells " <- " y))
+
+(deftopkey |do| (&rest body)
+  (write-string "do")
+  (with-indent 1
+    (dolist (expr body)
+      (indent)
+      (haskell-top expr))))
+
+
 (defkeyword |extension| (&rest args)
   `(with-pragma
      (format t "LANGUAGE ~{~a~^, ~}" ',args)))
