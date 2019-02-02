@@ -91,7 +91,7 @@
       (with-indent 1
         (map-indent #'%define defs)))))
 
-(defun %define-right (assign value)
+(defun %define-guard (assign defs value)
   (flet ((print-guard (g v)
            (haskells "| " g)
            (haskell-tops assign v)))
@@ -101,8 +101,20 @@
         (multiple-value-bind (exps gs) (reduce-cond expr)
           (with-indent 1
             (map-indent #'print-guard exps))
-          (%where-body gs))
-        (haskell-tops assign expr)))))
+          (%where-body (append defs gs)))
+        (progn
+          (haskell-tops assign expr)
+          (%where-body defs))))))
+
+(defun %define-right (assign value)
+  (cond
+    ((atom value) (haskell-tops assign value))
+    ((eq (car value) '|cond|)
+     (%define-guard assign nil value))
+    (t (let ((expanded (hs-macro-expand value)))
+         (if (eq (first expanded) '|where|)
+           (%define-guard assign (second expanded) (third expanded))
+           (%define-guard assign nil expanded))))))
 
 (defun %define (var val &optional (assign " = "))
   (if (eq var '|type|)
@@ -113,11 +125,6 @@
 
 (defkeyword |define| (var val)
   `(%define ',var ',val))
-
-
-(deftopkey |where| (defs val)
-  (haskell-top val)
-  (%where-body defs))
 
 
 (defun %let (defs val)
