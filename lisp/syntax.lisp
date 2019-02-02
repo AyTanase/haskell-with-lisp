@@ -70,6 +70,7 @@
 (defun haskells (&rest args)
   (mapc #'haskell args))
 
+
 (defun %rechask (x fn between)
   (labels ((rec (x xs)
              (funcall fn x)
@@ -101,7 +102,7 @@
 
 (def-key-table *syntax-macros* def-syntax-macro)
 (def-key-table *syntax* defsyntax)
-(def-key-table *topkeys* deftopkey)
+(def-key-table *sexp-rules* def-sexp-rule)
 
 
 (defun hs-macro-expand (expr)
@@ -111,24 +112,32 @@
       (hs-macro-expand (apply fn (cdr expr)))
       expr)))
 
-(defun %haskell-cons (expr)
+(defun %haskell-top (expr)
   (let ((fn (gethash (car expr) *syntax*)))
     (if fn
       (apply fn (cdr expr))
-      (with-paren
-        (rechask expr)))))
+      (rechask expr))))
 
 (defun haskell-top (expr)
   (if (atom expr)
     (haskell expr)
-    (let* ((expanded (hs-macro-expand expr))
-           (fn (gethash (car expanded) *topkeys*)))
-      (if fn
-        (apply fn (cdr expanded))
-        (%haskell-cons expanded)))))
+    (%haskell-top (hs-macro-expand expr))))
 
 (defun haskell-tops (&rest args)
   (mapc #'haskell-top args))
+
+
+(defmacro defpattern (name &body body)
+  `(let ((fn #'(lambda ,@body)))
+     (shadow-haskell ',name)
+     (setf (gethash ',name *syntax*) fn)
+     (setf (gethash ',name *sexp-rules*) fn)))
+
+(defmacro defhasq (name expr)
+  `(progn
+     (shadow-haskell ',name)
+     (defmethod haskell ((x (eql ',name)))
+       (write-string ,expr))))
 
 
 (defmethod haskell (x) (princ x))
@@ -144,24 +153,12 @@
   (write-string "()"))
 
 (defmethod haskell ((x cons))
-  (%haskell-cons (hs-macro-expand x)))
-
-
-(defvar *patterns* (make-hash-table :test 'eq))
-
-(defun patternp (x) (gethash x *patterns*))
-
-(defmacro defpattern (name &body body)
-  `(progn
-     (setf (gethash ',name *patterns*) t)
-     (defsyntax ,name ,@body)))
-
-
-(defmacro defhasq (name body)
-  `(progn
-     (shadow-haskell ',name)
-     (defmethod haskell ((x (eql ',name)))
-       (write-string ,body))))
+  (let* ((expr (hs-macro-expand x))
+         (fn (gethash (car expr) *sexp-rules*)))
+    (if fn
+      (apply fn (cdr expr))
+      (with-paren
+        (%haskell-top expr)))))
 
 
 (load-relative "keywords.lisp")

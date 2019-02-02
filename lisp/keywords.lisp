@@ -26,8 +26,7 @@
   `(%type ',vars ',type))
 
 (defsyntax |type| (var type)
-  (with-paren
-    (%type (list var) type)))
+  (%type (list var) type))
 
 
 (defun tuple (xs)
@@ -38,12 +37,6 @@
 
 
 (declaim (ftype function %define))
-
-(defun %define-left (var)
-  (if (or (atom var)
-          (patternp (car var)))
-    (haskell var)
-    (rechask var)))
 
 (defun if->cond (expr)
   (if (and (consp expr)
@@ -130,7 +123,7 @@
   (if (eq var '|type|)
     (%type val assign)
     (progn
-      (%define-left var)
+      (haskell-top var)
       (%define-right assign val))))
 
 (defkeyword |define| (var val)
@@ -144,12 +137,12 @@
     (indent)
     (haskell-tops "in " val)))
 
-(deftopkey |let| (defs val)
+(defsyntax |let| (defs val)
   (if defs
     (%let defs val)
     (haskell-top val)))
 
-(defsyntax |let| (defs val)
+(def-sexp-rule |let| (defs val)
   (if defs
     (with-paren
       (%let defs val))
@@ -158,11 +151,11 @@
 
 (shadow-haskell '|where|)
 
-(setf (gethash '|where| *topkeys*)
-      (gethash '|let| *topkeys*))
-
 (setf (gethash '|where| *syntax*)
       (gethash '|let| *syntax*))
+
+(setf (gethash '|where| *sexp-rules*)
+      (gethash '|let| *sexp-rules*))
 
 
 (defun %class-derive (derive)
@@ -276,7 +269,7 @@
   `(%data ',name ',body ',deriving))
 
 
-(deftopkey |if| (x y z)
+(defsyntax |if| (x y z)
   (with-indent 1
     (haskell-tops "if " x)
     (indent)
@@ -284,7 +277,7 @@
     (indent)
     (haskell-tops "else " z)))
 
-(defsyntax |if| (x y z)
+(def-sexp-rule |if| (x y z)
   (with-paren
     (haskells "if " x " then " y " else " z)))
 
@@ -296,25 +289,18 @@
       (second x))))
 
 
-(defun %case (x &rest xs)
+(defsyntax |case| (x &rest xs)
   (flet ((case-val (x y)
            (%define x y " -> ")))
     (haskells "case " x " of")
     (with-indent 1
       (map-indent #'case-val xs))))
 
-(setf (gethash '|case| *topkeys*) #'%case)
 
-(defsyntax |case| (x &rest xs)
-  (with-paren
-    (apply #'%case x xs)))
+(defpattern |setf| (x y)
+  (haskell-tops x " <- " y))
 
-
-(defsyntax |setf| (x y)
-  (%define-left x)
-  (haskells " <- " y))
-
-(deftopkey |do| (&rest body)
+(defsyntax |do| (&rest body)
   (write-string "do")
   (with-indent 1
     (dolist (expr body)

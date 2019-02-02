@@ -5,13 +5,15 @@
     `(progn
        (defsyntax ,name (&rest args)
          (cond
-           ((null args) (write-string ,(or zero printed)))
-           ((null (cdr args)) (haskell ,(or one '(car args))))
-           (t ,(or many `(with-paren
-                           (rechask args ,(format nil " ~a " op)))))))
+           ((null args)
+             (write-string ,(or zero printed)))
+           ((null (cdr args))
+             (haskell-top ,(or one '(car args))))
+           (t ,(or many `(rechask args ,(format nil " ~a " op))))))
        (defhasq ,name ,printed))))
 
-(defmacro defbinop (op &rest args) `(def-binop-as ,op ,op ,@args))
+(defmacro defbinop (op &rest args)
+  `(def-binop-as ,op ,op ,@args))
 
 (defbinop -> :zero "()")
 (defbinop + :zero "0")
@@ -26,10 +28,9 @@
 
 
 (defun print-infix (op x y)
-  (with-paren
-    (haskell x)
-    (format t " ~a " op)
-    (haskell y)))
+  (haskell x)
+  (format t " ~a " op)
+  (haskell y))
 
 (defmacro defoperator (name &optional (op name))
   `(def-binop-as ,name ,op
@@ -50,7 +51,7 @@
          (print-infix ',op x y))
        (def-binop-as ,name ,op
          :one `#'(,',name ,(car args))
-         :many (haskell (expand-ord-op ',g args))))))
+         :many (haskell-top (expand-ord-op ',g args))))))
 
 (def-ord-op = ==)
 (def-ord-op <=)
@@ -70,17 +71,16 @@
              (print-infix '/= x y)))
     (defbinop /=
       :one `#'(/= ,(car args))
-      :many (haskell (if (cddr args)
-                       (expand-/= args)
-                       (cons g args))))))
+      :many (haskell-top (if (cddr args)
+                           (expand-/= args)
+                           (cons g args))))))
 
 
 (defsyntax function (x)
   (cond
-    ((atom x) (haskell x))
-    ((atom (cdr x)) (haskell (car x)))
-    (t (with-paren
-         (rechask `(,(car x) ,(if (cddr x) x (cadr x))))))))
+    ((atom x) (haskell-top x))
+    ((atom (cdr x)) (haskell-top (car x)))
+    (t (rechask `(,(car x) ,(if (cddr x) x (cadr x)))))))
 
 (defhasq |strict| "($!)")
 
@@ -96,18 +96,16 @@
 (def-binop-as |cons| |:|
   :one `#'(|cons| ,(car args))
   :many (destructuring-bind (x y) args
-          (with-paren
-            (haskell x)
-            (if (and (atom x) (atom y))
-              (write-string ":")
-              (write-string " : "))
-            (haskell y))))
+          (haskell x)
+          (if (and (atom x) (atom y))
+            (write-string ":")
+            (write-string " : "))
+          (haskell y)))
 
-(defpattern |list*| (&rest args)
-  (with-paren
-    (if (find-if #'consp args)
-      (rechask args " : ")
-      (rechask args ":"))))
+(defsyntax |list*| (&rest args)
+  (if (find-if #'consp args)
+    (rechask args " : ")
+    (rechask args ":")))
 
 
 (defpattern |list| (&rest args)
@@ -118,7 +116,7 @@
 
 #!(defconstant list pure)
 
-(defsyntax |enum-from| (x &rest xs)
+(defpattern |enum-from| (x &rest xs)
   (labels ((rec (xs)
              (cond
                ((atom xs) (write-string ".."))
