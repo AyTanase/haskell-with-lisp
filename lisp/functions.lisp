@@ -36,6 +36,8 @@
      :one `#'(,',name ,(car args))
      :many (apply #'print-infix ',op args)))
 
+(defoperator |cons| |:|)
+
 
 (defun expand-ord-op (op args)
   (let ((vs (genvars (- (length args) 2))))
@@ -91,8 +93,6 @@
 (def-syntax-macro 1- (x) `(- ,x 1))
 
 (defhasq |pair| "(,)")
-
-(defhasq |cons| "(:)")
 
 (defpattern |list*| (&rest args)
   (with-paren
