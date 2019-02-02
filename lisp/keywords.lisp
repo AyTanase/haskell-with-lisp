@@ -121,13 +121,6 @@
   (haskell-top val)
   (%where-body defs))
 
-(defsyntax |where| (defs val)
-  (if defs
-    (with-paren
-      (haskell-top val)
-      (%where-body defs))
-    (haskell val)))
-
 
 (defun %let (defs val)
   (write-string "let")
