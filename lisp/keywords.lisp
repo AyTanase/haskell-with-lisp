@@ -146,6 +146,15 @@
     (haskell val)))
 
 
+(shadow-haskell '|where|)
+
+(setf (gethash '|where| *topkeys*)
+      (gethash '|let| *topkeys*))
+
+(setf (gethash '|where| *syntax*)
+      (gethash '|let| *syntax*))
+
+
 (defun %class-derive (derive)
   (flet ((print-derive (derive)
            (with-paren
