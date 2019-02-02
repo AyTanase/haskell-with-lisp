@@ -93,8 +93,8 @@
 
 (defun %define-right (assign value)
   (flet ((print-guard (g v)
-           (haskells "| " g assign)
-           (haskell-top v)))
+           (haskells "| " g)
+           (haskell-tops assign v)))
     (let ((expr (if->cond value)))
       (if (and (consp expr)
                (eq (car expr) '|cond|))
@@ -102,9 +102,7 @@
           (with-indent 1
             (map-indent #'print-guard exps))
           (%where-body gs))
-        (progn
-          (write-string assign)
-          (haskell-top expr))))))
+        (haskell-tops assign expr)))))
 
 (defun %define (var val &optional (assign " = "))
   (if (eq var '|type|)
@@ -127,8 +125,7 @@
   (with-indent 1
     (map-indent #'%define defs)
     (indent)
-    (write-string "in ")
-    (haskell-top val)))
+    (haskell-tops "in " val)))
 
 (deftopkey |let| (defs val)
   (if defs
@@ -255,14 +252,11 @@
 
 (deftopkey |if| (x y z)
   (with-indent 1
-    (write-string "if ")
-    (haskell-top x)
+    (haskell-tops "if " x)
     (indent)
-    (write-string "then ")
-    (haskell-top y)
+    (haskell-tops "then " y)
     (indent)
-    (write-string "else ")
-    (haskell-top z)))
+    (haskell-tops "else " z)))
 
 (defsyntax |if| (x y z)
   (with-paren

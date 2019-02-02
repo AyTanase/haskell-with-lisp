@@ -77,6 +77,9 @@
       (apply fn (cdr expr))
       (haskell expr))))
 
+(defun haskell-tops (&rest args)
+  (mapc #'haskell-top args))
+
 (defmacro def-syntax-macro (name &body body)
   `(let ((f #'(lambda ,@body)))
      (defsyntax ,name (&rest args)
