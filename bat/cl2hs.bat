@@ -8,7 +8,7 @@ exit /b
 :compile-all
 set "FILES="
 call :collect-files .
-call runcl %SRC% --eval "(hs:compile-all %FILES%)"
+call runcl %SRC% --eval "(hs:compile-all%FILES%)"
 exit /b
 
 :collect-files
@@ -21,5 +21,5 @@ for %%f in (*.hl) do (call :collect-file-1 "%~1/%%f")
 exit /b
 
 :collect-file-1
-set "FILES=\"%~1\" %FILES%"
+set "FILES= \"%~1\"%FILES%"
 exit /b
