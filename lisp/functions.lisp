@@ -94,11 +94,13 @@
 
 
 (def-binop-as |cons| |:|
-  :one `#'(|cons| ,@args)
+  :one `#'(|cons| ,(car args))
   :many (destructuring-bind (x y) args
           (with-paren
             (haskell x)
-            (write-string (if (and (atom x) (atom y)) ":" " : "))
+            (if (and (atom x) (atom y))
+              (write-string ":")
+              (write-string " : "))
             (haskell y))))
 
 (defpattern |list*| (&rest args)
