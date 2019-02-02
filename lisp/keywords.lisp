@@ -276,12 +276,18 @@
       (second x))))
 
 
-(defsyntax |case| (x &rest xs)
+(defun %case (x &rest xs)
   (flet ((case-val (x y)
            (%define x y " -> ")))
     (haskells "case " x " of")
     (with-indent 1
       (map-indent #'case-val xs))))
+
+(setf (gethash '|case| *topkeys*) #'%case)
+
+(defsyntax |case| (x &rest xs)
+  (with-paren
+    (apply #'%case x xs)))
 
 
 (defkeyword |extension| (&rest args)
