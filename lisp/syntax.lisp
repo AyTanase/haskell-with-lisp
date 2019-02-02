@@ -47,12 +47,17 @@
        `(progn ,(progn ,@rest) (fresh-line)))))
 
 
-(defvar *syntax* (make-hash-table :test 'eq))
-
-(defmacro defsyntax (name &body body)
+(defmacro def-key-table (table setter)
   `(progn
-     (shadow-haskell ',name)
-     (setf (gethash ',name *syntax*) #'(lambda ,@body))))
+     (defvar ,table (make-hash-table :test 'eq))
+     (defmacro ,setter (name &body body)
+       `(progn
+          (shadow-haskell ',name)
+          (setf (gethash ',name ,',table)
+                #'(lambda ,@body))))))
+
+
+(def-key-table *syntax* defsyntax)
 
 (defmacro def-syntax-macro (name args &body body)
   (with-picking-out (decs rest) body
@@ -140,6 +145,16 @@
      (shadow-haskell ',name)
      (defmethod haskell ((x (eql ',name)))
        (write-string ,body))))
+
+
+(def-key-table *topkeys* deftopkey)
+
+(defun haskell-top (expr)
+  (let ((fn (if (consp expr)
+              (gethash (car expr) *topkeys*))))
+    (if fn
+      (apply fn (cdr expr))
+      (haskell expr))))
 
 
 (load-relative "keywords.lisp")
