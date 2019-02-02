@@ -83,7 +83,7 @@
                           (cdr value))))
         (values expr (nreverse guards))))))
 
-(defun %where-body (defs)
+(defun %where (defs)
   (if defs
     (with-indent 1
       (indent)
@@ -91,26 +91,30 @@
       (with-indent 1
         (map-indent #'%define defs)))))
 
-(defun %define-guard (assign defs value)
+(defun %cond (assign defs expr)
   (flet ((print-guard (g v)
            (haskells "| " g)
            (haskell-tops assign v)))
-    (let ((expr (if->cond value)))
-      (if (and (consp expr)
-               (eq (car expr) '|cond|))
-        (multiple-value-bind (exps gs) (reduce-cond expr)
-          (with-indent 1
-            (map-indent #'print-guard exps))
-          (%where-body (append defs gs)))
-        (progn
-          (haskell-tops assign expr)
-          (%where-body defs))))))
+  (multiple-value-bind (exps gs) (reduce-cond expr)
+    (with-indent 1
+      (map-indent #'print-guard exps))
+    (%where (append defs gs)))))
+
+(defun %define-guard (assign defs value)
+  (let ((expr (if->cond value)))
+    (if (and (consp expr)
+             (eq (car expr) '|cond|))
+      (%cond assign defs expr)
+      (progn
+        (haskell-tops assign expr)
+        (%where defs)))))
 
 (defun %define-right (assign value)
   (cond
-    ((atom value) (haskell-tops assign value))
+    ((atom value)
+     (haskell-tops assign value))
     ((eq (car value) '|cond|)
-     (%define-guard assign nil value))
+     (%cond assign nil value))
     (t (let ((expanded (hs-macro-expand value)))
          (if (eq (first expanded) '|where|)
            (%define-guard assign (second expanded) (third expanded))
