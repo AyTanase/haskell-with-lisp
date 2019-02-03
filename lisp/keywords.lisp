@@ -312,7 +312,7 @@
 
 (defsyntax |lambda| (args expr)
   (write-char #\\)
-  (arrange args)
+  (rechask args)
   (haskell-tops " -> " expr))
 
 (defkeyword |extension| (&rest args)
