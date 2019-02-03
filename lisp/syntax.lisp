@@ -88,7 +88,6 @@
        (%rechask ,x ,fn ,between))))
 
 (defrechask rechask #'haskell " ")
-(defrechask arrange #'rechask ", ")
 
 
 (defmacro def-key-table (table setter)
@@ -122,6 +121,8 @@
   (if (atom expr)
     (haskell expr)
     (%haskell-top (hs-macro-expand expr))))
+
+(defrechask arrange #'haskell-top ", ")
 
 (defun haskell-tops (&rest args)
   (mapc #'haskell-top args))
