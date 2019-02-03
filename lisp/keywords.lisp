@@ -231,15 +231,14 @@
 
 
 (defun %data-body (body)
-  (cond
-    ((atom body) (haskell body))
-    ((and (consp (cdr body))
-          (eq (cadr body) :|name|))
-      (haskell (car body))
-      (write-string " { ")
+  (if (and (consp body)
+           (consp (cdr body))
+           (eq (cadr body) :|name|))
+    (progn
+      (haskell-tops (car body) " { ")
       (%rechask (cddr body) (curry #'apply #'%type) ", ")
       (write-string " }"))
-    (t (haskell-top body))))
+    (haskell-top body)))
 
 (defun %data (name body deriving)
   (write-string "data ")
