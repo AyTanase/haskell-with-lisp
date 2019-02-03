@@ -71,15 +71,13 @@
 
 
 (defun %rechask (x fn between)
-  (labels ((rec (x xs)
-             (funcall fn x)
-             (when xs
-               (write-string between)
-               (rec (car xs) (cdr xs)))))
-    (typecase x
-      (null)
-      (cons (rec (car x) (cdr x)))
-      (t (funcall fn x)))))
+  (flet ((call-1 (xs)
+           (funcall fn (car xs))
+           (if (cdr xs)
+             (write-string between))))
+    (if (listp x)
+      (mapl #'call-1 x)
+      (funcall fn x))))
 
 (defmacro defrechask (name fn default)
   (with-gensyms (x between)
