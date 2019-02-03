@@ -11,8 +11,8 @@
 
 (instance (Show (Complex a)) ((Show a))
   ((show (Complex x y))
-   (where ((shows' (showsPrec 11)))
-     (append "Complex " (shows' x " ") (shows' y ""))))
+    (where ((shows' (showsPrec 11)))
+      (append "Complex " (shows' x " ") (shows' y ""))))
   ((showsPrec p) (compose (showParen (>= p 11)) append show)))
 
 (instance (Pure Complex m) (:overlapping (Monoid m))
@@ -20,7 +20,7 @@
 
 (instance (Join Complex g) (:overlapping (Group g))
   ((join (Complex (Complex u v) (Complex x y)))
-   (Complex (- u y) (+ v x))))
+    (Complex (- u y) (+ v x))))
 
 (instance (Semigroup (Complex s)) (:overlapping (Semigroup s))
   ((+ (Complex u v) (Complex x y)) (Complex (+ u x) (+ v y))))
@@ -34,7 +34,7 @@
 (instance (Action (Complex a) (Complex b))
     (:overlapping (Action a b) (Group b))
   ((* (Complex u v) (Complex x y))
-   (Complex (- (* u x) (* v y)) (+ (* u y) (* v x)))))
+    (Complex (- (* u x) (* v y)) (+ (* u y) (* v x)))))
 
 (instance (Div a (Complex b)) (:overlapping (Div a b))
   ((/ (Complex x y) z) (Complex (/ x z) (/ y z))))
@@ -44,4 +44,4 @@
      (Group a) (Action a a) (Div a (Complex b))
      (Action (Complex a) (Complex b)))
   ((/ z (Complex x y))
-   (* (Complex x (- y)) (/ z (+ (* x x) (* y y))))))
+    (* (Complex x (- y)) (/ z (+ (* x x) (* y y))))))

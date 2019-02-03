@@ -19,7 +19,7 @@
 
 (instance (Semigroup (Ratio r)) (:overlapping (Semigroup r) (Action r r))
   ((+ (ratio a b) (ratio c d))
-   (ratio (+ (* a d) (* b c)) (* b d))))
+    (ratio (+ (* a d) (* b c)) (* b d))))
 
 (instance (Group (Ratio r)) (:overlapping (Monoid (Ratio r)) (Group r))
   ((negate (ratio a b)) (ratio (negate a) b)))
