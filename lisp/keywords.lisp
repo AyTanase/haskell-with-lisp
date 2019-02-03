@@ -37,7 +37,7 @@
   (tuple xs))
 
 
-(declaim (ftype function %define))
+(declaim (ftype function %define reduce-cond-1))
 
 (defun %if->cond (sexp)
   (destructuring-bind (x y &optional (z nil svar)) sexp
@@ -58,17 +58,20 @@
     ((truep y) x)
     (t `(|and| ,x ,y))))
 
+(defun rec-reduce-cond-1 (f guard gvs)
+  (let ((var (if (or (truep guard)
+                     (null (cdr gvs)))
+               guard
+               (funcall f guard))))
+    (loop for (g v) in gvs
+      nconc (reduce-cond-1 f (merge-guards var g) v))))
+
 (defun reduce-cond-1 (f guard value)
   (let ((expr (if->cond value)))
     (if (and (consp expr)
              (eq (car expr) '|cond|))
-      (let ((vg (if (or (truep guard)
-                        (null (cddr expr)))
-                  guard
-                  (funcall f guard))))
-        (loop for (g v) in (cdr expr)
-          nconc (reduce-cond-1 f (merge-guards vg g) v)))
-      (list (list guard value)))))
+      (rec-reduce-cond-1 f guard (cdr expr))
+      (list (list guard expr)))))
 
 (defun reduce-cond (value)
   (let ((guards nil))
