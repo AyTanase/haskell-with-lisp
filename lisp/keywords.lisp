@@ -31,9 +31,10 @@
 
 (defun tuple (xs)
   (with-paren
-    (rechask xs ", ")))
+    (arrange xs)))
 
-(defpattern |tuple| (&rest xs) (tuple xs))
+(defpattern |tuple| (&rest xs)
+  (tuple xs))
 
 
 (declaim (ftype function %define))
