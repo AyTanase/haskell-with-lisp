@@ -27,7 +27,7 @@
     (case key
       (:|use| `(progn ,@(mapcar #'defpac-import args)))
       ((:|shadow| :|import|)
-       (defpac-import (car args) (cdr args) (eq key :|shadow|))))))
+        (defpac-import (car args) (cdr args) (eq key :|shadow|))))))
 
 (def-hs-macro |defpackage| (name &rest args)
   (let ((exports (filter :|export| args :test #'eq :key #'car)))
