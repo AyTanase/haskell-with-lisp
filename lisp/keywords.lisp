@@ -163,9 +163,7 @@
   (when (consp derive)
     (if (symbolp (car derive))
       (progn
-        (with-pragma
-          (format t "~@:(~a~)" (car derive)))
-        (write-string " ")
+        (format t "{-# ~@:(~a~) #-} " (car derive))
         (tuple (cdr derive)))
       (tuple derive))
     (write-string " => ")))
@@ -307,8 +305,7 @@
 
 
 (defkeyword |extension| (&rest args)
-  `(with-pragma
-     (format t "LANGUAGE ~{~a~^, ~}" ',args)))
+  `(format t "{-# LANGUAGE ~{~a~^, ~} #-}" ',args))
 
 
 (defhasq :|as| "@")

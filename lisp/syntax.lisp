@@ -57,7 +57,6 @@
 
 (defparen with-paren "(" ")")
 (defparen with-square-brackets "[" "]")
-(defparen with-pragma "{-# " " #-}")
 
 
 (defgeneric haskell (x)
