@@ -310,12 +310,15 @@
       (haskell-top expr))))
 
 
+(defsyntax |lambda| (args expr)
+  (write-char #\\)
+  (arrange args)
+  (haskell-tops " -> " expr))
+
 (defkeyword |extension| (&rest args)
   `(format t "{-# LANGUAGE ~{~a~^, ~} #-}" ',args))
 
-
 (defhasq :|as| "@")
-
 
 (def-hs-macro |defconstant| (name expr)
   `(defhasq ,name ,(strhask expr)))
