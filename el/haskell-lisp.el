@@ -32,6 +32,9 @@
    ("\\_<\\([[:upper:]][[:word:]']*\\|list\\*?\\|tuple\\|nil\\|cons\\|pair\\)\\_>" 1 font-lock-type-face)
    ("\\_<\\?.*?\\_>" . font-lock-builtin-face)))
 
+(modify-syntax-entry ?{ "_ 2bn" haskell-lisp-mode-syntax-table)
+(modify-syntax-entry ?} "_ 3bn" haskell-lisp-mode-syntax-table)
+
 (define-key haskell-lisp-mode-map (kbd "C-c C-c") 'to-haskell)
 
 (push '("\\.hl\\'" . haskell-lisp-mode) auto-mode-alist)
