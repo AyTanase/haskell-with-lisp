@@ -90,15 +90,15 @@
 (defmacro cl-macro-char (&rest args)
   `(set-macro-char ,@args (make-cl-reader (get-macro-char ,@args))))
 
-(defun read-hs-string (stream &rest args)
+(defun read-hs-string (ins &rest args)
   (declare (ignore args))
-  (with-output-to-string (s)
-    (write-char #\" s)
+  (with-output-to-string (outs)
+    (write-char #\" outs)
     (loop
-      (let ((char (read-not-cr stream)))
-        (write-char char s)
+      (let ((char (read-not-cr ins)))
+        (write-char char outs)
         (case char
-          (#\\ (write-char (read-not-cr stream) s))
+          (#\\ (write-char (read-not-cr ins) outs))
           (#\" (return)))))))
 
 (declaim (ftype function read-hs-comment-1))
