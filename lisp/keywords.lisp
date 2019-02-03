@@ -58,27 +58,38 @@
     ((truep y) x)
     (t `(|and| ,x ,y))))
 
-(defun rec-reduce-cond-1 (f guard gvs)
-  (let ((var (if (or (truep guard)
-                     (null (cdr gvs)))
-               guard
-               (funcall f guard))))
-    (loop for (g v) in gvs
+(defun reduce-cond-cond (f guard expr)
+  (let ((var (funcall f guard (cdr expr))))
+    (loop for (g v) in (cdr expr)
       nconc (reduce-cond-1 f (merge-guards var g) v))))
+
+(defun reduce-cond-if-bind (f guard expr)
+  (let* ((gvs (%if->cond `((|setf| ,@(cadr expr))
+                           ,@(cddr expr))))
+         (var (funcall f guard gvs)))
+    (loop for (g v) in gvs
+      collect (list (merge-guards var g) v))))
 
 (defun reduce-cond-1 (f guard value)
   (let ((expr (if->cond value)))
-    (if (and (consp expr)
-             (eq (car expr) '|cond|))
-      (rec-reduce-cond-1 f guard (cdr expr))
+    (if (consp expr)
+      (case (car expr)
+        (|cond|
+          (reduce-cond-cond f guard expr))
+        (|if-bind|
+          (reduce-cond-if-bind f guard expr))
+        (t (list (list guard expr))))
       (list (list guard expr)))))
 
 (defun reduce-cond (value)
   (let ((guards nil))
-    (flet ((gpush (g)
-             (let ((v (genvar)))
-               (push (list v g) guards)
-               v)))
+    (flet ((gpush (guard gvs)
+             (if (or (truep guard)
+                     (null (cdr gvs)))
+               guard
+               (let ((var (genvar)))
+                 (push (list var guard) guards)
+                 var))))
       (let ((expr (mapcan (curry #'apply #'reduce-cond-1 #'gpush)
                           (cdr value))))
         (values expr (nreverse guards))))))
