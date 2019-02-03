@@ -79,7 +79,7 @@
     (typecase x
       (null)
       (cons (rec (car x) (cdr x)))
-      (t (haskell x)))))
+      (t (funcall fn x)))))
 
 (defmacro defrechask (name fn default)
   (with-gensyms (x between)
