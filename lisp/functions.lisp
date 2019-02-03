@@ -27,6 +27,19 @@
 (def-binop-as |compose| |.| :zero "id")
 
 
+(defun %-> (expr)
+  (cond
+    ((atom expr)
+      (haskell-top expr))
+    ((eq (car expr) '->)
+      (haskell expr))
+    (t (haskell-top expr))))
+
+(defbinop ->
+  :zero "()"
+  :many (%rechask args #'%-> " -> "))
+
+
 (defun print-infix (op x y)
   (haskell x)
   (format t " ~a " op)
