@@ -5,7 +5,7 @@ import Data.Bifunctor
 
 
 {- Q :: Quantifier -}
-type QMaker = (BinOp Node) -> Node -> Node
+type QMaker = BinOp Node -> Node -> Node
 
 makeStar, makePlus, makeOpt :: QMaker
 

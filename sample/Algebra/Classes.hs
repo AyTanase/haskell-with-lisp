@@ -8,14 +8,14 @@ import GHC.Base (liftA2)
 
 
 class Pure f a where
-  pure :: a -> (f a)
+  pure :: a -> f a
 
 instance (Applicative f) => Pure f a where
   pure = Prelude.pure
 
 
 class Join m a where
-  join :: (m (m a)) -> (m a)
+  join :: m (m a) -> m a
 
 instance (Monad m) => Join m a where
   join = GHC.Base.join

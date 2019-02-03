@@ -27,7 +27,7 @@ instance (Fractional a, Applicative f) => Fractional (f a) where
   fromRational = pure . fromRational
 
 
-polyAbs :: Num a => (Poly a) -> a
+polyAbs :: Num a => Poly a -> a
 polyAbs (Poly xs) = sum (map abs xs)
 
 instance {-# OVERLAPPING #-} (Num a) => Num (Poly a) where
@@ -55,7 +55,7 @@ instance {-# OVERLAPPING #-} (Num a) => Fractional (Ratio a) where
   fromRational (x GHC.Real.:% y) = (fromInteger x) :% (fromInteger y)
 
 
-complexAbs :: Floating a => (Complex a) -> a
+complexAbs :: Floating a => Complex a -> a
 complexAbs (Complex x y) = sqrt ((absq x) + (absq y))
   where
     absq = (join (*)) . abs

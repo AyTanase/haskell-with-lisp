@@ -21,7 +21,7 @@ instance HasNot (Maybe a) where
 
 class Category cat where
   id :: cat a a
-  (.) :: (cat b c) -> (cat a b) -> (cat a c)
+  (.) :: cat b c -> cat a b -> cat a c
 
 class (Category cat, Category cat') => Functor f cat cat' where
-  fmap :: (cat a b) -> (cat' (f a) (f b))
+  fmap :: cat a b -> cat' (f a) (f b)
