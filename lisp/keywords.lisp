@@ -42,8 +42,8 @@
 (defun if->cond (expr)
   (if (and (consp expr)
            (eq (car expr) '|if|))
-    (destructuring-bind (x y &optional z) (cdr expr)
-      `(|cond| (,x ,y) ,@(if z `((|otherwise| ,z)))))
+    (destructuring-bind (x y &optional (z nil svar)) (cdr expr)
+      `(|cond| (,x ,y) ,@(if svar `((|otherwise| ,z)))))
     expr))
 
 (defun truep (x)
