@@ -52,19 +52,18 @@
 
 
 (defun expand-ord-op (op args)
-  (let ((vs (genvars (- (length args) 2))))
-    `#!(let ,#?(mapcar #'list vs (cdr args))
-         (and ,@#?(loop for (x . xs) on (cons (car args) vs)
-                    collect (list op x (car (or xs (last args)))))))))
+  (flet ((expand-1 (vs)
+           (list op (car vs) (car (or (cdr vs) (last args))))))
+    (let ((vs (genvars (- (length args) 2))))
+      `#!(let ,#?(mapcar #'list vs (cdr args))
+           (and ,@#?(maplist #'expand-1 (cons (car args) vs)))))))
 
 (defmacro def-ord-op (name &optional (op name))
-  (with-gensyms (g)
-    `(progn
-       (defsyntax ,g (x y)
-         (print-infix ',op x y))
-       (def-binop-as ,name ,op
-         :one `#'(,',name ,(car args))
-         :many (haskell-top (expand-ord-op ',g args))))))
+  `(def-binop-as ,name ,op
+     :one `#'(,',name ,(car args))
+     :many (if (cddr args)
+             (haskell-top (expand-ord-op ',name args))
+             (apply #'print-infix ',op args))))
 
 (def-ord-op = ==)
 (def-ord-op <=)
