@@ -226,13 +226,8 @@
   (haskell-tops " => " type))
 
 
-(defun %deftype (name type)
-  (write-string "type ")
-  (rechask name)
-  (haskell-tops " = " type))
-
 (defkeyword |deftype| (name type)
-  `(%deftype ',name ',type))
+  `(haskell-tops "type " ',name " = " ',type))
 
 
 (defun %data-body (body)
