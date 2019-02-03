@@ -73,20 +73,20 @@
 (def-ord-op >)
 
 
-(let ((g '#:/=))
-  (labels ((expand-1 (xs)
-             (mapcar (curry #'list g (car xs)) (cdr xs)))
-           (expand-/= (args)
-             (let ((vs (genvars (length args))))
-               `#!(let ,#?(mapcar #'list vs args)
-                    (and ,@#?(mapcon #'expand-1 vs))))))
-    (eval `(defsyntax ,g (x y)
-             (print-infix '/= x y)))
-    (defbinop /=
-      :one `#'(/= ,(car args))
-      :many (haskell-top (if (cddr args)
-                           (expand-/= args)
-                           (cons g args))))))
+(defun expand-/= (args)
+  (let ((vs (genvars (length args))))
+    (flet ((expand-1 (v)
+             (loop for w in vs
+               until (eq v w)
+               collect `(/= ,w ,v))))
+    `#!(let ,#?(mapcar #'list vs args)
+         (and ,@#?(mapcan #'expand-1 vs))))))
+
+(defbinop /=
+  :one `#'(/= ,(car args))
+  :many (if (cddr args)
+          (haskell-top (expand-/= args))
+          (apply #'print-infix '/= args)))
 
 
 (defsyntax function (x)
