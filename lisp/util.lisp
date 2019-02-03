@@ -93,13 +93,17 @@
 (defun read-hs-string (ins &rest args)
   (declare (ignore args))
   (with-output-to-string (outs)
-    (write-char #\" outs)
-    (loop
-      (let ((char (read-not-cr ins)))
-        (write-char char outs)
-        (case char
-          (#\\ (write-char (read-not-cr ins) outs))
-          (#\" (return)))))))
+    (flet ((read-1 ()
+             (read-not-cr ins))
+           (write-1 (char)
+             (write-char char outs)))
+      (write-1 #\")
+      (loop
+        (let ((char (read-1)))
+          (write-1 char)
+          (case char
+            (#\\ (write-1 (read-1)))
+            (#\" (return))))))))
 
 (let ((*readtable* *hs-readtable*))
   (cl-macro-char #\# #\?)
