@@ -118,8 +118,6 @@
          (recurse (char)
            (parse-hs-comment char ins outs)))
     (case c
-      (#\\ (write-1 (read-1))
-           (recurse (read-1)))
       (#\# (let ((d (read-1)))
              (cond
                ((char= d #\{)
