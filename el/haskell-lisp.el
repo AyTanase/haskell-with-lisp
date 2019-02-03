@@ -18,10 +18,11 @@
 (add-cl-indent-rule 'ulet 'lisp-indent-let-method)
 (add-cl-indent-rule 'ulabels '((&whole 4 &rest (&whole 1 &lambda &body)) &body))
 (add-cl-indent-rule 'do '(&body))
+(add-cl-indent-rule 'if-bind '((&whole 4 &body) &body))
 
 (font-lock-add-keywords
  'haskell-lisp-mode
- '(("(\\(d\\(?:ef\\(?:ine\\|module\\|data\\)\\|ata\\)\\|u\\(?:def\\(?:data\\)?\\|l\\(?:et\\|abels\\)\\|c\\(?:lass\\|ase\\)\\|instance\\|where\\)\\|type\\|enum-from\\|class\\|i\\(?:nstance\\|mport\\)\\|module\\|where\\|setf\\)\\_>"
+ '(("(\\(d\\(?:ef\\(?:ine\\|module\\|data\\)\\|ata\\)\\|u\\(?:def\\(?:data\\)?\\|l\\(?:et\\|abels\\)\\|c\\(?:lass\\|ase\\)\\|instance\\|where\\)\\|type\\|enum-from\\|class\\|i\\(?:nstance\\|mport\\|f-bind\\)\\|module\\|where\\|setf\\)\\_>"
     1 font-lock-keyword-face)
    ("(\\(?:define\\s-+(?\\|type\\s-\\)\\s-*\\([[:lower:]_][[:word:]']*\\)" 1 font-lock-function-name-face)
    ("(type\\s-+(\\([^)]*\\))" 1 font-lock-function-name-face)
