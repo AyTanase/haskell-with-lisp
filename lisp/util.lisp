@@ -54,6 +54,12 @@
     (read-char stream t nil t)
     #\Newline))
 
+(defun read-not-cr (stream)
+  (let ((char (read-char stream t nil t)))
+    (if (char= char #\Return)
+      (convert-cr stream)
+      char)))
+
 
 (defvar *cl-readtable* *readtable*)
 (defvar *hs-readtable*)
@@ -86,19 +92,14 @@
 
 (defun read-hs-string (stream &rest args)
   (declare (ignore args))
-  (labels ((read-1 ()
-             (let ((char (read-char stream t nil t)))
-               (if (char= char #\Return)
-                 (convert-cr stream)
-                 char))))
-    (with-output-to-string (s)
-      (write-char #\" s)
-      (loop
-        (let ((char (read-1)))
-          (write-char char s)
-          (case char
-            (#\\ (write-char (read-1) s))
-            (#\" (return))))))))
+  (with-output-to-string (s)
+    (write-char #\" s)
+    (loop
+      (let ((char (read-not-cr stream)))
+        (write-char char s)
+        (case char
+          (#\\ (write-char (read-not-cr stream) s))
+          (#\" (return)))))))
 
 (let ((*readtable* *hs-readtable*))
   (cl-macro-char #\# #\?)
