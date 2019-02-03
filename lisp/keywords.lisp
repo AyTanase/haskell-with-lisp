@@ -171,7 +171,7 @@
 (defun %class (key name derive defs)
   (format t "~a " key)
   (%class-derive derive)
-  (rechask name)
+  (haskell-top name)
   (when defs
     (write-string " where")
     (with-indent 1
