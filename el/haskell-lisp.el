@@ -14,7 +14,7 @@
 
 (cl-indent-rules '(4 &body) 'define 'udef 'defdata 'udefdata 'defmodule)
 (cl-indent-rules '((&whole 4 &rest (&whole 1 &body)) &body) 'where 'uwhere)
-(cl-indent-rules '(4 &lambda &body) 'class 'uclass 'instance 'uinstance)
+(cl-indent-rules '(4 &lambda (&whole 2 &body)) 'class 'uclass 'instance 'uinstance)
 (add-cl-indent-rule 'ulet 'lisp-indent-let-method)
 (add-cl-indent-rule 'ulabels '((&whole 4 &rest (&whole 1 &lambda &body)) &body))
 (add-cl-indent-rule 'do '(&body))
