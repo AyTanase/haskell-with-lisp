@@ -221,9 +221,8 @@
 
 (defsyntax => (constraints type)
   (if (consp (car constraints))
-    (with-paren
-      (arrange constraints))
-    (rechask constraints))
+    (tuple constraints)
+    (haskell-top constraints))
   (haskell-tops " => " type))
 
 
