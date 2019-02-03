@@ -187,32 +187,31 @@
   `(%class '|data| ',name nil ',defs))
 
 
-(defun module-names (suppliedp names)
-  (when suppliedp
+(defun module-names (svar names)
+  (when svar
     (write-string " ")
-    (with-paren
-      (arrange names))))
+    (tuple names)))
 
-(defun %defmodule (module suppliedp names)
+(defun %defmodule (module svar names)
   (format t "module ~a" module)
-  (module-names suppliedp names)
+  (module-names svar names)
   (write-string " where"))
 
-(defkeyword |defmodule| (module &optional (names nil suppliedp))
-  `(%defmodule ',module ,suppliedp ',names))
+(defkeyword |defmodule| (module &optional (names nil svar))
+  `(%defmodule ',module ,svar ',names))
 
-(defun %import (module suppliedp names qualifiedp hidingp)
-  (write-string "import")
-  (if qualifiedp
-    (write-string " qualified"))
-  (format t " ~a" module)
-  (if hidingp
+(defun %import (qualify? module hide? svar names)
+  (write-string "import ")
+  (if qualify?
+    (write-string "qualified "))
+  (princ module)
+  (if hide?
     (write-string " hiding"))
-  (module-names suppliedp names))
+  (module-names svar names))
 
-(defmacro defimport (name qualifiedp)
-  `(defkeyword ,name (module &optional (names nil suppliedp) hidingp)
-     `(%import ',module ,suppliedp ',names ',',qualifiedp ',hidingp)))
+(defmacro defimport (name qualify?)
+  `(defkeyword ,name (module &optional (names nil svar) hide?)
+     `(%import ',',qualify? ',module ',hide? ,svar ',names)))
 
 (defimport |import| nil)
 (defimport |require| t)
