@@ -101,10 +101,38 @@
           (#\\ (write-char (read-not-cr stream) s))
           (#\" (return)))))))
 
+(defun read-hs-comment-1 (ins outs)
+  (flet ((read-1 ()
+           (read-not-cr ins))
+         (write-1 (char)
+           (write-char char outs)))
+    (write-string "{-" outs)
+    (loop
+      (let ((c (read-1)))
+        (case c
+          (#\\ (write-1 (read-1)))
+          (#\# (let ((d (read-1)))
+                 (if (char= d #\{)
+                   (read-hs-comment-1 ins outs)
+                   (progn (write-1 c)
+                          (write-1 d)))))
+          (#\} (return))
+          (t (write-1 c)))))
+    (write-string "-}" outs)))
+
+(defun read-hs-comment (ins &rest args)
+  (declare (ignore args))
+  `(progn
+     (write-string
+      ,(with-output-to-string (outs)
+         (read-hs-comment-1 ins outs)))
+     (fresh-line)))
+
 (let ((*readtable* *hs-readtable*))
   (cl-macro-char #\# #\?)
   (set-macro-char #\' (get-macro-char #\') t)
-  (set-macro-char #\" #'read-hs-string))
+  (set-macro-char #\" #'read-hs-string)
+  (set-macro-char #\# #\{ #'read-hs-comment))
 
 
 (setf *hs-toplevel* (copy-readtable *hs-readtable*))
