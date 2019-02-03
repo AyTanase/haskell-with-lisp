@@ -241,17 +241,14 @@
     (haskell-top body)))
 
 (defun %data (name body deriving)
-  (write-string "data ")
-  (rechask name)
-  (write-string " = ")
+  (haskell-tops "data " name " = ")
   (if (and (consp body)
            (eq (car body) '|or|))
     (%rechask (cdr body) #'%data-body " | ")
     (%data-body body))
   (when deriving
     (write-string " deriving ")
-    (with-paren
-      (arrange deriving))))
+    (tuple deriving)))
 
 (defkeyword |data| (name body &optional deriving)
   `(%data ',name ',body ',deriving))
