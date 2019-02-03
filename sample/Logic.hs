@@ -8,14 +8,14 @@ id = (<*>) const const
 (.) :: (b -> c) -> (a -> b) -> a -> c
 (.) = (<*>) (const (<*>)) const
 
-fixcompose = (.) (.)
-compose2 = fixcompose (.)
+liftCompose = (.) (.)
+compose2 = liftCompose (.)
 
 
-fixapply = compose2 (<*>) (.)
+liftApply = compose2 (<*>) (.)
 apply2 :: (a -> b -> c -> d) -> (a -> b -> c) -> a -> b -> d
-apply2 = fixapply (<*>)
-apply3 = fixapply apply2
+apply2 = liftApply (<*>)
+apply3 = liftApply apply2
 
 
 flip :: (a -> b -> c) -> b -> a -> c
