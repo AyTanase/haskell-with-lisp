@@ -39,11 +39,14 @@
 
 (declaim (ftype function %define))
 
+(defun %if->cond (sexp)
+  (destructuring-bind (x y &optional (z nil svar)) sexp
+    `((,x ,y) ,@(if svar `((|otherwise| ,z))))))
+
 (defun if->cond (expr)
   (if (and (consp expr)
            (eq (car expr) '|if|))
-    (destructuring-bind (x y &optional (z nil svar)) (cdr expr)
-      `(|cond| (,x ,y) ,@(if svar `((|otherwise| ,z)))))
+    `(|cond| ,@(%if->cond (cdr expr)))
     expr))
 
 (defun truep (x)
