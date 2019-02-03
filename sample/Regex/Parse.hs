@@ -17,15 +17,15 @@ makeOpt method f = method f id
 
 
 
-type Parser a b = (End b) -> [a] -> ((End b), [a])
+type Parser a b = (End b) -> [a] -> (End b, [a])
 parse' :: Parser Char NFA
 
 
 checkQ'' :: (QMaker NFA) -> (Parser Char NFA)
 
-checkQ'' make f ('?':xs) = ((make (flip (destribute Split)) f), xs)
+checkQ'' make f ('?':xs) = (make (flip (destribute Split)) f, xs)
 
-checkQ'' make f xs = ((make (destribute Split) f), xs)
+checkQ'' make f xs = (make (destribute Split) f, xs)
 
 
 checkQ' :: Parser Char NFA
@@ -39,7 +39,7 @@ checkQ f g xs = let
   (h, ys) = checkQ' g xs
   in parse' (f . h) ys
 
-parseChar :: (End NFA) -> Char -> [Char] -> ((End NFA), [Char])
+parseChar :: (End NFA) -> Char -> [Char] -> (End NFA, [Char])
 parseChar f x xs = checkQ f (Compare x) xs
 
 
