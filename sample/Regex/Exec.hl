@@ -4,7 +4,7 @@
 (defpackage Exec
   (:use Common Control.Applicative))
 
-(type matchHead (=> (Num a) (-> NFA (list Char) (Maybe a))))
+(type matchHead (=> (Num a) (-> NFA String (Maybe a))))
 (define matchHead
   (ulabels ((matchHead' (n Finite _)
               (Just n))
@@ -17,7 +17,7 @@
                    (matchHead' n q xs))))
     (matchHead' 0)))
 
-(type match (=> (Num a) (-> NFA (list Char) (Maybe (tuple a a)))))
+(type match (=> (Num a) (-> NFA String (Maybe (tuple a a)))))
 (define match
   (labels ((match' (n rx xs)
              (alt (fmap (pair n) (matchHead rx xs))

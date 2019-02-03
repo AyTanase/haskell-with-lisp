@@ -1,14 +1,15 @@
 (defpackage Parse
-  (:use Common Data.Bifunctor)
+  (:use Common Data.Function Data.Bifunctor)
   (:export parse))
 
 
-(deftype (QMaker a) (-> (BinOp (End a)) (End (End a))))
+#{ Q :: Quantifier }#
+(deftype QMaker (-> (BinOp Node) Node Node))
 
-(type (makeStar makePlus makeOpt) (QMaker a))
+(type (makeStar makePlus makeOpt) QMaker)
 
 (define (makeStar method f)
-  (let ((g (method (compose f g) id))) g))
+  (fix (lambda (g) (method (compose f g) id))))
 
 (define (makePlus method f)
   (compose f (makeStar method f)))
@@ -16,32 +17,32 @@
 (define (makeOpt method f) (method f id))
 
 
-
-(deftype (Parser a b) (-> (End b) (list a) (tuple (End b) (list a))))
-(type parse' (Parser Char NFA))
-
-
-(type checkQ'' (-> (QMaker NFA) (Parser Char NFA)))
-
-(define (checkQ'' make f (list* #\? xs))
-  (tuple (make (flip (destribute Split)) f) xs))
-
-(define (checkQ'' make f xs)
-  (tuple (make (destribute Split) f) xs))
+(deftype Parser (-> Node String (tuple Node String)))
+(type parse' Parser)
 
 
-(type checkQ' (Parser Char NFA))
-(define (checkQ' f (list* #\* xs)) (checkQ'' makeStar f xs))
-(define (checkQ' f (list* #\+ xs)) (checkQ'' makePlus f xs))
-(define (checkQ' f (list* #\? xs)) (checkQ'' makeOpt f xs))
+#{ G :: Greediness }#
+(type checkG (-> QMaker Parser))
+
+(define (checkG make f (cons #\? xs))
+  (tuple (make (flip split) f) xs))
+
+(define (checkG make f xs)
+  (tuple (make split f) xs))
+
+
+(type checkQ' Parser)
+(define (checkQ' f (cons #\* xs)) (checkG makeStar f xs))
+(define (checkQ' f (cons #\+ xs)) (checkG makePlus f xs))
+(define (checkQ' f (cons #\? xs)) (checkG makeOpt  f xs))
 (define (checkQ' f xs) (tuple f xs))
 
-(type checkQ (-> (End NFA) (Parser Char NFA)))
+(type checkQ (-> Node Parser))
 (define (checkQ f g xs)
   (let (((tuple h ys) (checkQ' g xs)))
     (parse' (compose f h) ys)))
 
-(type parseChar (-> (End NFA) Char (list Char) (tuple (End NFA) (list Char))))
+(type parseChar (-> Node Char String (tuple Node String)))
 (define (parseChar f x xs) (checkQ f (Compare x) xs))
 
 
@@ -49,16 +50,16 @@
 
 (define (parse' f (list* #\\ x xs)) (parseChar f x xs))
 
-(define (parse' f (list* #\( xs))
+(define (parse' f (cons #\( xs))
   (uncurry (checkQ f) (parse' id xs)))
 
-(define (parse' f (list* #\) xs)) (tuple f xs))
+(define (parse' f (cons #\) xs)) (tuple f xs))
 
-(define (parse' f (list* #\| xs))
-  (first (destribute Split f) (parse' id xs)))
+(define (parse' f (cons #\| xs))
+  (first (split f) (parse' id xs)))
 
-(define (parse' f (list* x xs)) (parseChar f x xs))
+(define (parse' f (cons x xs)) (parseChar f x xs))
 
 
-(type parse (-> (list Char) NFA))
+(type parse (-> String NFA))
 (define (parse xs) (fst (parse' id xs) Finite))

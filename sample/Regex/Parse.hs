@@ -1,45 +1,45 @@
 module Parse (parse) where
 import Common
+import Data.Function
 import Data.Bifunctor
 
 
-type QMaker a = (BinOp (End a)) -> (End (End a))
+{- Q :: Quantifier -}
+type QMaker = (BinOp Node) -> Node -> Node
 
-makeStar, makePlus, makeOpt :: QMaker a
+makeStar, makePlus, makeOpt :: QMaker
 
-makeStar method f = let
-  g = method (f . g) id
-  in g
+makeStar method f = fix (\g -> method (f . g) id)
 
 makePlus method f = f . (makeStar method f)
 
 makeOpt method f = method f id
 
 
-
-type Parser a b = (End b) -> [a] -> (End b, [a])
-parse' :: Parser Char NFA
-
-
-checkQ'' :: (QMaker NFA) -> (Parser Char NFA)
-
-checkQ'' make f ('?':xs) = (make (flip (destribute Split)) f, xs)
-
-checkQ'' make f xs = (make (destribute Split) f, xs)
+type Parser = Node -> String -> (Node, String)
+parse' :: Parser
 
 
-checkQ' :: Parser Char NFA
-checkQ' f ('*':xs) = checkQ'' makeStar f xs
-checkQ' f ('+':xs) = checkQ'' makePlus f xs
-checkQ' f ('?':xs) = checkQ'' makeOpt f xs
+{- G :: Greediness -}
+checkG :: QMaker -> Parser
+
+checkG make f ('?':xs) = (make (flip split) f, xs)
+
+checkG make f xs = (make split f, xs)
+
+
+checkQ' :: Parser
+checkQ' f ('*':xs) = checkG makeStar f xs
+checkQ' f ('+':xs) = checkG makePlus f xs
+checkQ' f ('?':xs) = checkG makeOpt f xs
 checkQ' f xs = (f, xs)
 
-checkQ :: (End NFA) -> (Parser Char NFA)
+checkQ :: Node -> Parser
 checkQ f g xs = let
   (h, ys) = checkQ' g xs
   in parse' (f . h) ys
 
-parseChar :: (End NFA) -> Char -> [Char] -> (End NFA, [Char])
+parseChar :: Node -> Char -> String -> (Node, String)
 parseChar f x xs = checkQ f (Compare x) xs
 
 
@@ -51,10 +51,10 @@ parse' f ('(':xs) = uncurry (checkQ f) (parse' id xs)
 
 parse' f (')':xs) = (f, xs)
 
-parse' f ('|':xs) = first (destribute Split f) (parse' id xs)
+parse' f ('|':xs) = first (split f) (parse' id xs)
 
 parse' f (x:xs) = parseChar f x xs
 
 
-parse :: [Char] -> NFA
+parse :: String -> NFA
 parse xs = fst (parse' id xs) Finite

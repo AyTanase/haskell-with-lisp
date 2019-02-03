@@ -2,5 +2,5 @@
   (:use Common Parse Exec)
   (:export (module Regex) NFA (module Parse) (module Exec)))
 
-(type regex (=> (Num a) (-> (list Char) (list Char) (Maybe (tuple a a)))))
+(type regex (=> (Num a) (-> String String (Maybe (tuple a a)))))
 (define regex (compose match parse))

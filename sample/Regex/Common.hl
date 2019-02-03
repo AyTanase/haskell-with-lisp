@@ -5,11 +5,12 @@
 (instance (Show NFA) ()
   (show (const "#<NFA>")))
 
-(deftype (End a) (-> a a))
-(deftype (BinOp a) (-> a (End a)))
+(deftype Node (-> NFA NFA))
 
-(type destribute (-> (-> b c d) (-> a b) (-> a c) a d))
-(define (destribute f g h x) (f (g x) (h x)))
+(deftype (BinOp a) (-> a a a))
+
+(type split (BinOp Node))
+(define (split f g x) (Split (f x) (g x)))
 
 (type safeTail (-> (list a) (Maybe (list a))))
 (define (safeTail nil) Nothing)
