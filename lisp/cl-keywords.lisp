@@ -15,8 +15,10 @@
   (flet ((gencode (key mod)
            (list* key mod args)))
     (cond
-      ((atom module) (gencode '|import| module))
-      ((atom (cdr module)) (gencode '|import| (car module)))
+      ((atom module)
+        (gencode '|import| module))
+      ((atom (cdr module))
+        (gencode '|import| (car module)))
       (t (gencode '|require| (cadr module))))))
 
 (defun defpac-option (option)
