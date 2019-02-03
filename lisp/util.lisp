@@ -101,6 +101,14 @@
           (#\\ (write-char (read-not-cr ins) outs))
           (#\" (return)))))))
 
+(let ((*readtable* *hs-readtable*))
+  (cl-macro-char #\# #\?)
+  (set-macro-char #\' (get-macro-char #\') t)
+  (set-macro-char #\" #'read-hs-string))
+
+
+(setf *hs-toplevel* (copy-readtable *hs-readtable*))
+
 (declaim (ftype function read-hs-comment-1))
 (defun parse-hs-comment (c ins outs)
   (flet ((read-1 ()
@@ -139,15 +147,6 @@
          (read-hs-comment-1 ins outs)))
      (fresh-line)))
 
-(let ((*readtable* *hs-readtable*))
-  (cl-macro-char #\# #\?)
-  (set-macro-char #\' (get-macro-char #\') t)
-  (set-macro-char #\" #'read-hs-string)
-  (set-macro-char #\# #\{ #'read-hs-comment))
-
-
-(setf *hs-toplevel* (copy-readtable *hs-readtable*))
-
 (defun read-hs-lf (stream &rest args)
   (declare (ignore args))
   (if (case (peek-char nil stream nil nil t)
@@ -161,6 +160,7 @@
   (read-hs-lf stream))
 
 (let ((*readtable* *hs-toplevel*))
+  (set-macro-char #\# #\{ #'read-hs-comment)
   (set-macro-char #\Newline #'read-hs-lf)
   (set-macro-char #\Return #'read-hs-cr)
   (set-macro-char #\( (make-hs-reader (get-macro-char #\()))
