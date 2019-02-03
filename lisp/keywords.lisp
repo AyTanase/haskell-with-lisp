@@ -160,18 +160,15 @@
 
 
 (defun %class-derive (derive)
-  (flet ((print-derive (derive)
-           (with-paren
-             (arrange derive))))
-    (when (consp derive)
-      (if (symbolp (car derive))
-        (progn
-          (with-pragma
-            (format t "~@:(~a~)" (car derive)))
-          (write-string " ")
-          (print-derive (cdr derive)))
-        (print-derive derive))
-      (write-string " => "))))
+  (when (consp derive)
+    (if (symbolp (car derive))
+      (progn
+        (with-pragma
+          (format t "~@:(~a~)" (car derive)))
+        (write-string " ")
+        (tuple (cdr derive)))
+      (tuple derive))
+    (write-string " => ")))
 
 (defun %class (key name derive defs)
   (format t "~a " key)
