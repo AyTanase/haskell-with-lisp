@@ -250,7 +250,7 @@
       (write-string " { ")
       (%rechask (cddr body) (curry #'apply #'%type) ", ")
       (write-string " }"))
-    (t (rechask body))))
+    (t (haskell-top body))))
 
 (defun %data (name body deriving)
   (write-string "data ")
