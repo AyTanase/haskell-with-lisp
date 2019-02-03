@@ -1,0 +1,40 @@
+#?(defoperator |ratio| |:%|)
+
+(extension FlexibleInstances
+           MonoLocalBinds
+           MultiParamTypeClasses
+           UndecidableInstances)
+
+(defpackage Ratio
+  (:import Prelude)
+  (:use Classes))
+
+(data (Ratio r) (ratio r r) Show)
+
+(instance (Eq (Ratio r)) ((Action r r) (Eq r))
+  ((= (ratio a b) (ratio c d)) (= (* a d) (* b c))))
+
+(instance (Pure Ratio r) (:overlapping (Ring r))
+  ((pure x) (ratio x unit)))
+
+(instance (Semigroup (Ratio r)) (:overlapping (Semigroup r) (Action r r))
+  ((+ (ratio a b) (ratio c d))
+   (ratio (+ (* a d) (* b c)) (* b d))))
+
+(instance (Group (Ratio r)) (:overlapping (Monoid (Ratio r)) (Group r))
+  ((negate (ratio a b)) (ratio (negate a) b)))
+
+(instance (Action a (Ratio b)) (:overlapping (Action a b))
+  ((* x (ratio y z)) (ratio (* x y) z)))
+
+(instance (Action (Ratio a) (Ratio b)) (:overlapping (Action a b))
+  ((* (ratio a b) (ratio c d)) (ratio (* a c) (* b d))))
+
+(instance (Div a (Ratio b)) (:overlapping (Action a b))
+  ((/ (ratio x y) z) (ratio x (* z y))))
+
+(instance (Div (Ratio a) (Ratio b)) (:overlapping (Action a b))
+  ((/ r (ratio x y)) (* (ratio y x) r)))
+
+(instance (Join Ratio r) (:overlapping (Action r r))
+  ((join (ratio x y)) (/ x y)))

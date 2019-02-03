@@ -1,0 +1,81 @@
+#?(defoperator |Classes.+|)
+#?(defoperator |Classes.-|)
+#?(defoperator |Classes.*|)
+#?(defoperator |Classes./|)
+#?(defoperator |ratio| |:%|)
+#?(defoperator |GHC.Real.ratio| |GHC.Real.:%|)
+
+(extension FlexibleInstances
+           FlexibleContexts
+           UndecidableInstances)
+
+(defpackage ExNum
+  (:shadow Prelude pure)
+  (:import GHC.Base liftA2)
+  (:import Classes pure join)
+  (:use (:q GHC.Real) (:q Classes) AlNum Poly Ratio Complex))
+
+
+(instance (Num (f a)) ((Num a) (Applicative f))
+  (+ (liftA2 +))
+  (- (liftA2 -))
+  (* (liftA2 *))
+  (negate (fmap negate))
+  (abs (fmap abs))
+  (signum (fmap signum))
+  (fromInteger (compose pure fromInteger)))
+
+(instance (Fractional (f a)) ((Fractional a) (Applicative f))
+  (/ (liftA2 /))
+  (recip (fmap recip))
+  (fromRational (compose pure fromRational)))
+
+
+(type polyAbs (=> (Num a) (-> (Poly a) a)))
+(define (polyAbs (Poly xs)) (sum (map abs xs)))
+
+(instance (Num (Poly a)) (:overlapping (Num a))
+  (+ Classes.+)
+  (- Classes.-)
+  (* Classes.*)
+  (negate Classes.negate)
+  (abs (compose pure polyAbs))
+  (signum undefined)
+  (fromInteger (compose pure fromInteger)))
+
+
+(instance (Num (Ratio a)) (:overlapping (Num a))
+  (+ Classes.+)
+  (- Classes.-)
+  (* Classes.*)
+  (negate Classes.negate)
+  ((abs (ratio x y)) (ratio (abs x) (abs y)))
+  ((signum (ratio x y)) (pure (* (signum x) (signum y))))
+  (fromInteger (compose pure fromInteger)))
+
+(instance (Fractional (Ratio a)) (:overlapping (Num a))
+  (/ Classes./)
+  (recip Classes.recip)
+  ((fromRational (GHC.Real.ratio x y))
+   (ratio (fromInteger x) (fromInteger y))))
+
+
+(type complexAbs (=> (Floating a) (-> (Complex a) a)))
+(define (complexAbs (Complex x y))
+  (where ((absq (compose (join *) abs)))
+    (sqrt (+ (absq x) (absq y)))))
+
+(instance (Num (Complex a)) (:overlapping (Floating a))
+  (+ Classes.+)
+  (- Classes.-)
+  (* Classes.*)
+  (negate Classes.negate)
+  (abs (compose pure complexAbs))
+  (signum undefined)
+  (fromInteger (compose pure fromInteger)))
+
+(instance (Fractional (Complex a))
+    (:overlapping (Num (Complex a)) (Fractional a))
+  (/ Classes./)
+  (recip Classes.recip)
+  (fromRational (compose pure fromRational)))

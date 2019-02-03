@@ -1,0 +1,97 @@
+(extension FlexibleInstances
+           MonoLocalBinds
+           MultiParamTypeClasses
+           UndecidableInstances)
+
+(defpackage Classes
+  (:shadow Prelude pure Semigroup Monoid + negate - * recip /)
+  (:use (:q Prelude) (:q GHC.Base))
+  (:import GHC.Base liftA2)
+  (:export (module Classes) (module Prelude)))
+
+
+(class (Pure f a) ()
+  (type pure (-> a (f a))))
+
+(instance (Pure f a) ((Applicative f))
+  (pure Prelude.pure))
+
+
+(class (Join m a) ()
+  (type join (-> (m (m a)) (m a))))
+
+(instance (Join m a) ((Monad m))
+  (join GHC.Base.join))
+
+
+(class (Semigroup s) ()
+  (type + (-> s s s)))
+
+(instance (Semigroup (f s)) ((Semigroup s) (Applicative f))
+  (+ (liftA2 +)))
+
+
+(class (Monoid m) ((Semigroup m))
+  (type zero m))
+
+(instance (Monoid (f m)) ((Monoid m) (Semigroup (f m)) (Pure f m))
+  (zero (pure zero)))
+
+
+(class (Group g) ((Monoid g))
+  (type negate (-> g g))
+  (type - (-> g g g))
+  (negate #'(- zero))
+  ((- x y) (+ x (- y))))
+
+(instance (Group (f g)) ((Group g) (Monoid (f g)) (Functor f))
+  (negate (fmap negate)))
+
+
+(class (Action a b) ()
+  (type * (-> a b b)))
+
+(instance (Action a (f b)) (:incoherent (Action a b) (Functor f))
+  (* (compose fmap *)))
+
+(instance (Action (f a) (f b)) ((Action a b) (Applicative f))
+  (* (liftA2 *)))
+
+
+(class (Ring r) ((Group r) (Action r r))
+  (type unit r))
+
+(instance (Ring (f r))
+    ((Ring r) (Group (f r)) (Action (f r) (f r)) (Pure f r))
+  (unit (pure unit)))
+
+
+(class (Div a b) ((Action a b))
+  (type / (-> b a b)))
+
+(instance (Div a (f b)) ((Div a b) (Functor f))
+  (/ (flip (compose fmap (flip /)))))
+
+(instance (Div (f a) (f b)) ((Div a b) (Applicative f))
+  (/ (liftA2 /)))
+
+
+(class (Field k) ((Ring k) (Div k k)))
+
+(instance (Field k) ((Ring k) (Div k k)))
+
+(type recip (=> (Field k) (-> k k)))
+(define recip #'(/ unit))
+
+(instance (Div k a) ((Field k) (Action k a))
+  ((/ x k) (* (/ k) x)))
+
+
+(class (Module r m) ((Ring r) (Group m) (Action r m)))
+
+(instance (Module r m) ((Ring r) (Group m) (Action r m)))
+
+
+(class (Vector k v) ((Field k) (Module k v)))
+
+(instance (Vector k v) ((Field k) (Module k v)))

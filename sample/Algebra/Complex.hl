@@ -1,0 +1,47 @@
+(extension FlexibleInstances
+           MonoLocalBinds
+           MultiParamTypeClasses
+           UndecidableInstances)
+
+(defpackage Complex
+  (:import Prelude)
+  (:use Classes))
+
+(data (Complex a) (Complex :name (re a) (im a)) Eq)
+
+(instance (Show (Complex a)) ((Show a))
+  ((show (Complex x y))
+   (where ((shows' (showsPrec 11)))
+     (append "Complex " (shows' x " ") (shows' y ""))))
+  ((showsPrec p) (compose (showParen (>= p 11)) append show)))
+
+(instance (Pure Complex m) (:overlapping (Monoid m))
+  ((pure x) (Complex x zero)))
+
+(instance (Join Complex g) (:overlapping (Group g))
+  ((join (Complex (Complex u v) (Complex x y)))
+   (Complex (- u y) (+ v x))))
+
+(instance (Semigroup (Complex s)) (:overlapping (Semigroup s))
+  ((+ (Complex u v) (Complex x y)) (Complex (+ u x) (+ v y))))
+
+(instance (Group (Complex g)) (:overlapping (Group g))
+  ((negate (Complex x y)) (Complex (negate x) (negate y))))
+
+(instance (Action a (Complex b)) (:overlapping (Action a b))
+  ((* r (Complex x y)) (Complex (* r x) (* r y))))
+
+(instance (Action (Complex a) (Complex b))
+    (:overlapping (Action a b) (Group b))
+  ((* (Complex u v) (Complex x y))
+   (Complex (- (* u x) (* v y)) (+ (* u y) (* v x)))))
+
+(instance (Div a (Complex b)) (:overlapping (Div a b))
+  ((/ (Complex x y) z) (Complex (/ x z) (/ y z))))
+
+(instance (Div (Complex a) (Complex b))
+    (:overlapping
+     (Group a) (Action a a) (Div a (Complex b))
+     (Action (Complex a) (Complex b)))
+  ((/ z (Complex x y))
+   (* (Complex x (- y)) (/ z (+ (* x x) (* y y))))))

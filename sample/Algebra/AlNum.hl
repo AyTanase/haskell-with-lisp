@@ -1,0 +1,32 @@
+#?(defoperator |Prelude.+|)
+#?(defoperator |Prelude.-|)
+#?(defoperator |Prelude.*|)
+#?(defoperator |Prelude./|)
+
+(extension FlexibleInstances
+           IncoherentInstances
+           MultiParamTypeClasses
+           UndecidableInstances)
+
+(defpackage AlNum
+  (:import Prelude)
+  (:use (:q Prelude) Classes))
+
+(instance (Semigroup a) ((Num a))
+  (+ Prelude.+))
+
+(instance (Monoid a) ((Num a))
+  (zero 0))
+
+(instance (Group a) ((Num a))
+  (negate Prelude.negate)
+  (- Prelude.-))
+
+(instance (Action a a) ((Num a))
+  (* Prelude.*))
+
+(instance (Ring a) ((Num a))
+  (unit 1))
+
+(instance (Div a a) ((Fractional a))
+  (/ Prelude./))
