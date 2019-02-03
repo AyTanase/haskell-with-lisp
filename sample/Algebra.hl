@@ -1,3 +1,6 @@
+#?(defoperator |Prelude.+|)
+#?(defoperator |Prelude.-|)
+
 (extension FlexibleInstances UndecidableInstances)
 
 (defpackage Algebra
@@ -29,8 +32,8 @@
 
 (instance (Monoid a) ((Num a))
   (zero 0)
-  (+ (Prelude.+)))
+  (+ Prelude.+))
 
 (instance (Group a) ((Num a))
   (negate Prelude.negate)
-  (- (Prelude.-)))
+  (- Prelude.-))

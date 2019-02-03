@@ -3,5 +3,5 @@ import Common
 import Parse
 import Exec
 
-regex :: Num a => ([Char] -> [Char] -> (Maybe (a, a)))
-regex = (match . parse)
+regex :: Num a => [Char] -> [Char] -> (Maybe (a, a))
+regex = match . parse
