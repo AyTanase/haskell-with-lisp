@@ -28,12 +28,10 @@
 
 
 (defun %-> (expr)
-  (cond
-    ((atom expr)
-      (haskell-top expr))
-    ((eq (car expr) '->)
-      (haskell expr))
-    (t (haskell-top expr))))
+  (if (and (consp expr)
+           (eq (car expr) '->))
+    (haskell expr)
+    (haskell-top expr)))
 
 (defbinop ->
   :zero "()"
