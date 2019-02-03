@@ -78,8 +78,10 @@
 
 (defsyntax function (x)
   (cond
-    ((atom x) (haskell-top x))
-    ((atom (cdr x)) (haskell-top (car x)))
+    ((atom x)
+      (haskell-top x))
+    ((atom (cdr x))
+      (haskell-top (car x)))
     (t (rechask `(,(car x) ,(if (cddr x) x (cadr x)))))))
 
 (defhasq |strict| "($!)")
@@ -110,7 +112,7 @@
 
 (defpattern |list| (&rest args)
   (with-square-brackets
-    (rechask args ", ")))
+    (arrange args)))
 
 #!(defconstant nil (list))
 
@@ -119,15 +121,16 @@
 (defpattern |enum-from| (x &rest xs)
   (labels ((rec (xs)
              (cond
-               ((atom xs) (write-string ".."))
+               ((atom xs)
+                 (write-string ".."))
                ((eq (car xs) :|to|)
                  (write-string "..")
                  (if (consp (cdr xs))
-                   (haskell (cadr xs))))
-               (t (haskells "," (car xs))
+                   (haskell-top (cadr xs))))
+               (t (haskell-tops "," (car xs))
                   (rec (cdr xs))))))
     (with-square-brackets
-      (haskell x)
+      (haskell-top x)
       (rec xs))))
 
 ;; Local Variables:
