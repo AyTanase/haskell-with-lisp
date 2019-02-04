@@ -44,7 +44,9 @@
   (with-picking-out (decs rest) body
     `(def-hs-macro ,name ,args
        ,@decs
-       `(progn ,(progn ,@rest) (fresh-line)))))
+       `(progn
+          ,(progn ,@rest)
+          (fresh-line)))))
 
 
 (defmacro defparen (name open close)
