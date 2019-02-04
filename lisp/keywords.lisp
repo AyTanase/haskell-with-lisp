@@ -155,22 +155,16 @@
     (indent)
     (haskell-tops "in " val)))
 
-(defsyntax |let| (defs val)
+(defsyntax (or |let| |where|) (defs val)
   (if defs
     (%let defs val)
     (haskell-top val)))
 
-(def-sexp-rule |let| (defs val)
+(def-sexp-rule (or |let| |where|) (defs val)
   (if defs
     (with-paren
       (%let defs val))
     (haskell val)))
-
-(defsyntax |where| (&rest args)
-  (haskell-top `(|let| ,@args)))
-
-(def-sexp-rule |where| (&rest args)
-  (haskell `(|let| ,@args)))
 
 
 (defun %class-derive (derive)

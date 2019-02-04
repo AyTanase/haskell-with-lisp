@@ -101,11 +101,22 @@
                           ,@body)))))
 
 
-(defshadow defapply (method name fn)
+(defshadow defapply-1 (method name fn)
   (with-gensyms (spec expr)
     `(defmethod ,method ((,spec (eql ',name)) ,expr)
        (declare (ignore ,spec))
        (apply ,fn (cdr ,expr)))))
+
+(defmacro defapply (method name fn)
+  "NAME = SYMBOL | (or SYMBOL*)"
+  (flet ((gen-1 (name fn)
+           `(defapply-1 ,method ,name ,fn)))
+    (if (atom name)
+      (gen-1 name fn)
+      (with-gensyms (gf)
+        `(let ((,gf ,fn))
+           ,@(loop for v in (cdr name)
+               collect (gen-1 v gf)))))))
 
 
 (defgeneric apply-syntax (spec expr)
