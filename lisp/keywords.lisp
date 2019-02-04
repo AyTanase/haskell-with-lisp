@@ -166,14 +166,11 @@
       (%let defs val))
     (haskell val)))
 
+(defsyntax |where| (&rest args)
+  (haskell-top `(|let| ,@args)))
 
-(shadow-haskell '|where|)
-
-(setf (gethash '|where| *syntax*)
-      (gethash '|let| *syntax*))
-
-(setf (gethash '|where| *sexp-rules*)
-      (gethash '|let| *sexp-rules*))
+(def-sexp-rule |where| (&rest args)
+  (haskell `(|let| ,@args)))
 
 
 (defun %class-derive (derive)

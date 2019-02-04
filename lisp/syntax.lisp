@@ -31,7 +31,7 @@
 
 
 (defgeneric haskell (x)
-  (:documentation "Convert to Haskell code"))
+  (:documentation "Print X as Haskell code."))
 
 (defun strhask (x)
   (with-output-to-string (*standard-output*)
@@ -58,49 +58,73 @@
 (defrechask rechask #'haskell " ")
 
 
-(defmacro def-key-table (table setter)
-  `(progn
-     (defvar ,table (make-hash-table :test 'eq))
-     (defmacro ,setter (name &body body)
-       `(progn
-          (shadow-haskell ',name)
-          (setf (gethash ',name ,',table)
-                #'(lambda ,@body))))))
+(defgeneric macro-apply (spec expr)
+  (:documentation "Expand macros in Haskell code."))
 
-(def-key-table *syntax-macros* def-syntax-macro)
-(def-key-table *syntax* defsyntax)
-(def-key-table *sexp-rules* def-sexp-rule)
+(defmethod macro-apply (spec expr)
+  (declare (ignore spec))
+  expr)
 
-
+(declaim (inline hs-macro-expand))
 (defun hs-macro-expand (expr)
-  (let ((fn (if (consp expr)
-              (gethash (car expr) *syntax-macros*))))
-    (if fn
-      (hs-macro-expand (apply fn (cdr expr)))
-      expr)))
-
-(defun %haskell-top (expr)
-  (let ((fn (gethash (car expr) *syntax*)))
-    (if fn
-      (apply fn (cdr expr))
-      (rechask expr))))
-
-(defun haskell-top (expr)
   (if (atom expr)
-    (haskell expr)
-    (%haskell-top (hs-macro-expand expr))))
+    expr
+    (macro-apply (car expr) expr)))
 
-(defrechask arrange #'haskell-top ", ")
+(defmacro def-syntax-macro (name args &body body)
+  `(progn
+     (shadow-haskell ',name)
+     (defmethod macro-apply ((spec (eql ',name)) expr)
+       (declare (ignore spec))
+       (hs-macro-expand (destructuring-bind ,args (cdr expr)
+                          ,@body)))))
+
+
+(defmacro defapply (method name fn)
+  `(progn
+     (shadow-haskell ',name)
+     (defmethod ,method ((spec (eql ',name)) expr)
+       (declare (ignore spec))
+       (apply ,fn (cdr expr)))))
+
+
+(defgeneric apply-syntax (spec expr)
+  (:documentation "Apply syntax rules to EXPR."))
+
+(defmethod apply-syntax (spec expr)
+  (declare (ignore spec))
+  (rechask expr))
+
+(defmacro defsyntax (name &body body)
+  `(defapply apply-syntax ,name #'(lambda ,@body)))
+
+(defun haskell-top (x)
+  (let ((expr (hs-macro-expand x)))
+    (if (atom expr)
+      (haskell expr)
+      (apply-syntax (car expr) expr))))
 
 (defun haskell-tops (&rest args)
   (mapc #'haskell-top args))
 
+(defrechask arrange #'haskell-top ", ")
+
+
+(defgeneric apply-sexp-rule (spec expr)
+  (:documentation "Apply S-Expression syntax rules to EXPR."))
+
+(defmethod apply-sexp-rule (spec expr)
+  (with-paren
+    (apply-syntax spec expr)))
+
+(defmacro def-sexp-rule (name &body body)
+  `(defapply apply-sexp-rule ,name #'(lambda ,@body)))
+
 
 (defmacro defpattern (name &body body)
   `(let ((fn #'(lambda ,@body)))
-     (shadow-haskell ',name)
-     (setf (gethash ',name *syntax*) fn)
-     (setf (gethash ',name *sexp-rules*) fn)))
+     (defapply apply-syntax ,name fn)
+     (defapply apply-sexp-rule ,name fn)))
 
 (defmacro defhasq (name expr)
   `(progn
@@ -125,12 +149,10 @@
   (write-string "()"))
 
 (defmethod haskell ((x cons))
-  (let* ((expr (hs-macro-expand x))
-         (fn (gethash (car expr) *sexp-rules*)))
-    (if fn
-      (apply fn (cdr expr))
-      (with-paren
-        (%haskell-top expr)))))
+  (let ((expr (hs-macro-expand x)))
+    (if (atom expr)
+      (haskell expr)
+      (apply-sexp-rule (car expr) expr))))
 
 
 (load-relative "keywords.lisp")
