@@ -128,20 +128,18 @@
 
 #!(defconstant list pure)
 
-(defpattern |enum-from| (x &rest xs)
-  (labels ((rec (xs)
-             (cond
-               ((atom xs)
-                 (write-string ".."))
-               ((eq (car xs) :|to|)
-                 (write-string "..")
-                 (if (consp (cdr xs))
-                   (haskell-top (cadr xs))))
-               (t (haskell-tops "," (car xs))
-                  (rec (cdr xs))))))
-    (with-square-brackets
-      (haskell-top x)
-      (rec xs))))
+(defpattern |enum-from| (expr &rest args)
+  (with-square-brackets
+    (haskell-top expr)
+    (loop
+      for xs on args
+      for x = (car xs)
+      until (eq x :|to|)
+      do (haskell-tops "," x)
+      finally
+         (write-string "..")
+         (if (consp (cdr xs))
+           (haskell-top (cadr xs))))))
 
 ;; Local Variables:
 ;; eval: (cl-indent-rules (quote (&body)) (quote with-paren) (quote with-square-brackets))
