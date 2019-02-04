@@ -253,15 +253,19 @@
   `(%data ',name ',body ',deriving))
 
 
-(defsyntax |if| (x y z)
-  (if (and (atom x) (atom y) (atom z))
-    (haskells "if " x " then " y " else " z)
-    (with-indent 1
-      (haskell-tops "if " x)
-      (indent)
-      (haskell-tops "then " y)
-      (indent)
-      (haskell-tops "else " z))))
+(defsyntax |if| (x y &optional (z nil svar))
+  (cond
+    ((not svar)
+      (assert (truep x) () "if: missing else-form")
+      (haskell-top y))
+    ((and (atom x) (atom y) (atom z))
+      (haskells "if " x " then " y " else " z))
+    (t (with-indent 1
+         (haskell-tops "if " x)
+         (indent)
+         (haskell-tops "then " y)
+         (indent)
+         (haskell-tops "else " z)))))
 
 (def-syntax-macro |cond| (x &rest xs)
   `(|if| ,@x ,@(if xs `((|cond| ,@xs)))))
