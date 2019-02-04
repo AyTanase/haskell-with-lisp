@@ -37,7 +37,7 @@
   (tuple xs))
 
 
-(declaim (ftype function %define))
+(declaim (ftype function %define reduce-guard-1))
 
 (defun truep (x)
   (case x (#!(True otherwise) t)))
@@ -71,33 +71,51 @@
       (map-indent #'print-1 gvs))
     (%where defs)))
 
-(defun %define-if-1 (f guard value)
-  (let ((expr (hs-macro-expand value)))
-    (if (and (consp expr)
-             (eq (car expr) '|if|))
-      (destructuring-bind (x y &optional (z nil svar)) (cdr expr)
-        (if svar
-          (let ((vg (if (truep guard)
-                      guard
-                      (funcall f guard))))
-            (nconc (%define-if-1 f (merge-guards vg x) y)
-                   (%define-if-1 f vg z)))
-          (%define-if-1 f (merge-guards guard x) y)))
-      (list (list guard expr)))))
+(defun reduce-guard-if (f guard expr)
+  (destructuring-bind (x y &optional (z nil svar)) (cdr expr)
+    (if svar
+      (let ((vg (if (truep guard)
+                  guard
+                  (funcall f guard))))
+        (nconc (reduce-guard-1 f (merge-guards vg x) y)
+               (reduce-guard-1 f vg z)))
+      (reduce-guard-1 f (merge-guards guard x) y))))
 
-(defun %define-if (assign defs expr)
+(defun reduce-guard-if-bind (f guard expr)
+  (destructuring-bind (x y &optional (z nil svar)) (cdr expr)
+    (let ((w `(|setf| ,@x)))
+      (if svar
+        (let ((vg (if (truep guard)
+                    guard
+                    (funcall f guard))))
+          (cons (list (merge-guards vg w) y)
+                (reduce-guard-1 f vg z)))
+        (list (list (merge-guards guard w) y))))))
+
+(defun reduce-guard-1 (f guard value)
+  (let ((expr (hs-macro-expand value)))
+    (flet ((base () (list (list guard expr))))
+      (cond
+        ((atom expr) (base))
+        ((eq (car expr) '|if|)
+          (reduce-guard-if f guard expr))
+        ((eq (car expr) '|if-bind|)
+          (reduce-guard-if-bind f guard expr))
+        (t (base))))))
+
+(defun reduce-guards (assign defs expr)
   (let ((gs nil))
     (flet ((gpush (guard)
              (let ((v (genvar)))
                (push (list v guard) gs)
                v)))
-      (let ((gvs (%define-if-1 #'gpush '|otherwise| expr)))
+      (let ((gvs (reduce-guard-1 #'gpush '|otherwise| expr)))
         (%print-guards assign gvs (append defs (nreverse gs)))))))
 
 (defun %define-guard (assign defs expr)
   (if (and (consp expr)
            (eq (car expr) '|if|))
-    (%define-if assign defs expr)
+    (reduce-guards assign defs expr)
     (progn
       (haskell-tops assign expr)
       (%where defs))))
