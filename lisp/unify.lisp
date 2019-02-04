@@ -18,7 +18,7 @@
     (flet ((unify-1 (x)
              (let ((y (uvarp x)))
                (cond
-                 ((null y) x)
+                 ((not y) x)
                  ((find y vars :test #'eq)
                    (let ((v (genvar)))
                      (push `(= ,y ,v) guards)
