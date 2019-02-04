@@ -77,16 +77,18 @@
     (macro-apply (car expr) expr)))
 
 (defshadow def-syntax-macro (name args &body body)
-  `(defmethod macro-apply ((spec (eql ',name)) expr)
-     (declare (ignore spec))
-     (hs-macro-expand (destructuring-bind ,args (cdr expr)
-                        ,@body))))
+  (with-gensyms (spec expr)
+    `(defmethod macro-apply ((,spec (eql ',name)) ,expr)
+       (declare (ignore ,spec))
+       (hs-macro-expand (destructuring-bind ,args (cdr ,expr)
+                          ,@body)))))
 
 
 (defshadow defapply (method name fn)
-  `(defmethod ,method ((spec (eql ',name)) expr)
-     (declare (ignore spec))
-     (apply ,fn (cdr expr))))
+  (with-gensyms (spec expr)
+    `(defmethod ,method ((,spec (eql ',name)) ,expr)
+       (declare (ignore ,spec))
+       (apply ,fn (cdr ,expr)))))
 
 
 (defgeneric apply-syntax (spec expr)
