@@ -144,9 +144,12 @@
 
 (defmethod haskell ((x character))
   (cond
-    ((char= x #\') (format t "'\\''"))
-    ((char= x #\\) (format t "'\\\\'"))
-    ((graphic-char-p x) (format t "'~c'" x))
+    ((char= x #\')
+      (write-string "'\\''"))
+    ((char= x #\\)
+      (write-string "'\\\\'"))
+    ((graphic-char-p x)
+      (format t "'~c'" x))
     (t (format t "'\\x~x'" (char-code x)))))
 
 (defmethod haskell ((x null))
