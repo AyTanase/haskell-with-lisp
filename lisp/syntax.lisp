@@ -107,16 +107,15 @@
        (declare (ignore ,spec))
        (apply ,fn (cdr ,expr)))))
 
-(defmacro defapply (method name fn)
+(defmacro defapply (method name f)
   "NAME = SYMBOL | (or SYMBOL*)"
-  (flet ((gen-1 (name fn)
-           `(defapply-1 ,method ,name ,fn)))
+  (flet ((generate (name f)
+           `(defapply-1 ,method ,name ,f)))
     (if (atom name)
-      (gen-1 name fn)
-      (with-gensyms (gf)
-        `(let ((,gf ,fn))
-           ,@(loop for v in (cdr name)
-               collect (gen-1 v gf)))))))
+      (generate name f)
+      `(let ((g ,f))
+         ,@(loop for v in (cdr name)
+             collect (generate v 'g))))))
 
 
 (defgeneric apply-syntax (spec expr)
