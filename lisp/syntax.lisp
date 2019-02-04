@@ -7,10 +7,15 @@
   (export (intern (string x) :|hs|) :|hs|))
 
 
-(defmacro def-hs-macro (name &body body)
-  `(progn
-     (shadow-haskell ',name)
-     (defmacro ,name ,@body)))
+(defmacro defshadow (macro args &body body)
+  `(defmacro ,macro ,args
+     `(progn
+        (shadow-haskell ',name)
+        ,(locally ,@body))))
+
+
+(defshadow def-hs-macro (name &body body)
+  `(defmacro ,name ,@body))
 
 (defmacro defkeyword (name args &body body)
   `(def-hs-macro ,name ,args
@@ -71,21 +76,17 @@
     expr
     (macro-apply (car expr) expr)))
 
-(defmacro def-syntax-macro (name args &body body)
-  `(progn
-     (shadow-haskell ',name)
-     (defmethod macro-apply ((spec (eql ',name)) expr)
-       (declare (ignore spec))
-       (hs-macro-expand (destructuring-bind ,args (cdr expr)
-                          ,@body)))))
+(defshadow def-syntax-macro (name args &body body)
+  `(defmethod macro-apply ((spec (eql ',name)) expr)
+     (declare (ignore spec))
+     (hs-macro-expand (destructuring-bind ,args (cdr expr)
+                        ,@body))))
 
 
-(defmacro defapply (method name fn)
-  `(progn
-     (shadow-haskell ',name)
-     (defmethod ,method ((spec (eql ',name)) expr)
-       (declare (ignore spec))
-       (apply ,fn (cdr expr)))))
+(defshadow defapply (method name fn)
+  `(defmethod ,method ((spec (eql ',name)) expr)
+     (declare (ignore spec))
+     (apply ,fn (cdr expr))))
 
 
 (defgeneric apply-syntax (spec expr)
@@ -126,11 +127,9 @@
      (defapply apply-syntax ,name fn)
      (defapply apply-sexp-rule ,name fn)))
 
-(defmacro defhasq (name expr)
-  `(progn
-     (shadow-haskell ',name)
-     (defmethod haskell ((x (eql ',name)))
-       (write-string ,expr))))
+(defshadow defhasq (name expr)
+  `(defmethod haskell ((x (eql ',name)))
+     (write-string ,expr)))
 
 
 (defmethod haskell (x) (princ x))
