@@ -12,41 +12,10 @@
      (shadow-haskell ',name)
      (defmacro ,name ,@body)))
 
-
-(defun pick-out-decs-doc (body &optional (doc-allowed t))
-  "Pick out declarations and a documentation."
-  (labels ((pick-out-1 (decs body doc-allowed)
-             (flet ((return-values ()
-                      (values (nreverse decs) body))
-                    (recurse (doc-allowed)
-                      (pick-out-1 (cons (car body) decs)
-                                  (cdr body)
-                                  doc-allowed)))
-               (if (atom body)
-                 (return-values)
-                 (cond
-                   ((and doc-allowed
-                         (stringp (car body))
-                         (cdr body))
-                     (recurse nil))
-                   ((and (consp (car body))
-                         (eq (caar body) 'declare))
-                     (recurse doc-allowed))
-                   (t (return-values)))))))
-    (pick-out-1 nil body doc-allowed)))
-
-(defmacro with-picking-out (args code &body body)
-  `(multiple-value-bind ,args (pick-out-decs-doc ,code)
-     ,@body))
-
-
 (defmacro defkeyword (name args &body body)
-  (with-picking-out (decs rest) body
-    `(def-hs-macro ,name ,args
-       ,@decs
-       `(progn
-          ,(progn ,@rest)
-          (fresh-line)))))
+  `(def-hs-macro ,name ,args
+     `(progn ,(locally ,@body)
+             (fresh-line))))
 
 
 (defmacro defparen (name open close)
