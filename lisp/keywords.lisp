@@ -254,16 +254,14 @@
 
 
 (defsyntax |if| (x y z)
-  (with-indent 1
-    (haskell-tops "if " x)
-    (indent)
-    (haskell-tops "then " y)
-    (indent)
-    (haskell-tops "else " z)))
-
-(def-sexp-rule |if| (x y z)
-  (with-paren
-    (haskells "if " x " then " y " else " z)))
+  (if (and (atom x) (atom y) (atom z))
+    (haskells "if " x " then " y " else " z)
+    (with-indent 1
+      (haskell-tops "if " x)
+      (indent)
+      (haskell-tops "then " y)
+      (indent)
+      (haskell-tops "else " z))))
 
 (def-syntax-macro |cond| (x &rest xs)
   `(|if| ,@x ,@(if xs `((|cond| ,@xs)))))
