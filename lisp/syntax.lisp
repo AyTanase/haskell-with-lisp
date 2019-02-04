@@ -1,26 +1,43 @@
 (in-package :hs)
 
 
+(defun collect-decs (body)
+  (loop
+    for exps on body
+    for expr = (car exps)
+    while (typecase expr
+            (cons (eq (car expr) 'declare))
+            (string (cdr exps)))
+    collect expr into decs
+    finally (return (values decs exps))))
+
+(defmacro with-collect-decs (args code &body body)
+  `(multiple-value-bind ,args (collect-decs ,code)
+     ,@body))
+
+
 (defpackage :|haskell| (:nicknames :|hs|))
 
 (defun shadow-haskell (x)
   (export (intern (string x) :|hs|) :|hs|))
 
-
 (defmacro defshadow (macro args &body body)
-  `(defmacro ,macro ,args
-     `(progn
-        (shadow-haskell ',name)
-        ,(locally ,@body))))
+  (with-collect-decs (decs rest) body
+    `(defmacro ,macro ,args
+       ,@decs
+       `(progn
+          (shadow-haskell ',name)
+          ,(progn ,@rest)))))
 
 
 (defshadow def-hs-macro (name &body body)
   `(defmacro ,name ,@body))
 
 (defmacro defkeyword (name args &body body)
-  `(def-hs-macro ,name ,args
-     `(progn ,(locally ,@body)
-             (fresh-line))))
+  (with-collect-decs (decs rest) body
+    `(def-hs-macro ,name ,args
+       ,@decs
+       `(progn ,(progn ,@rest) (fresh-line)))))
 
 
 (defmacro defparen (name open close)
@@ -162,6 +179,6 @@
 (load-relative "functions.lisp")
 
 ;; Local Variables:
-;; eval: (add-cl-indent-rule (quote with-picking-out) (quote (6 4 &body)))
+;; eval: (add-cl-indent-rule (quote with-collect-decs) (quote (&lambda 4 &body)))
 ;; eval: (add-cl-indent-rule (quote with-paren) (quote (&body)))
 ;; End:
