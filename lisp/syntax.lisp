@@ -108,13 +108,12 @@
        (apply ,fn (cdr ,expr)))))
 
 (defmacro defapply (method name f)
-  "NAME = SYMBOL | (or SYMBOL*)"
   (flet ((generate (name f)
            `(defapply-1 ,method ,name ,f)))
     (if (atom name)
       (generate name f)
       `(let ((g ,f))
-         ,@(loop for v in (cdr name)
+         ,@(loop for v in name
              collect (generate v 'g))))))
 
 

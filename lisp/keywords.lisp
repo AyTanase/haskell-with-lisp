@@ -155,12 +155,12 @@
     (indent)
     (haskell-tops "in " val)))
 
-(defsyntax (or |let| |where|) (defs val)
+(defsyntax #!(let where) (defs val)
   (if defs
     (%let defs val)
     (haskell-top val)))
 
-(def-sexp-rule (or |let| |where|) (defs val)
+(def-sexp-rule #!(let where) (defs val)
   (if defs
     (with-paren
       (%let defs val))
