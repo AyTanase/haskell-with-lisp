@@ -28,9 +28,8 @@
  'haskell-lisp-mode
  `((,(concat "(" (regexp-opt (mapcar #'symbol-name haskell-lisp-keywords) t) "\\_>")
      1 font-lock-keyword-face)
-   ("(\\(?:define\\s-+(?\\|type\\s-\\)\\s-*\\([[:lower:]_][[:word:]']*\\)"
-    1 font-lock-function-name-face)
    ("(type\\s-+(\\([^)]*\\))" 1 font-lock-function-name-face)
+   ("(\\(?:define\\s-+(?\\|type\\s-\\)\\s-*\\(\\S-*\\)" 1 font-lock-function-name-face)
    ("(\\(extension\\s-[^)]*\\))" 1 font-lock-preprocessor-face)
    ("(\\(a\\(?:ppe\\)?nd\\|or\\|compose\\|->?\\|[+*/]\\)\\_>" 1 font-lock-variable-name-face)
    ("#\\(?:\\?\\|\\\\.\\)" . font-lock-negation-char-face)
