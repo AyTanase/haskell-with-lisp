@@ -27,7 +27,7 @@
 (font-lock-add-keywords
  'haskell-lisp-mode
  `((,(concat "(" (regexp-opt (mapcar #'symbol-name haskell-lisp-keywords) t) "\\_>")
-     1 font-lock-keyword-fsace)
+     1 font-lock-keyword-face)
    ("(\\(?:define\\s-+(?\\|type\\s-\\)\\s-*\\([[:lower:]_][[:word:]']*\\)"
     1 font-lock-function-name-face)
    ("(type\\s-+(\\([^)]*\\))" 1 font-lock-function-name-face)
