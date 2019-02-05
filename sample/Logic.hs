@@ -2,11 +2,11 @@ module Logic where
 import Prelude (const, (<*>))
 
 id :: a -> a
-id = (<*>) const const
+id = const <*> const
 
 
 (.) :: (b -> c) -> (a -> b) -> a -> c
-(.) = (<*>) (const (<*>)) const
+(.) = (const (<*>)) <*> const
 
 liftCompose = (.) (.)
 compose2 = liftCompose (.)

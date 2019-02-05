@@ -14,7 +14,7 @@
 #?(def-hs-macro |generate| (name m &optional n)
     `(progn ,@(generate name (if n m 2) (if n n m))))
 
-#?(defhasq |apply| "(<*>)")
+#?(defoperator |apply| :op <*>)
 
 
 (defpackage Logic
