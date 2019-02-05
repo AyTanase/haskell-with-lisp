@@ -3,7 +3,7 @@ module Common where
 data Op = Finite | Compare Char Op | Split Op Op
 
 instance Show Op where
-  show = const "#<REGEX.OP>"
+  show = const "#<Regex.Op>"
 
 type NFA = Op -> Op
 

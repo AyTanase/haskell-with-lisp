@@ -3,7 +3,7 @@
 (data Op (or Finite (Compare Char Op) (Split Op Op)))
 
 (instance (Show Op) ()
-  (show (const "#<REGEX.OP>")))
+  (show (const "#<Regex.Op>")))
 
 (deftype NFA (-> Op Op))
 
