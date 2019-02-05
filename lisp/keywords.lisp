@@ -72,20 +72,16 @@
 
 (defun reduce-guard-if (f guard expr)
   (ds-bind (x y &optional (z nil svar)) (cdr expr)
-    (if svar
-      (let ((vg (funcall f guard)))
-        (nconc (reduce-guard-1 f (merge-guards vg x) y)
-               (reduce-guard-1 f vg z)))
-      (reduce-guard-1 f (merge-guards guard x) y))))
+    (let ((vg (if svar (funcall f guard) guard)))
+      (nconc (reduce-guard-1 f (merge-guards vg x) y)
+             (if svar (reduce-guard-1 f vg z))))))
 
 (defun reduce-guard-if-bind (f guard expr)
   (ds-bind (x y &optional (z nil svar)) (cdr expr)
-    (let ((w `(|setf| ,@x)))
-      (if svar
-        (let ((vg (funcall f guard)))
-          (cons (list (merge-guards vg w) y)
-                (reduce-guard-1 f vg z)))
-        (list (list (merge-guards guard w) y))))))
+    (let ((w `(|setf| ,@x))
+          (vg (if svar (funcall f guard) guard)))
+      (cons (list (merge-guards vg w) y)
+            (if svar (reduce-guard-1 f vg z))))))
 
 (defun reduce-guard-1 (f guard value)
   (let ((expr (hs-macro-expand value)))
