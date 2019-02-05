@@ -96,6 +96,11 @@
 
 (defhasq |pair| "(,)")
 
+(defsyntax |fmap| (&rest args)
+  (if (= (length args) 2)
+    (apply #'print-infix '<$> args)
+    (rechask `(|fmap| ,@args))))
+
 
 (def-binop-as |cons| |:|
   :one `#'(|cons| ,(car args))
