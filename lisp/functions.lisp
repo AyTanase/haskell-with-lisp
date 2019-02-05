@@ -42,10 +42,12 @@
   (format t " ~a " op)
   (haskell y))
 
-(defmacro defoperator (name &optional (op name))
+(defmacro defoperator (name &key (op name) many)
   `(def-binop-as ,name ,op
      :one `#'(,',name ,(car args))
-     :many (apply #'print-infix ',op args)))
+     :many (if (cddr args)
+             ,(or many `(rechask `(,name ,@args)))
+             (apply #'print-infix ',op args))))
 
 
 (defun expand-ord-op (op args)
