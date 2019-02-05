@@ -88,8 +88,6 @@
       (haskell-top (car x)))
     (t (rechask `(,(car x) ,(if (cddr x) x (cadr x)))))))
 
-(defhasq |strict| "($!)")
-
 #!(defconstant 1+ #'(+ 1))
 (def-syntax-macro 1+ (x) `(+ ,x 1))
 
