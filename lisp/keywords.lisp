@@ -224,8 +224,9 @@
       (write-string " }"))
     (haskell-top body)))
 
-(defun %data (name body deriving)
-  (haskell-tops "data " name " = ")
+(defun %data (key name body deriving)
+  (format t "~a " key)
+  (haskell-tops name " = ")
   (if (callp body '|or|)
     (%rechask (cdr body) #'%data-body " | ")
     (%data-body body))
@@ -233,8 +234,12 @@
     (write-string " deriving ")
     (tuple deriving)))
 
-(defkeyword |data| (name body &optional deriving)
-  `(%data ',name ',body ',deriving))
+(defmacro def-data-macro (key)
+  `(defkeyword ,key (name constr &optional deriving)
+     `(%data ',',key ',name ',constr ',deriving)))
+
+(def-data-macro |data|)
+(def-data-macro |newtype|)
 
 
 (defsyntax |if| (x y &optional (z nil svar))
