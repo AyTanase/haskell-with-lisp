@@ -17,7 +17,7 @@
       (eq xs ys))))
 
 (type polyMap (-> (-> a b) (Poly a) (Poly b)))
-(define (polyMap f (Poly xs)) (Poly (fmap f xs)))
+(define (polyMap f (Poly xs)) (Poly (map f xs)))
 
 (instance (Pure Poly a) (:overlapping)
   (pure (compose Poly list)))

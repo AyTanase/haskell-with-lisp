@@ -14,7 +14,7 @@ instance (Eq a, Monoid a) => Eq (Poly a) where
       eq (x:xs) (y:ys) = (x == y) && (eq xs ys)
 
 polyMap :: (a -> b) -> Poly a -> Poly b
-polyMap f (Poly xs) = Poly (fmap f xs)
+polyMap f (Poly xs) = Poly (map f xs)
 
 instance {-# OVERLAPPING #-} () => Pure Poly a where
   pure = Poly . pure
