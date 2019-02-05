@@ -167,11 +167,12 @@
     (with-indent 1
       (map-indent #'%define defs))))
 
-(defkeyword |class| (name &optional derive &rest defs)
-  `(%class '|class| ',name ',derive ',defs))
+(defmacro def-class-macro (key)
+  `(defkeyword ,key (name &optional derive &rest defs)
+     `(%class ',',key ',name ',derive ',defs)))
 
-(defkeyword |instance| (name &optional derive &rest defs)
-  `(%class '|instance| ',name ',derive ',defs))
+(def-class-macro |class|)
+(def-class-macro |instance|)
 
 
 (defun module-names (svar names)
