@@ -2,7 +2,7 @@
 
 
 (defvar *indent* 0
-  "current indentation level")
+  "the current indentation level")
 
 (defun indent (&optional (n *indent*))
   (fresh-line)
