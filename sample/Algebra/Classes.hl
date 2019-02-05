@@ -7,7 +7,7 @@
   (:shadow Prelude pure Semigroup Monoid + negate - * recip /)
   (:use (:q Prelude) (:q GHC.Base))
   (:import GHC.Base liftA2)
-  (:export (module Classes) (module Prelude)))
+  (:export (:m Classes) (:m Prelude)))
 
 
 (class (Pure f a) ()

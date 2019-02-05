@@ -1,6 +1,6 @@
 (defpackage Regex
   (:use Common Parse Exec)
-  (:export (module Regex) Op (module Parse) (module Exec)))
+  (:export (:m Regex) Op (:m Parse) (:m Exec)))
 
 (type regex (=> (Num a) (-> String String (Maybe (tuple a a)))))
 (define regex (compose match parse))

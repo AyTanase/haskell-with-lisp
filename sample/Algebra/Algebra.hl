@@ -2,4 +2,4 @@
     (eval `#!(defpackage Algebra
                (:import Prelude)
                (:use ,@#?mods)
-               (:export ,@#?(mapcar (curry #'list '|module|) mods)))))
+               (:export ,@#?(mapcar (curry #'list :|m|) mods)))))
