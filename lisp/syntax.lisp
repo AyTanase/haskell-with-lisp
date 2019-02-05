@@ -12,7 +12,10 @@
     finally (return (values decs exps))))
 
 
-(defpackage :|haskell| (:nicknames :|hs|))
+(defpackage :|haskell|
+  (:nicknames :|hs|)
+  (:documentation
+   "shadowing keywords to use them as names in Haskell code"))
 
 (defun shadow-haskell (x)
   (export (intern (string x) :|hs|) :|hs|))
@@ -76,8 +79,7 @@
 (defrechask rechask #'haskell " ")
 
 
-(defgeneric macro-apply (spec expr)
-  (:documentation "Expand macros in Haskell code."))
+(defgeneric macro-apply (spec expr))
 
 (defmethod macro-apply (spec expr)
   (declare (ignore spec))
@@ -112,8 +114,7 @@
              collect (generate v 'g))))))
 
 
-(defgeneric apply-syntax (spec expr)
-  (:documentation "Apply syntax rules to EXPR."))
+(defgeneric apply-syntax (spec expr))
 
 (defmethod apply-syntax (spec expr)
   (declare (ignore spec))
@@ -134,8 +135,7 @@
 (defrechask arrange #'haskell-top ", ")
 
 
-(defgeneric apply-sexp-rule (spec expr)
-  (:documentation "Apply S-Expression syntax rules to EXPR."))
+(defgeneric apply-sexp-rule (spec expr))
 
 (defmethod apply-sexp-rule (spec expr)
   (with-paren

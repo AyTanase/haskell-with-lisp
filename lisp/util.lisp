@@ -71,9 +71,15 @@
       char)))
 
 
-(defvar *cl-readtable* *readtable*)
-(defvar *hs-readtable*)
-(defvar *hs-toplevel*)
+(defvar *cl-readtable* *readtable*
+  "for reading Common Lisp parts")
+
+(defvar *hs-readtable* nil
+  "for reading Haskell parts")
+
+(defvar *hs-toplevel* nil
+  "for preserving the code style")
+
 
 (defun read-as-is (stream &rest args)
   (declare (ignore args))

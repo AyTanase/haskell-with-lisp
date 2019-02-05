@@ -1,7 +1,8 @@
 (in-package :hs)
 
 
-(defvar *indent* 0)
+(defvar *indent* 0
+  "current indentation level")
 
 (defun indent (&optional (n *indent*))
   (fresh-line)
