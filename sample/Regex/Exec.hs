@@ -2,16 +2,16 @@ module Exec where
 import Common
 import Control.Applicative
 
-matchHead :: Num a => Op -> String -> Maybe a
-matchHead = matchHead' 0
+exec :: Num a => Op -> String -> Maybe a
+exec = exec' 0
   where
-    matchHead' n Finite _ = Just n
-    matchHead' n (Compare x rx) (_v1:xs)
-      | (x == _v1) = matchHead' (n + 1) rx xs
-    matchHead' _ (Compare _ _) _ = Nothing
-    matchHead' n (Split p q) xs = (matchHead' n p xs) <|> (matchHead' n q xs)
+    exec' n Finite _ = Just n
+    exec' n (Compare x rx) (_v1:xs)
+      | (x == _v1) = exec' (n + 1) rx xs
+    exec' _ (Compare _ _) _ = Nothing
+    exec' n (Split p q) xs = (exec' n p xs) <|> (exec' n q xs)
 
 match :: Num a => Op -> String -> Maybe (a, a)
 match = match' 0
   where
-    match' n rx xs = (fmap ((,) n) (matchHead rx xs)) <|> ((match' (n + 1) rx) =<< (safeTail xs))
+    match' n rx xs = (fmap ((,) n) (exec rx xs)) <|> ((match' (n + 1) rx) =<< (safeTail xs))

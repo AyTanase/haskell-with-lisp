@@ -4,22 +4,21 @@
 (defpackage Exec
   (:use Common Control.Applicative))
 
-(type matchHead (=> (Num a) (-> Op String (Maybe a))))
-(define matchHead
-  (ulabels ((matchHead' (n Finite _)
+(type exec (=> (Num a) (-> Op String (Maybe a))))
+(define exec
+  (ulabels ((exec' (n Finite _)
               (Just n))
-            (matchHead' (n (Compare ?x rx) (cons ?x xs))
-              (matchHead' (1+ n) rx xs))
-            (matchHead' (_ (Compare _ _) _)
+            (exec' (n (Compare ?x rx) (cons ?x xs))
+              (exec' (1+ n) rx xs))
+            (exec' (_ (Compare _ _) _)
               Nothing)
-            (matchHead' (n (Split p q) xs)
-              (alt (matchHead' n p xs)
-                   (matchHead' n q xs))))
-    (matchHead' 0)))
+            (exec' (n (Split p q) xs)
+              (alt (exec' n p xs) (exec' n q xs))))
+    (exec' 0)))
 
 (type match (=> (Num a) (-> Op String (Maybe (tuple a a)))))
 (define match
   (labels ((match' (n rx xs)
-             (alt (fmap (pair n) (matchHead rx xs))
+             (alt (fmap (pair n) (exec rx xs))
                   (join-fmap (match' (1+ n) rx) (safeTail xs)))))
     (match' 0)))
