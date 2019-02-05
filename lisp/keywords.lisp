@@ -73,9 +73,7 @@
 (defun reduce-guard-if (f guard expr)
   (ds-bind (x y &optional (z nil svar)) (cdr expr)
     (if svar
-      (let ((vg (if (truep guard)
-                  guard
-                  (funcall f guard))))
+      (let ((vg (funcall f guard)))
         (nconc (reduce-guard-1 f (merge-guards vg x) y)
                (reduce-guard-1 f vg z)))
       (reduce-guard-1 f (merge-guards guard x) y))))
@@ -84,9 +82,7 @@
   (ds-bind (x y &optional (z nil svar)) (cdr expr)
     (let ((w `(|setf| ,@x)))
       (if svar
-        (let ((vg (if (truep guard)
-                    guard
-                    (funcall f guard))))
+        (let ((vg (funcall f guard)))
           (cons (list (merge-guards vg w) y)
                 (reduce-guard-1 f vg z)))
         (list (list (merge-guards guard w) y))))))
@@ -105,9 +101,11 @@
 (defun reduce-guards (assign defs expr)
   (let ((gs nil))
     (flet ((gpush (guard)
-             (let ((v (genvar)))
-               (push (list v guard) gs)
-               v)))
+             (if (atom guard)
+               guard
+               (let ((v (genvar)))
+                 (push (list v guard) gs)
+                 v))))
       (let ((gvs (reduce-guard-1 #'gpush '|otherwise| expr)))
         (%print-guards assign gvs (append defs (nreverse gs)))))))
 
