@@ -12,7 +12,7 @@
   :after-hook
   (setq-local font-lock-keywords-case-fold-search nil))
 
-(cl-indent-rules '(4 &body) 'define 'udef 'defdata 'udefdata 'defmodule)
+(cl-indent-rules '(4 &body) 'define 'udef 'defmodule)
 (cl-indent-rules '((&whole 4 &rest (&whole 1 &body)) &body) 'where 'uwhere)
 (cl-indent-rules '(4 &lambda (&whole 2 &body)) 'class 'uclass 'instance 'uinstance)
 (add-cl-indent-rule 'ulet 'lisp-indent-let-method)
@@ -20,11 +20,16 @@
 (add-cl-indent-rule 'do '(&body))
 (add-cl-indent-rule 'if-bind '((&whole 4 &body) &body))
 
+(defconst haskell-lisp-keywords
+  '(class data define defmodule enum-from if-bind import instance
+    setf type ucase uclass udef ulabels ulet uinstance uwhere where))
+
 (font-lock-add-keywords
  'haskell-lisp-mode
- '(("(\\(d\\(?:ef\\(?:ine\\|module\\|data\\)\\|ata\\)\\|u\\(?:def\\(?:data\\)?\\|l\\(?:et\\|abels\\)\\|c\\(?:lass\\|ase\\)\\|instance\\|where\\)\\|type\\|enum-from\\|class\\|i\\(?:nstance\\|mport\\|f-bind\\)\\|module\\|where\\|setf\\)\\_>"
-    1 font-lock-keyword-face)
-   ("(\\(?:define\\s-+(?\\|type\\s-\\)\\s-*\\([[:lower:]_][[:word:]']*\\)" 1 font-lock-function-name-face)
+ `((,(concat "(" (regexp-opt (mapcar #'symbol-name haskell-lisp-keywords) t) "\\_>")
+     1 font-lock-keyword-fsace)
+   ("(\\(?:define\\s-+(?\\|type\\s-\\)\\s-*\\([[:lower:]_][[:word:]']*\\)"
+    1 font-lock-function-name-face)
    ("(type\\s-+(\\([^)]*\\))" 1 font-lock-function-name-face)
    ("(\\(extension\\s-[^)]*\\))" 1 font-lock-preprocessor-face)
    ("(\\(a\\(?:ppe\\)?nd\\|or\\|compose\\|->?\\|[+*/]\\)\\_>" 1 font-lock-variable-name-face)
