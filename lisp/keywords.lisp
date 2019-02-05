@@ -13,8 +13,8 @@
   `(let ((*indent* (+ *indent* ,n)))
      ,@body))
 
-(defun map-indent (fn list &optional (n *indent*))
-  (dolist (x list)
+(defun map-indent (fn xs &optional (n *indent*))
+  (dolist (x xs)
     (indent n)
     (apply fn x)))
 
