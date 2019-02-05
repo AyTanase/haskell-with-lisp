@@ -6,6 +6,7 @@
            collect `(,x (gensym)))
      ,@body))
 
+
 (defun curry (f &rest xs)
   #'(lambda (&rest ys) (apply f (append xs ys))))
 
@@ -16,6 +17,7 @@
 (declaim (inline compose))
 (defun compose (f g)
   #'(lambda (x) (funcall f (funcall g x))))
+
 
 (declaim (inline %partition partition))
 
@@ -28,6 +30,7 @@
 (defun partition (test xs &key (key #'identity))
   (%partition (compose test key) xs))
 
+
 (declaim (inline format-symbol))
 (defun format-symbol (&rest args)
   (intern (apply #'format nil args)))
@@ -38,6 +41,7 @@
 
 (defun genvars (n)
   (loop repeat n collect (genvar)))
+
 
 (defun map-tree (fn tree)
   (if (atom tree)
