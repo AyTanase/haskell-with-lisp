@@ -11,10 +11,6 @@
     collect expr into decs
     finally (return (values decs exps))))
 
-(defmacro with-collect-decs (args code &body body)
-  `(multiple-value-bind ,args (collect-decs ,code)
-     ,@body))
-
 
 (defpackage :|haskell| (:nicknames :|hs|))
 
@@ -22,7 +18,7 @@
   (export (intern (string x) :|hs|) :|hs|))
 
 (defmacro defshadow (macro args &body body)
-  (with-collect-decs (decs rest) body
+  (mv-bind (decs rest) (collect-decs body)
     `(defmacro ,macro ,args
        ,@decs
        `(progn
@@ -34,7 +30,7 @@
   `(defmacro ,name ,@body))
 
 (defmacro defkeyword (name args &body body)
-  (with-collect-decs (decs rest) body
+  (mv-bind (decs rest) (collect-decs body)
     `(def-hs-macro ,name ,args
        ,@decs
        `(progn ,(progn ,@rest) (fresh-line)))))
@@ -187,6 +183,6 @@
 (load-relative "functions.lisp")
 
 ;; Local Variables:
-;; eval: (add-cl-indent-rule (quote with-collect-decs) (quote (&lambda 4 &body)))
+;; eval: (add-cl-indent-rule (quote mv-bind) (quote (&lambda 4 &body)))
 ;; eval: (add-cl-indent-rule (quote with-paren) (quote (&body)))
 ;; End:

@@ -40,6 +40,9 @@
 (defmacro ds-bind (&body body)
   `(destructuring-bind ,@body))
 
+(defmacro mv-bind (&body body)
+  `(multiple-value-bind ,@body))
+
 
 (declaim (inline get-macro-char set-macro-char))
 

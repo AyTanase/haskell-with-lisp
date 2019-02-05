@@ -35,7 +35,7 @@
     val))
 
 (defun %udef (var val &rest args)
-  (multiple-value-bind (expr guards) (unify var)
+  (mv-bind (expr guards) (unify var)
     (list* expr (%udef-body guards val) args)))
 
 (def-hs-macro |udef| (var val)
@@ -67,3 +67,7 @@
 
 (def-hs-macro |udefdata| (name &body defs)
   `(|defdata| ,name ,@(map-udef defs)))
+
+;; Local Variables:
+;; eval: (add-cl-indent-rule (quote mv-bind) (quote (&lambda 4 &body)))
+;; End:
