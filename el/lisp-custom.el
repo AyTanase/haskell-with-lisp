@@ -27,6 +27,12 @@
     (max normal-indent
          (+ sexp-column 2))))
 
+(defun lisp-indent-defpackage-method
+    (path state indent-point sexp-column normal-indent)
+  (if (cdr path)
+      normal-indent
+    (+ sexp-column (if (= (car path) 1) 4 2))))
+
 (defun runcl (file-name)
   (interactive "sFile Name: ")
   (shell-command (format "runcl %S" file-name)))
@@ -45,6 +51,7 @@
 (add-cl-indent-rule 'ftype '((&whole 4 &lambda 2) &rest 2))
 (add-cl-indent-rule 'cond 'lisp-indent-cond-method)
 (add-cl-indent-rule 'case '(4 &rest (&whole 2 &body)))
+(add-cl-indent-rule 'defpackage 'lisp-indent-defpackage-method)
 (cl-indent-rules 'lisp-indent-let-method 'let 'let*)
 
 (font-lock-add-keywords 'lisp-mode '(("#:.+?\\_>" . font-lock-builtin-face)))
