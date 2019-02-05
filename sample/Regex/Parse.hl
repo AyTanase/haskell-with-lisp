@@ -4,7 +4,7 @@
 
 
 #{ Q :: Quantifier }#
-(deftype QMaker (-> (BinOp Node) Node Node))
+(deftype QMaker (-> (BinOp NFA) NFA NFA))
 
 (type (makeStar makePlus makeOpt) QMaker)
 
@@ -17,7 +17,7 @@
 (define (makeOpt method f) (method f id))
 
 
-(deftype Parser (-> Node String (tuple Node String)))
+(deftype Parser (-> NFA String (tuple NFA String)))
 (type parse' Parser)
 
 
@@ -37,12 +37,12 @@
 (define (checkQ' f (cons #\? xs)) (checkG makeOpt  f xs))
 (define (checkQ' f xs) (tuple f xs))
 
-(type checkQ (-> Node Parser))
+(type checkQ (-> NFA Parser))
 (define (checkQ f g xs)
   (let (((tuple h ys) (checkQ' g xs)))
     (parse' (compose f h) ys)))
 
-(type parseChar (-> Node Char String (tuple Node String)))
+(type parseChar (-> NFA Char String (tuple NFA String)))
 (define (parseChar f x xs) (checkQ f (Compare x) xs))
 
 
@@ -61,5 +61,5 @@
 (define (parse' f (cons x xs)) (parseChar f x xs))
 
 
-(type parse (-> String NFA))
+(type parse (-> String Op))
 (define (parse xs) (fst (parse' id xs) Finite))

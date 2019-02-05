@@ -1,15 +1,15 @@
 (defmodule Common)
 
-(data NFA (or Finite (Compare Char NFA) (Split NFA NFA)))
+(data Op (or Finite (Compare Char Op) (Split Op Op)))
 
-(instance (Show NFA) ()
-  (show (const "#<NFA>")))
+(instance (Show Op) ()
+  (show (const "#<REGEX.OP>")))
 
-(deftype Node (-> NFA NFA))
+(deftype NFA (-> Op Op))
 
 (deftype (BinOp a) (-> a a a))
 
-(type split (BinOp Node))
+(type split (BinOp NFA))
 (define (split f g x) (Split (f x) (g x)))
 
 (type safeTail (-> (list a) (Maybe (list a))))

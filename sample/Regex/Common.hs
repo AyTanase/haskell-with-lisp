@@ -1,15 +1,15 @@
 module Common where
 
-data NFA = Finite | Compare Char NFA | Split NFA NFA
+data Op = Finite | Compare Char Op | Split Op Op
 
-instance Show NFA where
-  show = const "#<NFA>"
+instance Show Op where
+  show = const "#<REGEX.OP>"
 
-type Node = NFA -> NFA
+type NFA = Op -> Op
 
 type BinOp a = a -> a -> a
 
-split :: BinOp Node
+split :: BinOp NFA
 split f g x = Split (f x) (g x)
 
 safeTail :: [a] -> Maybe [a]

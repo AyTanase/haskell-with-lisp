@@ -5,7 +5,7 @@ import Data.Bifunctor
 
 
 {- Q :: Quantifier -}
-type QMaker = BinOp Node -> Node -> Node
+type QMaker = BinOp NFA -> NFA -> NFA
 
 makeStar, makePlus, makeOpt :: QMaker
 
@@ -16,7 +16,7 @@ makePlus method f = f . (makeStar method f)
 makeOpt method f = method f id
 
 
-type Parser = Node -> String -> (Node, String)
+type Parser = NFA -> String -> (NFA, String)
 parse' :: Parser
 
 
@@ -34,12 +34,12 @@ checkQ' f ('+':xs) = checkG makePlus f xs
 checkQ' f ('?':xs) = checkG makeOpt f xs
 checkQ' f xs = (f, xs)
 
-checkQ :: Node -> Parser
+checkQ :: NFA -> Parser
 checkQ f g xs = let
   (h, ys) = checkQ' g xs
   in parse' (f . h) ys
 
-parseChar :: Node -> Char -> String -> (Node, String)
+parseChar :: NFA -> Char -> String -> (NFA, String)
 parseChar f x xs = checkQ f (Compare x) xs
 
 
@@ -56,5 +56,5 @@ parse' f ('|':xs) = first (split f) (parse' id xs)
 parse' f (x:xs) = parseChar f x xs
 
 
-parse :: String -> NFA
+parse :: String -> Op
 parse xs = fst (parse' id xs) Finite
