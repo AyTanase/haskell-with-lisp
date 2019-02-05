@@ -58,11 +58,8 @@
            (and ,@#?(maplist #'expand-1 (cons (car args) vs)))))))
 
 (defmacro def-ord-op (name &optional (op name))
-  `(def-binop-as ,name ,op
-     :one `#'(,',name ,(car args))
-     :many (if (cddr args)
-             (haskell-top (expand-ord-op ',name args))
-             (apply #'print-infix ',op args))))
+  `(defoperator ,name :op ,op
+     :many (haskell-top (expand-ord-op ',name args))))
 
 (def-ord-op = ==)
 (def-ord-op <=)
@@ -80,11 +77,7 @@
     `#!(let ,#?(mapcar #'list vs args)
          (and ,@#?(mapcan #'expand-1 vs))))))
 
-(defbinop /=
-  :one `#'(/= ,(car args))
-  :many (if (cddr args)
-          (haskell-top (expand-/= args))
-          (apply #'print-infix '/= args)))
+(defoperator /= :many (haskell-top (expand-/= args)))
 
 
 (defsyntax function (x)
@@ -144,6 +137,7 @@
 
 ;; Local Variables:
 ;; eval: (cl-indent-rules (quote (&body)) (quote with-paren) (quote with-square-brackets))
-;; eval: (add-cl-indent-rule (quote defbinop) (quote (2 &body)))
+;; eval: (add-cl-indent-rule (quote defbinop) (quote (4 &body)))
+;; eval: (add-cl-indent-rule (quote defoperator) (quote (4 2 2 &body)))
 ;; eval: (add-cl-indent-rule (quote ds-bind) (quote (&lambda 4 &body)))
 ;; End:
