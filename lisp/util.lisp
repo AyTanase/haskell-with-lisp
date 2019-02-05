@@ -37,6 +37,9 @@
 (defun callp (expr symbol)
   (and (consp expr) (eq (car expr) symbol)))
 
+(defmacro ds-bind (&body body)
+  `(destructuring-bind ,@body))
+
 
 (declaim (inline get-macro-char set-macro-char))
 

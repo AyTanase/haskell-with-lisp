@@ -97,8 +97,7 @@
   (with-gensyms (spec expr)
     `(defmethod macro-apply ((,spec (eql ',name)) ,expr)
        (declare (ignore ,spec))
-       (hs-macro-expand (destructuring-bind ,args (cdr ,expr)
-                          ,@body)))))
+       (hs-macro-expand (ds-bind ,args (cdr ,expr) ,@body)))))
 
 
 (defshadow defapply-1 (method name fn)

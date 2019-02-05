@@ -106,7 +106,7 @@
 
 (def-binop-as |cons| |:|
   :one `#'(|cons| ,(car args))
-  :many (destructuring-bind (x y) args
+  :many (ds-bind (x y) args
           (haskell x)
           (if (and (atom x) (atom y))
             (write-string ":")
@@ -143,4 +143,5 @@
 ;; Local Variables:
 ;; eval: (cl-indent-rules (quote (&body)) (quote with-paren) (quote with-square-brackets))
 ;; eval: (add-cl-indent-rule (quote defbinop) (quote (2 &body)))
+;; eval: (add-cl-indent-rule (quote ds-bind) (quote (&lambda 4 &body)))
 ;; End:

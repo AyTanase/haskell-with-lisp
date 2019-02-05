@@ -1,7 +1,7 @@
 (in-package :hs)
 
 (defun defun->define (def)
-  (destructuring-bind (name args &body body) def
+  (ds-bind (name args &body body) def
     (if (eq name '|type|) def `((,name ,@args) ,@body))))
 
 (def-hs-macro |defun| (&body body)
@@ -35,3 +35,7 @@
        (|defmodule| ,name ,@(if exports
                               (list (mapcan #'cdr exports))))
        ,@(mapcar #'defpac-option args))))
+
+;; Local Variables:
+;; eval: (add-cl-indent-rule (quote ds-bind) (quote (&lambda 4 &body)))
+;; End:

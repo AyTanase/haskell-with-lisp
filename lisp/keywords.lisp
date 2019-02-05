@@ -71,7 +71,7 @@
     (%where defs)))
 
 (defun reduce-guard-if (f guard expr)
-  (destructuring-bind (x y &optional (z nil svar)) (cdr expr)
+  (ds-bind (x y &optional (z nil svar)) (cdr expr)
     (if svar
       (let ((vg (if (truep guard)
                   guard
@@ -81,7 +81,7 @@
       (reduce-guard-1 f (merge-guards guard x) y))))
 
 (defun reduce-guard-if-bind (f guard expr)
-  (destructuring-bind (x y &optional (z nil svar)) (cdr expr)
+  (ds-bind (x y &optional (z nil svar)) (cdr expr)
     (let ((w `(|setf| ,@x)))
       (if svar
         (let ((vg (if (truep guard)
@@ -300,4 +300,5 @@
 
 ;; Local Variables:
 ;; eval: (cl-indent-rules (quote (&body)) (quote with-paren) (quote with-pragma))
+;; eval: (add-cl-indent-rule (quote ds-bind) (quote (&lambda 4 &body)))
 ;; End:
