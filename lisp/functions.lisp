@@ -15,7 +15,6 @@
 (defmacro defbinop (op &rest args)
   `(def-binop-as ,op ,op ,@args))
 
-(defbinop -> :zero "()")
 (defbinop + :zero "0")
 (defbinop - :one `(|negate| ,(car args)))
 (defbinop * :zero "1")
