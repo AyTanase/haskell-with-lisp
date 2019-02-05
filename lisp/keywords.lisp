@@ -174,9 +174,6 @@
 (defkeyword |instance| (name &optional derive &rest defs)
   `(%class '|instance| ',name ',derive ',defs))
 
-(defkeyword |defdata| (name &rest defs)
-  `(%class '|data| ',name nil ',defs))
-
 
 (defun module-names (svar names)
   (when svar
