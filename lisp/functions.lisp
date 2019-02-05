@@ -46,7 +46,7 @@
   `(def-binop-as ,name ,op
      :one `#'(,',name ,(car args))
      :many (if (cddr args)
-             ,(or many `(rechask `(',',name ,@args)))
+             ,(or many `(rechask `(,',name ,@args)))
              (apply #'print-infix ',op args))))
 
 
