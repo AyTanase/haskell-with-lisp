@@ -33,6 +33,10 @@
     (funcall fn tree)
     (mapcar (curry #'map-tree fn) tree)))
 
+(declaim (inline callp))
+(defun callp (expr symbol)
+  (and (consp expr) (eq (car expr) symbol)))
+
 
 (declaim (inline get-macro-char set-macro-char))
 

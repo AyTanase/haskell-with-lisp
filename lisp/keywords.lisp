@@ -57,8 +57,7 @@
         (map-indent #'%define defs)))))
 
 (defun %print-guard-1 (expr)
-  (if (and (consp expr)
-           (eq (car expr) '|and|))
+  (if (callp expr '|and|)
     (%rechask (cdr expr) #'%print-guard-1 ", ")
     (haskell expr)))
 
@@ -113,8 +112,7 @@
         (%print-guards assign gvs (append defs (nreverse gs)))))))
 
 (defun %define-guard (assign defs expr)
-  (if (and (consp expr)
-           (eq (car expr) '|if|))
+  (if (callp expr '|if|)
     (reduce-guards assign defs expr)
     (progn
       (haskell-tops assign expr)
@@ -122,8 +120,7 @@
 
 (defun %define-right (assign value)
   (let ((expr (hs-macro-expand value)))
-    (if (and (consp expr)
-             (eq (first expr) '|where|))
+    (if (callp expr '|where|)
       (%define-guard assign (second expr)
                      (hs-macro-expand (third expr)))
       (%define-guard assign nil expr))))
@@ -231,8 +228,7 @@
 
 (defun %data-body (body)
   (if (and (consp body)
-           (consp (cdr body))
-           (eq (cadr body) :|name|))
+           (callp (cdr body) :|name|))
     (progn
       (haskell-tops (car body) " { ")
       (%rechask (cddr body) (curry #'apply #'%type) ", ")
@@ -241,8 +237,7 @@
 
 (defun %data (name body deriving)
   (haskell-tops "data " name " = ")
-  (if (and (consp body)
-           (eq (car body) '|or|))
+  (if (callp body '|or|)
     (%rechask (cdr body) #'%data-body " | ")
     (%data-body body))
   (when deriving

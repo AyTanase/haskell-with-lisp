@@ -28,8 +28,7 @@
 
 
 (defun %-> (expr)
-  (if (and (consp expr)
-           (eq (car expr) '->))
+  (if (callp expr '->)
     (haskell expr)
     (haskell-top expr)))
 
