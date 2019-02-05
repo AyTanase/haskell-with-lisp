@@ -46,16 +46,16 @@
   (mapcar (curry #'apply #'%udef) defs))
 
 (defmacro defulet (name)
-  `(def-syntax-macro ,name (defs &rest values)
-     `(,',(symbol-tail name) ,(map-udef defs) ,@values)))
+  `(def-syntax-macro ,name (defs &body body)
+     `(,',(symbol-tail name) ,(map-udef defs) ,@body)))
 
 (defulet |ulet|)
 (defulet |uwhere|)
 
-(def-syntax-macro |ulabels| (defs &rest values)
-  `(|uwhere| ,(mapcar #'defun->define defs) ,@values))
+(def-syntax-macro |ulabels| (defs &body body)
+  `(|uwhere| ,(mapcar #'defun->define defs) ,@body))
 
-(def-syntax-macro |ucase| (val &rest defs)
+(def-syntax-macro |ucase| (val &body defs)
   `(|case| ,val ,@(map-udef defs)))
 
 (defmacro defuclass (name)

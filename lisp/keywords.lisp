@@ -256,7 +256,7 @@
          (indent)
          (haskell-tops "else " z)))))
 
-(def-syntax-macro |cond| (x &rest xs)
+(def-syntax-macro |cond| (x &body xs)
   `(|if| ,@x ,@(if xs `((|cond| ,@xs)))))
 
 

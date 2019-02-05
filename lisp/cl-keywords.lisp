@@ -7,7 +7,7 @@
 (def-hs-macro |defun| (&body body)
   `(|define| ,@(defun->define body)))
 
-(def-syntax-macro |labels| (fs &rest body)
+(def-syntax-macro |labels| (fs &body body)
   `(|where| ,(mapcar #'defun->define fs) ,@body))
 
 
