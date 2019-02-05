@@ -17,6 +17,7 @@
   (load (true-path file)))
 
 (load-relative "util.lisp")
+(load-relative "reader.lisp")
 (load-relative "syntax.lisp")
 
 (provide :haskell)
