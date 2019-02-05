@@ -14,4 +14,4 @@ matchHead = matchHead' 0
 match :: Num a => Op -> String -> Maybe (a, a)
 match = match' 0
   where
-    match' n rx xs = (((,) n) <$> (matchHead rx xs)) <|> ((match' (n + 1) rx) =<< (safeTail xs))
+    match' n rx xs = (fmap ((,) n) (matchHead rx xs)) <|> ((match' (n + 1) rx) =<< (safeTail xs))
