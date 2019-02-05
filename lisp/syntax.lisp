@@ -79,9 +79,9 @@
 (defrechask rechask #'haskell " ")
 
 
-(defgeneric macro-apply (spec expr))
+(defgeneric apply-macro (spec expr))
 
-(defmethod macro-apply (spec expr)
+(defmethod apply-macro (spec expr)
   (declare (ignore spec))
   expr)
 
@@ -89,11 +89,11 @@
 (defun hs-macro-expand (expr)
   (if (atom expr)
     expr
-    (macro-apply (car expr) expr)))
+    (apply-macro (car expr) expr)))
 
 (defshadow def-syntax-macro (name args &body body)
   (with-gensyms (spec expr)
-    `(defmethod macro-apply ((,spec (eql ',name)) ,expr)
+    `(defmethod apply-macro ((,spec (eql ',name)) ,expr)
        (declare (ignore ,spec))
        (hs-macro-expand (ds-bind ,args (cdr ,expr) ,@body)))))
 
