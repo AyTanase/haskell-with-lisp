@@ -27,7 +27,7 @@
   `(%type ',vars ',type))
 
 (defsyntax |type| (var type)
-  (%type (list var) type))
+  (haskell-tops var " :: " type))
 
 
 (defun tuple (xs)
