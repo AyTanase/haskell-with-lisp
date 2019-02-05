@@ -13,9 +13,20 @@
   (with-gensyms (ys)
     `#'(lambda (&rest ,ys) (apply ,f ,@xs ,ys))))
 
-(declaim (inline filter))
-(defun filter (item sequence &key (test #'eql) (key #'identity))
-  (remove-if (complement (curry test item)) sequence :key key))
+(declaim (inline compose))
+(defun compose (f g)
+  #'(lambda (x) (funcall f (funcall g x))))
+
+(declaim (inline %partition partition))
+
+(defun %partition (test xs)
+  (loop for x in xs
+    if (funcall test x) collect x into ys
+    else collect x into ns
+    finally (return (values ys ns))))
+
+(defun partition (test xs &key (key #'identity))
+  (%partition (compose test key) xs))
 
 (declaim (inline format-symbol))
 (defun format-symbol (&rest args)

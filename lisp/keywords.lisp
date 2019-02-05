@@ -181,32 +181,29 @@
 (defun module-names (svar names)
   (when svar
     (write-string " ")
-    (tuple names)))
+    (if (callp names :|hide|)
+      (progn
+        (write-string "hiding ")
+        (tuple (cdr names)))
+      (tuple names))))
 
 (defun %defmodule (module svar names)
-  (format t "module ~a" module)
+  (haskell-tops "module " module)
   (module-names svar names)
   (write-string " where"))
 
 (defkeyword |defmodule| (module &optional (names nil svar))
   `(%defmodule ',module ,svar ',names))
 
-(defun %import (qualify? module hide? svar names)
-  (write-string "import ")
-  (if qualify?
-    (write-string "qualified "))
-  (princ module)
-  (if hide?
-    (write-string " hiding"))
+(defun %import (module svar names)
+  (haskell-tops "import " module)
   (module-names svar names))
 
-(defmacro defimport (name qualify?)
-  `(defkeyword ,name (module &optional (names nil svar) hide?)
-     `(%import ',',qualify? ',module ',hide? ,svar ',names)))
+(defkeyword |import| (module &optional (names nil svar))
+  `(%import ',module ,svar ',names))
 
-(defimport |import| nil)
-(defimport |require| t)
-
+(defhasq :|m| "module")
+(defhasq :|q| "qualified")
 (defhasq :|all| "(..)")
 
 
