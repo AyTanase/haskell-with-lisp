@@ -2,8 +2,8 @@
 #?(defoperator |Classes.-|)
 #?(defoperator |Classes.*|)
 #?(defoperator |Classes./|)
-#?(defoperator |ratio| |:%|)
-#?(defoperator |GHC.Real.ratio| |GHC.Real.:%|)
+#?(defoperator |ratio| :op |:%|)
+#?(defoperator |GHC.Real.ratio| :op |GHC.Real.:%|)
 
 (extension FlexibleInstances
            FlexibleContexts
