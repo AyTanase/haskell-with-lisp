@@ -161,16 +161,15 @@
 
 
 (defun %class-derive (args)
-  (if (consp args)
-    (ds-bind (key &rest rest) args
-      (if (symbolp key)
-        (progn
-          (format t "{-# ~@:(~a~) #-} " key)
-          (if rest
-            (=>-left (if (cdr rest)
-                       rest
-                       (car rest)))))
-        (=>-left args)))))
+  (flet ((print-args (sexp)
+           (=>-left (if (cdr sexp) sexp (car sexp)))))
+    (if (consp args)
+      (ds-bind (key &rest rest) args
+        (if (symbolp key)
+          (progn
+            (format t "{-# ~@:(~a~) #-} " key)
+            (print-args rest))
+          (print-args args))))))
 
 (defun %class (key name derive defs)
   (format t "~a " key)
