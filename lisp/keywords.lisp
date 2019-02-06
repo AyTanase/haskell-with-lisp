@@ -165,9 +165,8 @@
     (ds-bind (key &rest rest) args
       (if (symbolp key)
         (progn
-          (format t "{-# ~@:(~a~) #-}" key)
-          (when rest
-            (write-string " ")
+          (format t "{-# ~@:(~a~) #-} " key)
+          (if rest
             (=>-left rest)))
         (=>-left args)))))
 
