@@ -149,14 +149,27 @@
     (haskell val)))
 
 
-(defun %class-derive (derive)
-  (when (consp derive)
-    (if (symbolp (car derive))
-      (progn
-        (format t "{-# ~@:(~a~) #-} " (car derive))
-        (tuple (cdr derive)))
-      (tuple derive))
-    (write-string " => ")))
+(defun =>-left (args)
+  (if (consp (car args))
+    (tuple args)
+    (haskell-top args))
+  (write-string " => "))
+
+(defsyntax => (args type)
+  (=>-left args)
+  (haskell-top type))
+
+
+(defun %class-derive (args)
+  (if (consp args)
+    (ds-bind (key &rest rest) args
+      (if (symbolp key)
+        (progn
+          (format t "{-# ~@:(~a~) #-}" key)
+          (when rest
+            (write-string " ")
+            (=>-left rest)))
+        (=>-left args)))))
 
 (defun %class (key name derive defs)
   (format t "~a " key)
@@ -202,13 +215,6 @@
 (defhasq :|m| "module")
 (defhasq :|q| "qualified")
 (defhasq :|all| "(..)")
-
-
-(defsyntax => (constraints type)
-  (if (consp (car constraints))
-    (tuple constraints)
-    (haskell-top constraints))
-  (haskell-tops " => " type))
 
 
 (defkeyword |deftype| (name type)
