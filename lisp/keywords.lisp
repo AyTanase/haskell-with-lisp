@@ -293,7 +293,7 @@
 (defsyntax |lambda| (args expr)
   (write-char #\\)
   (rechask args)
-  (haskell-tops " -> " expr))
+  (%define-right " -> " expr))
 
 (defkeyword |extension| (&rest args)
   `(format t "{-# LANGUAGE ~{~a~^, ~} #-}" ',args))
