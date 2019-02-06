@@ -1,5 +1,5 @@
-#?(let ((mods '#!(AlNum Classes Complex ExNum Poly Ratio)))
+#?(let ((mods '#!(Classes Poly Complex Ratio)))
     (eval `#!(defpackage Algebra
-               (:import Prelude)
+               (:shadow Prelude (Num :all) (Fractional :all))
                (:use ,@#?mods)
                (:export ,@#?(mapcar (curry #'list :|m|) mods)))))

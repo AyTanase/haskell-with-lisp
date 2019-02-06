@@ -1,8 +1,6 @@
-module Algebra (module AlNum, module Classes, module Complex, module ExNum, module Poly, module Ratio) where
-import Prelude ()
-import AlNum
+module Algebra (module Classes, module Poly, module Complex, module Ratio) where
+import Prelude hiding (Num (..), Fractional (..))
 import Classes
-import Complex
-import ExNum
 import Poly
+import Complex
 import Ratio

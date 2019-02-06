@@ -1,11 +1,10 @@
-(extension FlexibleInstances
-           MonoLocalBinds
-           MultiParamTypeClasses
-           UndecidableInstances)
+(extension FlexibleInstances MultiParamTypeClasses)
 
 (defpackage Complex
-  (:import Prelude)
-  (:use Classes))
+  (:shadow Prelude negate + - * (Fractional :all))
+  (:use (:q Prelude) Classes)
+  (:export (Complex :all) cpure))
+
 
 (data (Complex a) (Complex :name (re a) (im a)) Eq)
 
@@ -13,35 +12,47 @@
   ((show (Complex x y))
     (where ((shows' (showsPrec 11)))
       (append "Complex " (shows' x " ") (shows' y ""))))
-  ((showsPrec p) (compose (showParen (>= p 11)) append show)))
+  ((showsPrec p)
+    (compose (showParen (>= p 11)) append show)))
 
-(instance (Pure Complex m) (:overlapping (Monoid m))
-  ((pure x) (Complex x zero)))
 
-(instance (Join Complex g) (:overlapping (Group g))
-  ((join (Complex (Complex u v) (Complex x y)))
-    (Complex (- u y) (+ v x))))
+(type cpure (=> (Group a) (-> a (Complex a))))
+(define cpure (flip Complex zero))
 
-(instance (Semigroup (Complex s)) (:overlapping (Semigroup s))
+(type cmap (-> (-> a b) (Complex a) (Complex b)))
+(define (cmap f (Complex x y)) (Complex (f x) (f y)))
+
+(instance (Group (Complex a)) (:overlapping (Group a))
+  (zero (cpure zero))
+  (negate (cmap negate))
   ((+ (Complex u v) (Complex x y)) (Complex (+ u x) (+ v y))))
 
-(instance (Group (Complex g)) (:overlapping (Group g))
-  ((negate (Complex x y)) (Complex (negate x) (negate y))))
 
 (instance (Action a (Complex b)) (:overlapping (Action a b))
-  ((* r (Complex x y)) (Complex (* r x) (* r y))))
+  (* (compose cmap *)))
 
 (instance (Action (Complex a) (Complex b))
     (:overlapping (Action a b) (Group b))
   ((* (Complex u v) (Complex x y))
     (Complex (- (* u x) (* v y)) (+ (* u y) (* v x)))))
 
+
+(instance (Ring (Complex r)) ((Ring r))
+  (unit (cpure unit)))
+
+
 (instance (Div a (Complex b)) (:overlapping (Div a b))
-  ((/ (Complex x y) z) (Complex (/ x z) (/ y z))))
+  (/ (flip (compose cmap (flip /)))))
 
 (instance (Div (Complex a) (Complex b))
-    (:overlapping
-     (Group a) (Action a a) (Div a (Complex b))
-     (Action (Complex a) (Complex b)))
+    ((Div a b) (Ring a) (Group b))
   ((/ z (Complex x y))
     (* (Complex x (- y)) (/ z (+ (* x x) (* y y))))))
+
+
+(instance (Num (Complex a)) ((Num a))
+  (+ +) (- -) (* *)
+  (negate negate)
+  (abs undefined)
+  (signum undefined)
+  (fromInteger (compose cpure fromInteger)))

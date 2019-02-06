@@ -1,51 +1,63 @@
-{-# LANGUAGE FlexibleInstances, MultiParamTypeClasses #-}
+{-# LANGUAGE FlexibleContexts, FlexibleInstances, MultiParamTypeClasses #-}
 
-module Poly where
-import Prelude ()
+module Poly (Poly (..), ppure) where
+import Prelude hiding (negate, (+), (-), (*))
+import qualified Prelude
 import Classes
 
-data Poly r = Poly [r] deriving (Show)
 
-instance (Eq a, Monoid a) => Eq (Poly a) where
-  (Poly xs) == (Poly ys) = eq xs ys
+newtype Poly a = Poly [a] deriving (Show)
+
+instance (Eq a, Group a) => Eq (Poly a) where
+  (Poly us) == (Poly vs) = equal us vs
     where
-      eq [] xs = and (map ((==) zero) xs)
-      eq xs [] = eq [] xs
-      eq (x:xs) (y:ys) = (x == y) && (eq xs ys)
-
-polyMap :: (a -> b) -> Poly a -> Poly b
-polyMap f (Poly xs) = Poly (map f xs)
-
-instance {-# OVERLAPPING #-} () => Pure Poly a where
-  pure = Poly . pure
+      zerop xs = and (map ((==) zero) xs)
+      equal xs [] = zerop xs
+      equal [] ys = zerop ys
+      equal (x:xs) (y:ys) = (x == y) && (equal xs ys)
 
 
-polyAdd :: Semigroup s => [s] -> [s] -> [s]
-polyAdd [] ys = ys
-polyAdd xs [] = xs
-polyAdd (x:xs) (y:ys) = (x + y) : (polyAdd xs ys)
+ppure :: a -> Poly a
+ppure = Poly . pure
 
-instance {-# OVERLAPPING #-} (Semigroup s) => Semigroup (Poly s) where
-  (Poly xs) + (Poly ys) = Poly (polyAdd xs ys)
+pmap :: (a -> b) -> Poly a -> Poly b
+pmap f (Poly xs) = Poly (map f xs)
 
 
-instance {-# OVERLAPPING #-} (Monoid m) => Join Poly m where
-  join (Poly xs) = Poly (join' xs)
+add :: Group a => [a] -> [a] -> [a]
+
+add xs [] = xs
+
+add [] ys = ys
+
+add (x:xs) (y:ys) = (x + y) : (add xs ys)
+
+
+instance {-# OVERLAPPING #-} (Group a) => Group (Poly a) where
+  zero = Poly []
+  negate = pmap negate
+  (Poly xs) + (Poly ys) = Poly (add xs ys)
+
+
+instance (Action a b) => Action a (Poly b) where
+  (*) = pmap . (*)
+
+instance {-# OVERLAPPING #-} (Action a b, Group b) => Action (Poly a) (Poly b) where
+  _ * (Poly []) = Poly []
+  (Poly us) * (Poly (v:vs)) = Poly (foldr (mul v vs) [] us)
     where
-      join' [] = []
-      join' ((Poly xs) : ys) = polyAdd xs (zero : (join' ys))
+      mul y ys x zs = (x * y) : (add (x * ys) zs)
 
 
-instance {-# OVERLAPPING #-} (Group g) => Group (Poly g) where
-  negate = polyMap negate
+instance (Ring r) => Ring (Poly r) where
+  unit = ppure unit
 
 
-instance {-# OVERLAPPING #-} (Action a b) => Action a (Poly b) where
-  (*) x = polyMap ((*) x)
-
-instance {-# OVERLAPPING #-} (Action a b, Semigroup b) => Action (Poly a) (Poly b) where
-  (Poly xs) * (Poly ys) = Poly (act xs ys)
-    where
-      act xs [] = []
-      act [] ys = []
-      act (x:xs) ys = (x * (head ys)) : (polyAdd (x * (tail ys)) (act xs ys))
+instance (Num a) => Num (Poly a) where
+  (+) = (+)
+  (-) = (-)
+  (*) = (*)
+  negate = negate
+  abs (Poly xs) = ppure (sum (map abs xs))
+  signum = undefined
+  fromInteger = ppure . fromInteger
