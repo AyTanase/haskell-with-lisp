@@ -168,7 +168,8 @@
         (if (symbolp key)
           (progn
             (format t "{-# ~@:(~a~) #-} " key)
-            (print-args rest))
+            (if rest
+              (print-args rest)))
           (print-args args))))))
 
 (defun %class (key name derive defs)
