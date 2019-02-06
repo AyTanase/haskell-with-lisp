@@ -1,9 +1,9 @@
 (extension FlexibleInstances MultiParamTypeClasses)
 
 (defpackage Complex
-  (:shadow Prelude negate + - * (Fractional :all))
+  (:shadow Prelude pure negate + - * (Fractional :all))
   (:use (:q Prelude) Classes)
-  (:export (Complex :all) cpure))
+  (:export (Complex :all)))
 
 
 (data (Complex a) (Complex :name (re a) (im a)) Eq)
@@ -16,14 +16,15 @@
     (compose (showParen (>= p 11)) append show)))
 
 
-(type cpure (=> (Group a) (-> a (Complex a))))
-(define cpure (flip Complex zero))
+(instance (Pure Complex a) (:overlapping (Group a))
+  (pure (flip Complex zero)))
 
 (type cmap (-> (-> a b) (Complex a) (Complex b)))
 (define (cmap f (Complex x y)) (Complex (f x) (f y)))
 
+
 (instance (Group (Complex a)) (:overlapping (Group a))
-  (zero (cpure zero))
+  (zero (pure zero))
   (negate (cmap negate))
   ((+ (Complex u v) (Complex x y)) (Complex (+ u x) (+ v y))))
 
@@ -35,10 +36,6 @@
     (:overlapping (Action a b) (Group b))
   ((* (Complex u v) (Complex x y))
     (Complex (- (* u x) (* v y)) (+ (* u y) (* v x)))))
-
-
-(instance (Ring (Complex r)) (:overlapping (Ring r))
-  (unit (cpure unit)))
 
 
 (instance (Div a (Complex b)) (:overlapping (Div a b))
@@ -55,4 +52,4 @@
   (negate negate)
   (abs undefined)
   (signum undefined)
-  (fromInteger (compose cpure fromInteger)))
+  (fromInteger (compose pure fromInteger)))

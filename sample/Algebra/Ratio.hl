@@ -6,9 +6,9 @@
            UndecidableInstances)
 
 (defpackage Ratio
-  (:shadow Prelude negate + - *)
+  (:shadow Prelude pure negate + - *)
   (:use (:q Prelude) Classes)
-  (:export (Ratio :all) rpure))
+  (:export (Ratio :all)))
 
 
 (data (Ratio a) (ratio a a) Show)
@@ -17,14 +17,15 @@
   ((= (ratio u v) (ratio x y)) (= (* u y) (* v x))))
 
 
-(type rpure (=> (Ring r) (-> r (Ratio r))))
-(define rpure (flip ratio unit))
+(instance (Pure Ratio a) (:overlapping (Ring a))
+  (pure (flip ratio unit)))
 
 (type rmap (-> (-> a a) (Ratio a) (Ratio a)))
 (define (rmap f (ratio x y)) (ratio (f x) y))
 
+
 (instance (Group (Ratio r)) (:overlapping (Ring r))
-  (zero (rpure zero))
+  (zero (pure zero))
   (negate (rmap negate))
   ((+ (ratio u v) (ratio x y))
     (ratio (+ (* u y) (* v x)) (* v y))))
@@ -36,10 +37,6 @@
 (instance (Action (Ratio a) (Ratio b))
     (:overlapping (Action a b))
   ((* (ratio u v) (ratio x y)) (ratio (* u x) (* v y))))
-
-
-(instance (Ring (Ratio r)) (:overlapping (Ring r))
-  (unit (rpure unit)))
 
 
 (instance (Div a (Ratio b)) (:overlapping (Action a b))
@@ -54,5 +51,5 @@
   (+ +) (- -) (* *)
   (negate negate)
   ((abs (ratio x y)) (ratio (abs x) (abs y)))
-  ((signum (ratio x y)) (rpure (* (signum x) (signum y))))
-  (fromInteger (compose rpure fromInteger)))
+  ((signum (ratio x y)) (pure (* (signum x) (signum y))))
+  (fromInteger (compose pure fromInteger)))

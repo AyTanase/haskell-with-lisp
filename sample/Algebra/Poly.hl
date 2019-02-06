@@ -3,9 +3,9 @@
            MultiParamTypeClasses)
 
 (defpackage Poly
-  (:shadow Prelude negate + - *)
+  (:shadow Prelude pure negate + - *)
   (:use (:q Prelude) Classes)
-  (:export (Poly :all) ppure))
+  (:export (Poly :all)))
 
 
 (newtype (Poly a) (Poly (list a)) Show)
@@ -21,8 +21,8 @@
       (equal us vs))))
 
 
-(type ppure (-> a (Poly a)))
-(define ppure (compose Poly list))
+(instance (Pure Poly a) (:overlapping)
+  (pure (compose Poly list)))
 
 (type pmap (-> (-> a b) (Poly a) (Poly b)))
 (define (pmap f (Poly xs)) (Poly (map f xs)))
@@ -56,13 +56,9 @@
       (Poly (foldr (mul v vs) nil us)))))
 
 
-(instance (Ring (Poly r)) (:overlapping (Ring r))
-  (unit (ppure unit)))
-
-
 (instance (Num (Poly a)) ((Num a))
   (+ +) (- -) (* *)
   (negate negate)
-  ((abs (Poly xs)) (ppure (sum (map abs xs))))
+  ((abs (Poly xs)) (pure (sum (map abs xs))))
   (signum undefined)
-  (fromInteger (compose ppure fromInteger)))
+  (fromInteger (compose pure fromInteger)))

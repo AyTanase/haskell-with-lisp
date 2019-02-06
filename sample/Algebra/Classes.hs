@@ -1,9 +1,16 @@
 {-# LANGUAGE FlexibleInstances, MonoLocalBinds, MultiParamTypeClasses, UndecidableInstances #-}
 
 module Classes where
-import Prelude hiding (negate, (+), (-), (*), (/), recip)
+import Prelude hiding (pure, negate, (+), (-), (*), (/), recip)
 import qualified Prelude
 import GHC.Base (liftA2)
+
+
+class Pure f a where
+  pure :: a -> f a
+
+instance (Applicative f) => Pure f a where
+  pure = Prelude.pure
 
 
 class Group g where
@@ -45,7 +52,7 @@ class (Group r, Action r r) => Ring r where
 instance (Num a) => Ring a where
   unit = 1
 
-instance (Ring r, Applicative f) => Ring (f r) where
+instance (Ring r, Group (f r), Action (f r) (f r), Pure f r) => Ring (f r) where
   unit = pure unit
 
 

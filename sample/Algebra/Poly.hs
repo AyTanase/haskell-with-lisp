@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleContexts, FlexibleInstances, MultiParamTypeClasses #-}
 
-module Poly (Poly (..), ppure) where
-import Prelude hiding (negate, (+), (-), (*))
+module Poly (Poly (..)) where
+import Prelude hiding (pure, negate, (+), (-), (*))
 import qualified Prelude
 import Classes
 
@@ -17,8 +17,8 @@ instance (Eq a, Group a) => Eq (Poly a) where
       equal (x:xs) (y:ys) = (x == y) && (equal xs ys)
 
 
-ppure :: a -> Poly a
-ppure = Poly . pure
+instance {-# OVERLAPPING #-} () => Pure Poly a where
+  pure = Poly . pure
 
 pmap :: (a -> b) -> Poly a -> Poly b
 pmap f (Poly xs) = Poly (map f xs)
@@ -49,15 +49,11 @@ instance {-# OVERLAPPING #-} (Action a b, Group b) => Action (Poly a) (Poly b) w
       mul y ys x zs = (x * y) : (add (x * ys) zs)
 
 
-instance {-# OVERLAPPING #-} (Ring r) => Ring (Poly r) where
-  unit = ppure unit
-
-
 instance (Num a) => Num (Poly a) where
   (+) = (+)
   (-) = (-)
   (*) = (*)
   negate = negate
-  abs (Poly xs) = ppure (sum (map abs xs))
+  abs (Poly xs) = pure (sum (map abs xs))
   signum = undefined
-  fromInteger = ppure . fromInteger
+  fromInteger = pure . fromInteger

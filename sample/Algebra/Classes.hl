@@ -9,9 +9,16 @@
            UndecidableInstances)
 
 (defpackage Classes
-  (:shadow Prelude negate + - * / recip)
+  (:shadow Prelude pure negate + - * / recip)
   (:use (:q Prelude))
   (:import GHC.Base liftA2))
+
+
+(class (Pure f a) ()
+  (type pure (-> a (f a))))
+
+(instance (Pure f a) ((Applicative f))
+  (pure Prelude.pure))
 
 
 (class (Group g) ()
@@ -54,7 +61,8 @@
 
 (instance (Ring a) ((Num a)) (unit 1))
 
-(instance (Ring (f r)) ((Ring r) (Applicative f))
+(instance (Ring (f r))
+    ((Ring r) (Group (f r)) (Action (f r) (f r)) (Pure f r))
   (unit (pure unit)))
 
 

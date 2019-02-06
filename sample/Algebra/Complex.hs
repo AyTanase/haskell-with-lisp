@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleInstances, MultiParamTypeClasses #-}
 
-module Complex (Complex (..), cpure) where
-import Prelude hiding (negate, (+), (-), (*), Fractional (..))
+module Complex (Complex (..)) where
+import Prelude hiding (pure, negate, (+), (-), (*), Fractional (..))
 import qualified Prelude
 import Classes
 
@@ -15,14 +15,15 @@ instance (Show a) => Show (Complex a) where
   showsPrec p = (showParen (p >= 11)) . (++) . show
 
 
-cpure :: Group a => a -> Complex a
-cpure = flip Complex zero
+instance {-# OVERLAPPING #-} (Group a) => Pure Complex a where
+  pure = flip Complex zero
 
 cmap :: (a -> b) -> Complex a -> Complex b
 cmap f (Complex x y) = Complex (f x) (f y)
 
+
 instance {-# OVERLAPPING #-} (Group a) => Group (Complex a) where
-  zero = cpure zero
+  zero = pure zero
   negate = cmap negate
   (Complex u v) + (Complex x y) = Complex (u + x) (v + y)
 
@@ -32,10 +33,6 @@ instance {-# OVERLAPPING #-} (Action a b) => Action a (Complex b) where
 
 instance {-# OVERLAPPING #-} (Action a b, Group b) => Action (Complex a) (Complex b) where
   (Complex u v) * (Complex x y) = Complex ((u * x) - (v * y)) ((u * y) + (v * x))
-
-
-instance {-# OVERLAPPING #-} (Ring r) => Ring (Complex r) where
-  unit = cpure unit
 
 
 instance {-# OVERLAPPING #-} (Div a b) => Div a (Complex b) where
@@ -52,4 +49,4 @@ instance (Num a) => Num (Complex a) where
   negate = negate
   abs = undefined
   signum = undefined
-  fromInteger = cpure . fromInteger
+  fromInteger = pure . fromInteger
