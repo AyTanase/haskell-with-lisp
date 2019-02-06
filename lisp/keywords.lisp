@@ -167,7 +167,7 @@
 (defun overlap-key-p (key)
   (case key
     (#!(:overlapping
-        :overlapps
+        :overlaps
         :overlappable
         :incoherent)
        t)))
