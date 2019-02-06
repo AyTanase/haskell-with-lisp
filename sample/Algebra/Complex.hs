@@ -34,14 +34,14 @@ instance {-# OVERLAPPING #-} (Action a b, Group b) => Action (Complex a) (Comple
   (Complex u v) * (Complex x y) = Complex ((u * x) - (v * y)) ((u * y) + (v * x))
 
 
-instance (Ring r) => Ring (Complex r) where
+instance {-# OVERLAPPING #-} (Ring r) => Ring (Complex r) where
   unit = cpure unit
 
 
 instance {-# OVERLAPPING #-} (Div a b) => Div a (Complex b) where
   (/) = flip (cmap . (flip (/)))
 
-instance (Div a b, Ring a, Group b) => Div (Complex a) (Complex b) where
+instance {-# OVERLAPPING #-} (Div a b, Ring a, Group b) => Div (Complex a) (Complex b) where
   z / (Complex x y) = (Complex x (negate y)) * (z / ((x * x) + (y * y)))
 
 

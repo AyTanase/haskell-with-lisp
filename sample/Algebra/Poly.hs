@@ -39,7 +39,7 @@ instance {-# OVERLAPPING #-} (Group a) => Group (Poly a) where
   (Poly xs) + (Poly ys) = Poly (add xs ys)
 
 
-instance (Action a b) => Action a (Poly b) where
+instance {-# OVERLAPPING #-} (Action a b) => Action a (Poly b) where
   (*) = pmap . (*)
 
 instance {-# OVERLAPPING #-} (Action a b, Group b) => Action (Poly a) (Poly b) where
@@ -49,7 +49,7 @@ instance {-# OVERLAPPING #-} (Action a b, Group b) => Action (Poly a) (Poly b) w
       mul y ys x zs = (x * y) : (add (x * ys) zs)
 
 
-instance (Ring r) => Ring (Poly r) where
+instance {-# OVERLAPPING #-} (Ring r) => Ring (Poly r) where
   unit = ppure unit
 
 

@@ -44,7 +44,7 @@
   ((+ (Poly xs) (Poly ys)) (Poly (add xs ys))))
 
 
-(instance (Action a (Poly b)) ((Action a b))
+(instance (Action a (Poly b)) (:overlapping (Action a b))
   (* (compose pmap *)))
 
 (instance (Action (Poly a) (Poly b))
@@ -56,7 +56,7 @@
       (Poly (foldr (mul v vs) nil us)))))
 
 
-(instance (Ring (Poly r)) ((Ring r))
+(instance (Ring (Poly r)) (:overlapping (Ring r))
   (unit (ppure unit)))
 
 

@@ -37,7 +37,7 @@
     (Complex (- (* u x) (* v y)) (+ (* u y) (* v x)))))
 
 
-(instance (Ring (Complex r)) ((Ring r))
+(instance (Ring (Complex r)) (:overlapping (Ring r))
   (unit (cpure unit)))
 
 
@@ -45,7 +45,7 @@
   (/ (flip (compose cmap (flip /)))))
 
 (instance (Div (Complex a) (Complex b))
-    ((Div a b) (Ring a) (Group b))
+    (:overlapping (Div a b) (Ring a) (Group b))
   ((/ z (Complex x y))
     (* (Complex x (- y)) (/ z (+ (* x x) (* y y))))))
 

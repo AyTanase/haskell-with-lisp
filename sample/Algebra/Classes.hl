@@ -61,7 +61,7 @@
 (class (Div a b) ((Action a b))
   (type / (-> b a b)))
 
-(instance (Div a a) ((Fractional a))
+(instance (Div a a) (:incoherent (Fractional a))
   (/ Prelude./))
 
 (instance (Div a (f b)) ((Div a b) (Functor f))

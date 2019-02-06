@@ -52,7 +52,7 @@ instance (Ring r, Applicative f) => Ring (f r) where
 class (Action a b) => Div a b where
   (/) :: b -> a -> b
 
-instance (Fractional a) => Div a a where
+instance {-# INCOHERENT #-} (Fractional a) => Div a a where
   (/) = (Prelude./)
 
 instance (Div a b, Functor f) => Div a (f b) where

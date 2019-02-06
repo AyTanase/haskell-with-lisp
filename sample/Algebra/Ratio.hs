@@ -31,14 +31,14 @@ instance {-# OVERLAPPING #-} (Action a b) => Action (Ratio a) (Ratio b) where
   (u :% v) * (x :% y) = (u * x) :% (v * y)
 
 
-instance (Ring r) => Ring (Ratio r) where
+instance {-# OVERLAPPING #-} (Ring r) => Ring (Ratio r) where
   unit = rpure unit
 
 
-instance (Action a b) => Div a (Ratio b) where
+instance {-# OVERLAPPING #-} (Action a b) => Div a (Ratio b) where
   (x :% y) / z = x :% (z * y)
 
-instance (Action a b) => Div (Ratio a) (Ratio b) where
+instance {-# OVERLAPPING #-} (Action a b) => Div (Ratio a) (Ratio b) where
   r / (x :% y) = (y :% x) * r
 
 

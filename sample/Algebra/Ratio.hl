@@ -38,14 +38,15 @@
   ((* (ratio u v) (ratio x y)) (ratio (* u x) (* v y))))
 
 
-(instance (Ring (Ratio r)) ((Ring r))
+(instance (Ring (Ratio r)) (:overlapping (Ring r))
   (unit (rpure unit)))
 
 
-(instance (Div a (Ratio b)) ((Action a b))
+(instance (Div a (Ratio b)) (:overlapping (Action a b))
   ((/ (ratio x y) z) (ratio x (* z y))))
 
-(instance (Div (Ratio a) (Ratio b)) ((Action a b))
+(instance (Div (Ratio a) (Ratio b))
+    (:overlapping (Action a b))
   ((/ r (ratio x y)) (* (ratio y x) r)))
 
 
