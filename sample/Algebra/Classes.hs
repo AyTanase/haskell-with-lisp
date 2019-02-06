@@ -36,7 +36,7 @@ instance {-# OVERLAPPING #-} (Group g, Applicative f) => Group (f g) where
 class Action a b where
   (*) :: a -> b -> b
 
-instance {-# INCOHERENT #-} (Num a) => Action a a where
+instance {-# INCOHERENT #-} Num a => Action a a where
   (*) = (Prelude.*)
 
 instance (Action a b, Functor f) => Action a (f b) where
@@ -59,7 +59,7 @@ instance (Ring r, Group (f r), Action (f r) (f r), Pure f r) => Ring (f r) where
 class (Action a b) => Div a b where
   (/) :: b -> a -> b
 
-instance {-# INCOHERENT #-} (Fractional a) => Div a a where
+instance {-# INCOHERENT #-} Fractional a => Div a a where
   (/) = (Prelude./)
 
 instance (Div a b, Functor f) => Div a (f b) where

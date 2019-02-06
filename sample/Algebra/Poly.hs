@@ -33,13 +33,13 @@ add [] ys = ys
 add (x:xs) (y:ys) = (x + y) : (add xs ys)
 
 
-instance {-# OVERLAPPING #-} (Group a) => Group (Poly a) where
+instance {-# OVERLAPPING #-} Group a => Group (Poly a) where
   zero = Poly []
   negate = pmap negate
   (Poly xs) + (Poly ys) = Poly (add xs ys)
 
 
-instance {-# OVERLAPPING #-} (Action a b) => Action a (Poly b) where
+instance {-# OVERLAPPING #-} Action a b => Action a (Poly b) where
   (*) = pmap . (*)
 
 instance {-# OVERLAPPING #-} (Action a b, Group b) => Action (Poly a) (Poly b) where
