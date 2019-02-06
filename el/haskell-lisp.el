@@ -34,7 +34,7 @@
    ("(\\(extension\\s-[^)]*\\))" 1 font-lock-preprocessor-face)
    ("(\\(a\\(?:ppe\\)?nd\\|or\\|compose\\|->?\\|[+*/]\\)\\_>" 1 font-lock-variable-name-face)
    ("#\\(?:\\?\\|\\\\.\\)" . font-lock-negation-char-face)
-   ("\\_<\\([[:upper:]][[:word:]']*\\|list\\*?\\|tuple\\|nil\\|cons\\|pair\\)\\_>" 1 font-lock-type-face)
+   ("\\_<\\([[:upper:]][[:word:]']*\\|\\(?:list\\*?\\|tuple\\|nil\\|cons\\|pair\\)\\_>\\)" 1 font-lock-type-face)
    ("\\_<\\?.*?\\_>" . font-lock-builtin-face)))
 
 (modify-syntax-entry ?{ "_ 2bn" haskell-lisp-mode-syntax-table)
