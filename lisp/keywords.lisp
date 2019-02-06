@@ -151,10 +151,12 @@
 
 (defun =>-left (args)
   (when (consp args)
-    (if (and (consp (car args))
-             (consp (cdr args)))
-      (tuple args)
-      (haskell-top args))
+    (cond
+      ((atom (car args))
+        (haskell-top args))
+      ((atom (cdr args))
+        (haskell-top (car args)))
+      (t (tuple args)))
     (write-string " => ")))
 
 (defsyntax => (args type)
@@ -168,8 +170,7 @@
       (if (symbolp key)
         (progn
           (format t "{-# ~@:(~a~) #-} " key)
-          (if rest
-            (=>-left rest)))
+          (=>-left rest))
         (=>-left args)))))
 
 (defun %class (key name derive defs)
