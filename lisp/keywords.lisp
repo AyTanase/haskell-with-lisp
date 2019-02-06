@@ -167,7 +167,9 @@
         (progn
           (format t "{-# ~@:(~a~) #-} " key)
           (if rest
-            (=>-left rest)))
+            (=>-left (if (cdr rest)
+                       rest
+                       (car rest)))))
         (=>-left args)))))
 
 (defun %class (key name derive defs)
