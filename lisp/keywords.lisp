@@ -150,10 +150,12 @@
 
 
 (defun =>-left (args)
-  (if (consp (car args))
-    (tuple args)
-    (haskell-top args))
-  (write-string " => "))
+  (when (consp args)
+    (if (and (consp (car args))
+             (consp (cdr args)))
+      (tuple args)
+      (haskell-top args))
+    (write-string " => ")))
 
 (defsyntax => (args type)
   (=>-left args)
@@ -161,16 +163,14 @@
 
 
 (defun %class-derive (args)
-  (flet ((print-args (sexp)
-           (=>-left (if (cdr sexp) sexp (car sexp)))))
-    (if (consp args)
-      (ds-bind (key &rest rest) args
-        (if (symbolp key)
-          (progn
-            (format t "{-# ~@:(~a~) #-} " key)
-            (if rest
-              (print-args rest)))
-          (print-args args))))))
+  (if (consp args)
+    (ds-bind (key &rest rest) args
+      (if (symbolp key)
+        (progn
+          (format t "{-# ~@:(~a~) #-} " key)
+          (if rest
+            (=>-left rest)))
+        (=>-left args)))))
 
 (defun %class (key name derive defs)
   (format t "~a " key)
