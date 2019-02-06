@@ -164,10 +164,18 @@
   (haskell-top type))
 
 
+(defun overlap-key-p (key)
+  (case key
+    (#!(:overlapping
+        :overlapps
+        :overlappable
+        :incoherent)
+       t)))
+
 (defun %class-derive (args)
   (if (consp args)
     (ds-bind (key &rest rest) args
-      (if (symbolp key)
+      (if (overlap-key-p key)
         (progn
           (format t "{-# ~@:(~a~) #-} " key)
           (=>-left rest))
