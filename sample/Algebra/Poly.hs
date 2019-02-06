@@ -17,7 +17,7 @@ instance (Eq a, Group a) => Eq (Poly a) where
       equal (x:xs) (y:ys) = (x == y) && (equal xs ys)
 
 
-instance {-# OVERLAPPING #-} () => Pure Poly a where
+instance {-# OVERLAPPING #-} Pure Poly a where
   pure = Poly . pure
 
 pmap :: (a -> b) -> Poly a -> Poly b
