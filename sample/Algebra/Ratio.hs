@@ -39,7 +39,7 @@ instance {-# OVERLAPPING #-} Action a b => Div (Ratio a) (Ratio b) where
   r / (x :% y) = (y :% x) * r
 
 
-instance (Num a) => Num (Ratio a) where
+instance Num a => Num (Ratio a) where
   (+) = (+)
   (-) = (-)
   (*) = (*)

@@ -9,7 +9,7 @@ import GHC.Base (liftA2)
 class Pure f a where
   pure :: a -> f a
 
-instance (Applicative f) => Pure f a where
+instance Applicative f => Pure f a where
   pure = Prelude.pure
 
 
@@ -20,7 +20,7 @@ class Group g where
   negate x = zero - x
   x - y = x + (negate y)
 
-instance (Num a) => Group a where
+instance Num a => Group a where
   zero = 0
   negate = Prelude.negate
   (+) = (Prelude.+)
@@ -49,14 +49,14 @@ instance {-# OVERLAPPING #-} (Action a b, Applicative f) => Action (f a) (f b) w
 class (Group r, Action r r) => Ring r where
   unit :: r
 
-instance (Num a) => Ring a where
+instance Num a => Ring a where
   unit = 1
 
 instance (Ring r, Group (f r), Action (f r) (f r), Pure f r) => Ring (f r) where
   unit = pure unit
 
 
-class (Action a b) => Div a b where
+class Action a b => Div a b where
   (/) :: b -> a -> b
 
 instance {-# INCOHERENT #-} Fractional a => Div a a where

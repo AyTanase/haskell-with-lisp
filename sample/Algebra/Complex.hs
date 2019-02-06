@@ -8,7 +8,7 @@ import Classes
 
 data Complex a = Complex { re :: a, im :: a } deriving (Eq)
 
-instance (Show a) => Show (Complex a) where
+instance Show a => Show (Complex a) where
   show (Complex x y) = "Complex " ++ (shows' x " ") ++ (shows' y "")
     where
       shows' = showsPrec 11
@@ -42,7 +42,7 @@ instance {-# OVERLAPPING #-} (Div a b, Ring a, Group b) => Div (Complex a) (Comp
   z / (Complex x y) = (Complex x (negate y)) * (z / ((x * x) + (y * y)))
 
 
-instance (Num a) => Num (Complex a) where
+instance Num a => Num (Complex a) where
   (+) = (+)
   (-) = (-)
   (*) = (*)

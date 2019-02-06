@@ -49,7 +49,7 @@ instance {-# OVERLAPPING #-} (Action a b, Group b) => Action (Poly a) (Poly b) w
       mul y ys x zs = (x * y) : (add (x * ys) zs)
 
 
-instance (Num a) => Num (Poly a) where
+instance Num a => Num (Poly a) where
   (+) = (+)
   (-) = (-)
   (*) = (*)
