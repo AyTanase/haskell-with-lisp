@@ -2,9 +2,6 @@
 
 (data Op (or Finite (Compare Char Op) (Split Op Op)))
 
-(instance (Show Op) ()
-  (show (const "#<Regex.Op>")))
-
 (deftype NFA (-> Op Op))
 
 (deftype (BinOp a) (-> a a a))

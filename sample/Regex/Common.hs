@@ -2,9 +2,6 @@ module Common where
 
 data Op = Finite | Compare Char Op | Split Op Op
 
-instance Show Op where
-  show = const "#<Regex.Op>"
-
 type NFA = Op -> Op
 
 type BinOp a = a -> a -> a
