@@ -44,9 +44,7 @@ instance {-# OVERLAPPING #-} Action a b => Action a (Poly b) where
 
 instance {-# OVERLAPPING #-} (Action a b, Group b) => Action (Poly a) (Poly b) where
   _ * (Poly []) = Poly []
-  (Poly us) * (Poly (v:vs)) = Poly (foldr (mul v vs) [] us)
-    where
-      mul y ys x zs = (x * y) : (add (x * ys) zs)
+  (Poly xs) * (Poly (y:ys)) = Poly (foldr (\x zs -> (x * y) : (add (x * ys) zs)) [] xs)
 
 
 instance Num a => Num (Poly a) where

@@ -50,10 +50,10 @@
 (instance (Action (Poly a) (Poly b))
     (:overlapping (Action a b) (Group b))
   ((* _ (Poly nil)) (Poly nil))
-  ((* (Poly us) (Poly (cons v vs)))
-    (labels ((mul (y ys x zs)
-               (cons (* x y) (add (* x ys) zs))))
-      (Poly (foldr (mul v vs) nil us)))))
+  ((* (Poly xs) (Poly (cons y ys)))
+    (Poly (foldr (lambda (x zs)
+                   (cons (* x y) (add (* x ys) zs)))
+                 nil xs))))
 
 
 (instance (Num (Poly a)) ((Num a))
