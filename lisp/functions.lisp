@@ -82,7 +82,7 @@
 #!(defconstant 1+ (curry + 1))
 (def-syntax-macro 1+ (x) `(+ ,x 1))
 
-#!(defconstant 1- (curry + (- 1)))
+#!(defconstant 1- (curry + -1))
 (def-syntax-macro 1- (x) `(- ,x 1))
 
 (defhasq |pair| "(,)")
