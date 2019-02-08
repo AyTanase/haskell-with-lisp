@@ -1,21 +1,9 @@
 #?(defun nth-name (name n)
     (if (= n 1)
       name
-      (format-symbol "~a~a" name n)))
-
-#?(defun generate-1 (lift name n)
-    `(|define| ,(nth-name name n) (,lift ,(nth-name name (1- n)))))
-
-#?(defun generate (name m n)
-    (let ((lift (format-symbol "lift~:(~a~)" name)))
-      (loop for i from m to n
-        collect (generate-1 lift name i))))
-
-#?(defmacro |generate| (name m &optional n)
-    `(progn ,@(generate name (if n m 2) (if n n m))))
+      (format-symbol "~a~d" name n)))
 
 #?(defoperator |apply| :op <*>)
-
 
 (defpackage Logic
   (:import Prelude const apply))
@@ -59,36 +47,41 @@ const
 (type compose (-> (-> b c) (-> a b) a c))
 (define compose (apply (const apply) const))
 
+
 #|
-compose :: (-> (-> c d) (-> b c) b d)
-compose f g y = f (g y)
-
-compose2 :: (-> (-> c d) (-> a b c) a b d)
-compose2 f g x = compose f (g x)
-
-composeN' f g x = composeN f (g x)
-composeN' f     = compose (composeN f)
-composeN'       = compose compose composeN
+liftCompose f x g y = f x (g y)
+liftCompose f x     = (.) (f x)
 |#
+(type liftCompose (-> (-> b c d) b (-> a c) a d))
 (define liftCompose (curry compose compose))
-(generate compose 2)
+
+#?(defun gencompose (n)
+    (let ((vs (genvars n))
+          (name (nth-name '|compose| n)))
+      `(progn
+         (|type| ,name (-> (-> |a| |b|) (-> ,@vs |a|) ,@vs |b|))
+         (|define| ,name (|liftCompose| ,(nth-name '|compose| (1- n)))))))
+
+#?(eval (gencompose 2))
 
 
 #|
-apply :: (-> (-> b c d) (-> b c) b d)
-apply f g y = f y (g y)
-
-apply2 :: (-> (-> a b c d) (-> a b c) a b d)
-apply2 f g x = apply (f x) (g x)
-
-applyN' f g x = applyN (f x) (g x)
-              = compose applyN f x (g x)
-applyN' f     = apply (compose applyN f)
-applyN'       = compose2 apply compose applyN
+liftApply f g h x = f (g x) (h x)
+                  = (.) f g x (h x)
+liftApply f g     = (<*>) ((.) f g)
 |#
+(type liftApply (-> (-> b c d) (-> a b) (-> a c) a d))
 (define liftApply (compose2 apply compose))
-(type apply2 (-> (-> a b c d) (-> a b c) a b d))
-(generate apply 3)
+
+#?(defun genapply (n)
+    (let ((vs (genvars n))
+          (name (nth-name '|apply| n)))
+      `(progn
+         (|type| ,name (-> (-> ,@vs |a| |b|) (-> ,@vs |a|) ,@vs |b|))
+         (|define| ,name (|liftApply| ,(nth-name '|apply| (1- n)))))))
+
+#?(loop for i from 2 to 3
+    do (eval (genapply i)))
 
 
 #|

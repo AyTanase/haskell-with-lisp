@@ -6,8 +6,8 @@ exec :: Num a => Op -> String -> Maybe a
 exec = exec' 0
   where
     exec' n Finite _ = Just n
-    exec' n (Compare x rx) (_v1:xs)
-      | (x == _v1) = exec' (n + 1) rx xs
+    exec' n (Compare x rx) (_v8:xs)
+      | (x == _v8) = exec' (n + 1) rx xs
     exec' _ (Compare _ _) _ = Nothing
     exec' n (Split p q) xs = (exec' n p xs) <|> (exec' n q xs)
 
