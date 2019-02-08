@@ -1,4 +1,4 @@
-(defmodule Common)
+(defpackage Common (:use GHC.Base))
 
 (data Op (or Finite (Compare Char Op) (Split Op Op)))
 
@@ -7,7 +7,7 @@
 (deftype (BinOp a) (-> a a a))
 
 (type split (BinOp NFA))
-(define (split f g x) (Split (f x) (g x)))
+(define split (liftA2 Split))
 
 (type safeTail (-> (list a) (Maybe (list a))))
 (define (safeTail nil) Nothing)

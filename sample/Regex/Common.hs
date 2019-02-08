@@ -1,4 +1,5 @@
 module Common where
+import GHC.Base
 
 data Op = Finite | Compare Char Op | Split Op Op
 
@@ -7,7 +8,7 @@ type NFA = Op -> Op
 type BinOp a = a -> a -> a
 
 split :: BinOp NFA
-split f g x = Split (f x) (g x)
+split = liftA2 Split
 
 safeTail :: [a] -> Maybe [a]
 safeTail [] = Nothing
