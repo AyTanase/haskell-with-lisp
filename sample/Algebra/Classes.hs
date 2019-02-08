@@ -17,7 +17,7 @@ class Group g where
   zero :: g
   negate :: g -> g
   (+), (-) :: g -> g -> g
-  negate x = zero - x
+  negate = (-) zero
   x - y = x + (negate y)
 
 instance Num a => Group a where
@@ -74,7 +74,7 @@ class (Ring k, Div k k) => Field k
 instance (Ring k, Div k k) => Field k
 
 recip :: Field k => k -> k
-recip x = unit / x
+recip = (/) unit
 
 instance (Action k a, Field k) => Div k a where
   x / y = (recip y) * x
