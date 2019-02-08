@@ -70,7 +70,7 @@ composeN' f g x = composeN f (g x)
 composeN' f     = compose (composeN f)
 composeN'       = compose compose composeN
 |#
-(define liftCompose #'(compose compose))
+(define liftCompose (curry compose compose))
 (generate compose 2)
 
 
