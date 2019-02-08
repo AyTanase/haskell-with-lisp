@@ -29,7 +29,7 @@
           ,(progn ,@rest)))))
 
 
-(defmacro defkeyword (name args &body body)
+(defmacro def-hs-macro (name args &body body)
   (mv-bind (decs rest) (collect-decs body)
     `(defmacro ,name ,args
        ,@decs

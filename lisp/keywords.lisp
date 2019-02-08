@@ -23,7 +23,7 @@
   (arrange vars)
   (haskell-tops " :: " type))
 
-(defkeyword |type| (vars type)
+(def-hs-macro |type| (vars type)
   `(%type ',vars ',type))
 
 (defsyntax |type| (expr type)
@@ -129,7 +129,7 @@
       (haskell-top var)
       (%define-right assign val))))
 
-(defkeyword |define| (var val)
+(def-hs-macro |define| (var val)
   `(%define ',var ',val))
 
 
@@ -189,7 +189,7 @@
       (map-indent #'%define defs))))
 
 (defmacro def-class-macro (key)
-  `(defkeyword ,key (name &optional derive &rest defs)
+  `(def-hs-macro ,key (name &optional derive &rest defs)
      `(%class ',',key ',name ',derive ',defs)))
 
 (def-class-macro |class|)
@@ -210,14 +210,14 @@
   (module-names svar names)
   (write-string " where"))
 
-(defkeyword |defmodule| (module &optional (names nil svar))
+(def-hs-macro |defmodule| (module &optional (names nil svar))
   `(%defmodule ',module ,svar ',names))
 
 (defun %import (module svar names)
   (haskell-tops "import " module)
   (module-names svar names))
 
-(defkeyword |import| (module &optional (names nil svar))
+(def-hs-macro |import| (module &optional (names nil svar))
   `(%import ',module ,svar ',names))
 
 (defhasq :|m| "module")
@@ -225,7 +225,7 @@
 (defhasq :|all| "(..)")
 
 
-(defkeyword |deftype| (name type)
+(def-hs-macro |deftype| (name type)
   `(haskell-tops "type " ',name " = " ',type))
 
 
@@ -249,7 +249,7 @@
     (tuple deriving)))
 
 (defmacro def-data-macro (key)
-  `(defkeyword ,key (name constr &optional deriving)
+  `(def-hs-macro ,key (name constr &optional deriving)
      `(%data ',',key ',name ',constr ',deriving)))
 
 (def-data-macro |data|)
@@ -301,7 +301,7 @@
 (defsyntax |curry| (&rest args)
   (rechask args))
 
-(defkeyword |extension| (&rest args)
+(def-hs-macro |extension| (&rest args)
   `(format t "{-# LANGUAGE ~{~a~^, ~} #-}" ',args))
 
 (defhasq :|as| "@")
