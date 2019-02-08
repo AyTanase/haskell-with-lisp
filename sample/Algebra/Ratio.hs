@@ -6,7 +6,7 @@ import qualified Prelude
 import Classes
 
 
-data Ratio a = a :% a deriving (Show)
+data Ratio a = a :% a deriving Show
 
 instance (Eq a, Action a a) => Eq (Ratio a) where
   (u :% v) == (x :% y) = (u * y) == (v * x)

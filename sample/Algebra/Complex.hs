@@ -6,7 +6,7 @@ import qualified Prelude
 import Classes
 
 
-data Complex a = Complex { re :: a, im :: a } deriving (Eq)
+data Complex a = Complex { re :: a, im :: a } deriving Eq
 
 instance Show a => Show (Complex a) where
   show (Complex x y) = "Complex " ++ (shows' x " ") ++ (shows' y "")

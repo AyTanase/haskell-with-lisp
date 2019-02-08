@@ -6,7 +6,7 @@ import qualified Prelude
 import Classes
 
 
-newtype Poly a = Poly [a] deriving (Show)
+newtype Poly a = Poly [a] deriving Show
 
 instance (Eq a, Group a) => Eq (Poly a) where
   (Poly us) == (Poly vs) = equal us vs
