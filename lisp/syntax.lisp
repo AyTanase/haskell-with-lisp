@@ -3,13 +3,13 @@
 
 (defun collect-decs (body)
   (loop
-    for exps on body
-    for expr = (car exps)
-    while (typecase expr
-            (cons (eq (car expr) 'declare))
-            (string (cdr exps)))
-    collect expr into decs
-    finally (return (values decs exps))))
+    for xs on body
+    for x = (car xs)
+    while (typecase x
+            (cons (eq (car x) 'declare))
+            (string (cdr xs)))
+    collect x into decs
+    finally (return (values decs xs))))
 
 
 (defpackage :|haskell|
