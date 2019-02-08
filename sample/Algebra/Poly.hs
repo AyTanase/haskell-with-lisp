@@ -43,7 +43,7 @@ instance {-# OVERLAPPING #-} Action a b => Action a (Poly b) where
   (*) = pmap . (*)
 
 instance {-# OVERLAPPING #-} (Action a b, Group b) => Action (Poly a) (Poly b) where
-  _ * (Poly []) = Poly []
+  _ * (Poly []) = zero
   (Poly xs) * (Poly (y:ys)) = Poly (foldr (\x zs -> (x * y) : (add (x * ys) zs)) [] xs)
 
 
