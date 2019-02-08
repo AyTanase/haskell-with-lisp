@@ -175,8 +175,8 @@
             :overlaps
             :overlappable
             :incoherent)
-           (format t "{-# ~@:(~a~) #-} " key)
-           (=>-left rest))
+          (format t "{-# ~@:(~a~) #-} " key)
+          (=>-left rest))
         (t (=>-left args))))))
 
 (defun %class (key name derive defs)
@@ -197,13 +197,18 @@
 
 
 (defun module-names (svar names)
-  (when svar
-    (write-string " ")
-    (if (callp names :|hide|)
-      (progn
-        (write-string "hiding ")
-        (tuple (cdr names)))
-      (tuple names))))
+  (labels ((print-1 (x)
+             (%rechask x #'tuple " "))
+           (print-names (args)
+             (with-paren
+               (%rechask args #'print-1 ", "))))
+    (when svar
+      (write-string " ")
+      (if (callp names :|hide|)
+        (progn
+          (write-string "hiding ")
+          (print-names (cdr names)))
+        (print-names names)))))
 
 (defun %defmodule (module svar names)
   (haskell-tops "module " module)
@@ -312,4 +317,5 @@
 ;; Local Variables:
 ;; eval: (cl-indent-rules (quote (&body)) (quote with-paren) (quote with-pragma))
 ;; eval: (add-cl-indent-rule (quote ds-bind) (quote (&lambda 4 &body)))
+;; eval: (modify-syntax-entry 33 "'2" lisp-mode-syntax-table)
 ;; End:
