@@ -21,7 +21,7 @@
 (add-cl-indent-rule 'if-bind '((&whole 4 &body) &body))
 
 (defconst haskell-lisp-keywords
-  '(class data define defmodule enum-from
+  '(class curry data define defmodule enum-from
     if-bind import instance newtype setf type
     ucase uclass udef ulabels ulet uinstance uwhere where))
 
