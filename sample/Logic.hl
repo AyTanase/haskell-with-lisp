@@ -11,7 +11,7 @@
       (loop for i from m to n
         collect (generate-1 lift name i))))
 
-#?(def-hs-macro |generate| (name m &optional n)
+#?(defmacro |generate| (name m &optional n)
     `(progn ,@(generate name (if n m 2) (if n n m))))
 
 #?(defoperator |apply| :op <*>)
