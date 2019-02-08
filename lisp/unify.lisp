@@ -38,7 +38,7 @@
   (mv-bind (expr guards) (unify var)
     (list* expr (%udef-body guards val) args)))
 
-(def-hs-macro |udef| (var val)
+(defmacro |udef| (var val)
   `(|define| ,@(%udef var val)))
 
 
@@ -59,7 +59,7 @@
   `(|case| ,val ,@(map-udef defs)))
 
 (defmacro defuclass (name)
-  `(def-hs-macro ,name (dec &optional derive &body defs)
+  `(defmacro ,name (dec &optional derive &body defs)
      `(,',(symbol-tail name) ,dec ,derive ,@(map-udef defs))))
 
 (defuclass |uclass|)

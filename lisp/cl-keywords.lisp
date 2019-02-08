@@ -4,7 +4,7 @@
   (ds-bind (name args &body body) def
     (if (eq name '|type|) def `((,name ,@args) ,@body))))
 
-(def-hs-macro |defun| (&body body)
+(defmacro |defun| (&body body)
   `(|define| ,@(defun->define body)))
 
 (def-syntax-macro |labels| (fs &body body)
@@ -18,7 +18,7 @@
       (:|import| `(|import| ,(car args) ,(cdr args)))
       (:|shadow| `(|import| ,(car args) (:|hide| ,@(cdr args)))))))
 
-(def-hs-macro |defpackage| (name &rest args)
+(defmacro |defpackage| (name &rest args)
   (mv-bind (exs ins) (partition (curry #'eq :|export|) args :key #'car)
     `(progn
        (|defmodule| ,name ,@(if exs (list (mapcan #'cdr exs))))

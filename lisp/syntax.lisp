@@ -29,12 +29,9 @@
           ,(progn ,@rest)))))
 
 
-(defshadow def-hs-macro (name &body body)
-  `(defmacro ,name ,@body))
-
 (defmacro defkeyword (name args &body body)
   (mv-bind (decs rest) (collect-decs body)
-    `(def-hs-macro ,name ,args
+    `(defmacro ,name ,args
        ,@decs
        `(progn ,(progn ,@rest) (fresh-line)))))
 

@@ -306,7 +306,7 @@
 
 (defhasq :|as| "@")
 
-(def-hs-macro |defconstant| (name expr)
+(defmacro |defconstant| (name expr)
   `(defhasq ,name ,(strhask expr)))
 
 ;; Local Variables:
