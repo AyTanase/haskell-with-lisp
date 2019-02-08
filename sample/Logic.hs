@@ -15,14 +15,14 @@ liftCompose = (.) (.)
 compose2 :: (a -> b) -> (_v1 -> _v2 -> a) -> _v1 -> _v2 -> b
 compose2 = liftCompose (.)
 
-liftApply :: (b -> c -> d) -> (a -> b) -> (a -> c) -> a -> d
-liftApply = compose2 (<*>) (.)
+liftA2 :: (b -> c -> d) -> (a -> b) -> (a -> c) -> a -> d
+liftA2 = compose2 (<*>) (.)
 
 apply2 :: (_v3 -> _v4 -> a -> b) -> (_v3 -> _v4 -> a) -> _v3 -> _v4 -> b
-apply2 = liftApply (<*>)
+apply2 = liftA2 (<*>)
 
 apply3 :: (_v5 -> _v6 -> _v7 -> a -> b) -> (_v5 -> _v6 -> _v7 -> a) -> _v5 -> _v6 -> _v7 -> b
-apply3 = liftApply apply2
+apply3 = liftA2 apply2
 
 flip :: (a -> b -> c) -> b -> a -> c
 flip = apply3 const (const const)

@@ -66,19 +66,19 @@ liftCompose f x     = (.) (f x)
 
 
 #|
-liftApply f g h x = f (g x) (h x)
-                  = (.) f g x (h x)
-liftApply f g     = apply ((.) f g)
+liftA2 f g h x = f (g x) (h x)
+               = (.) f g x (h x)
+liftA2 f g     = apply ((.) f g)
 |#
-(type liftApply (-> (-> b c d) (-> a b) (-> a c) a d))
-(define liftApply (compose2 apply compose))
+(type liftA2 (-> (-> b c d) (-> a b) (-> a c) a d))
+(define liftA2 (compose2 apply compose))
 
 #?(defun genapply (n)
     (let ((vs (genvars n))
           (name (nth-name '|apply| n)))
       `(progn
          (|type| ,name (-> (-> ,@vs |a| |b|) (-> ,@vs |a|) ,@vs |b|))
-         (|define| ,name (|liftApply| ,(nth-name '|apply| (1- n))))
+         (|define| ,name (|liftA2| ,(nth-name '|apply| (1- n))))
          (terpri))))
 
 #?(loop for i from 2 to 3
