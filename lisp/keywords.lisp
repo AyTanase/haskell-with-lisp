@@ -26,7 +26,8 @@
 (defkeyword |type| (vars type)
   `(%type ',vars ',type))
 
-(defapply apply-syntax |type| #'%type)
+(defsyntax |type| (expr type)
+  (haskell-tops expr " :: " type))
 
 
 (defun tuple (xs)
