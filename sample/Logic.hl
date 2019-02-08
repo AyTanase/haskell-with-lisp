@@ -60,7 +60,8 @@ liftCompose f x     = (.) (f x)
           (name (nth-name '|compose| n)))
       `(progn
          (|type| ,name (-> (-> |a| |b|) (-> ,@vs |a|) ,@vs |b|))
-         (|define| ,name (|liftCompose| ,(nth-name '|compose| (1- n)))))))
+         (|define| ,name (|liftCompose| ,(nth-name '|compose| (1- n))))
+         (terpri))))
 
 #?(eval (gencompose 2))
 
@@ -78,7 +79,8 @@ liftApply f g     = (<*>) ((.) f g)
           (name (nth-name '|apply| n)))
       `(progn
          (|type| ,name (-> (-> ,@vs |a| |b|) (-> ,@vs |a|) ,@vs |b|))
-         (|define| ,name (|liftApply| ,(nth-name '|apply| (1- n)))))))
+         (|define| ,name (|liftApply| ,(nth-name '|apply| (1- n))))
+         (terpri))))
 
 #?(loop for i from 2 to 3
     do (eval (genapply i)))
