@@ -1,7 +1,7 @@
 #?(defoperator |apply| :op <*>)
 
 (defpackage Logic
-  (:import Prelude Applicative pure apply))
+  (:import Prelude (Applicative (pure apply))))
 
 #|
 pure  :: Applicative f => a -> f a

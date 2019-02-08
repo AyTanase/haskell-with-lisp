@@ -1,5 +1,5 @@
 module Logic where
-import Prelude (Applicative, pure, (<*>))
+import Prelude (Applicative (pure, (<*>)))
 
 id :: a -> a
 id = pure <*> (pure :: a -> b -> a)
