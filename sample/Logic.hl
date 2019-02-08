@@ -1,116 +1,68 @@
-#?(defun nth-name (name n)
-    (if (= n 1)
-      name
-      (format-symbol "~a~d" name n)))
-
 #?(defoperator |apply| :op <*>)
 
 (defpackage Logic
-  (:import Prelude const apply))
+  (:import Prelude Applicative pure apply))
 
 #|
-const :: (-> a b a)
-apply :: (-> (-> a b c) (-> a b) a c)
+pure  :: Applicative f => a -> f a
+apply :: Applicative f => f (a -> b) -> f a -> f b
 |#
 
 
 #|
-apply       :: (-> (-> a (-> b a) a) (-> a b a) a a)
-const       :: (-> a (-> b a) a)
-apply const :: (-> (-> a b a) a a)
+apply      :: (a -> (b -> a) -> a) -> (a -> b -> a) -> a -> a
+pure       :: a -> (b -> a) -> a
+apply pure :: (a -> b -> a) -> a -> a
+pure       :: a -> b -> a
 |#
 (type id (-> a a))
-(define id (apply const const))
+(define id (apply pure (type pure (-> a b a))))
 
 
 #|
-x       :: a
-g       :: (-> a b)
-g x     :: b
-f       :: (-> b c)
-f (g x) :: c
+f              :: a -> b
+pure           :: (a -> b) -> f (a -> b)
+pure f         :: f (a -> b)
+apply          :: f (a -> b) -> f a -> f b
+apply (pure f) :: f a -> f b
 
-const f         :: (-> a b c)
-apply           :: (-> (-> a b c) (-> a b) a c)
-apply (const f) :: (-> (-> a b) a c)
-
-const apply
-  :: (-> (-> b c) (-> a b c) (-> a b) a c)
 apply
-  :: (-> (-> (-> b c) (-> a b c) (-> a b) a c) (-> (-> b c) a b c) (-> b c) (-> a b) a c)
-apply (const apply)
-  :: (-> (-> (-> b c) a b c) (-> b c) (-> a b) a c)
-const
-  :: (-> (-> b c) a b c)
+  :: ((a -> b) -> f (a -> b) -> f a -> f b) -> ((a -> b) -> f (a -> b)) -> (a -> b) -> f a -> f b
+pure apply
+  :: (a -> b) -> f (a -> b) -> f a -> f b
+apply (pure apply)
+  :: ((a -> b) -> f (a -> b)) -> (a -> b) -> f a -> f b
+pure
+  :: (a -> b) -> f (a -> b)
 |#
-(type compose (-> (-> b c) (-> a b) a c))
-(define compose (apply (const apply) const))
+(type liftA (=> (Applicative f) (-> (-> a b) (f a) (f b))))
+(define liftA (apply (pure apply) pure))
 
 
 #|
-liftCompose f x g y = f x (g y)
-liftCompose f x     = (.) (f x)
+apply       :: f (b -> c) -> f b -> f c
+liftA apply :: (f a -> f (b -> c)) -> f a -> f b -> f c
+liftA       :: (a -> b -> c) -> f a -> f (b -> c)
+
+liftA :: (y -> z) -> (x -> y) -> x -> z
 |#
-(type liftCompose (-> (-> b c d) b (-> a c) a d))
-(define liftCompose (curry compose compose))
-
-#?(defun gencompose (n)
-    (let ((vs (genvars n))
-          (name (nth-name '|compose| n)))
-      `(progn
-         (|type| ,name (-> (-> |a| |b|) (-> ,@vs |a|) ,@vs |b|))
-         (|define| ,name (|liftCompose| ,(nth-name '|compose| (1- n))))
-         (terpri))))
-
-#?(eval (gencompose 2))
+(type liftA2 (=> (Applicative f) (-> (-> a b c) (f a) (f b) (f c))))
+(define liftA2 (liftA (liftA apply) liftA))
 
 
 #|
-liftA2 f g h x = f (g x) (h x)
-               = (.) f g x (h x)
-liftA2 f g     = apply ((.) f g)
+f                    :: f (a -> b)
+apply                :: f (a -> b) -> f a -> f b
+apply f              :: f a -> f b
+pure                 :: a -> f a
+liftA                :: (f a -> f b) -> (a -> f a) -> a -> f b
+liftA (apply f) pure :: a -> f b
+
+apply     :: f (a -> b) -> f a -> f b
+pure pure :: f (a -> b) -> a -> f a
 |#
-(type liftA2 (-> (-> b c d) (-> a b) (-> a c) a d))
-(define liftA2 (compose2 apply compose))
-
-#?(defun genapply (n)
-    (let ((vs (genvars n))
-          (name (nth-name '|apply| n)))
-      `(progn
-         (|type| ,name (-> (-> ,@vs |a| |b|) (-> ,@vs |a|) ,@vs |b|))
-         (|define| ,name (|liftA2| ,(nth-name '|apply| (1- n))))
-         (terpri))))
-
-#?(loop for i from 2 to 3
-    do (eval (genapply i)))
-
-
-#|
-y     :: a
-f     :: (-> a b c)
-f y   :: (-> b c)
-x     :: b
-f y x :: c
-
-f                 :: (-> a b c)
-apply             :: (-> (-> a b c) (-> a b) a c)
-apply f           :: (-> (-> a b) a c)
-const x           :: (-> a b)
-apply f (const x) :: (-> a c)
-
-const f                :: (-> b a b c)
-apply2                 :: (-> (-> b a b c) (-> b a b) b a c)
-apply2 (const f)       :: (-> (-> b a b) b a c)
-const                  :: (-> b a b)
-apply2 (const f) const :: (-> b a c)
-
-const        :: (-> (-> a b c) b a b c)
-apply3       :: (-> (-> (-> a b c) b a b c) (-> (-> a b c) b a b) (-> a b c) b a c)
-apply3 const :: (-> (-> (-> a b c) b a b) (-> a b c) b a c)
-const const  :: (-> (-> a b c) b a b)
-|#
-(type flip (-> (-> a b c) b a c))
-(define flip (apply3 const (const const)))
+(type flip (=> (Applicative f) (-> (f (-> a b)) a (f b))))
+(define flip (liftA2 liftA apply (pure pure)))
 
 (type join (-> (-> a a b) a b))
 (define join (flip apply id))

@@ -1,31 +1,20 @@
 module Logic where
-import Prelude (const, (<*>))
+import Prelude (Applicative, pure, (<*>))
 
 id :: a -> a
-id = const <*> const
+id = pure <*> (pure :: a -> b -> a)
 
 
-(.) :: (b -> c) -> (a -> b) -> a -> c
-(.) = (const (<*>)) <*> const
+liftA :: Applicative f => (a -> b) -> f a -> f b
+liftA = (pure (<*>)) <*> pure
 
 
-liftCompose :: (b -> c -> d) -> b -> (a -> c) -> a -> d
-liftCompose = (.) (.)
+liftA2 :: Applicative f => (a -> b -> c) -> f a -> f b -> f c
+liftA2 = liftA (liftA (<*>)) liftA
 
-compose2 :: (a -> b) -> (_v1 -> _v2 -> a) -> _v1 -> _v2 -> b
-compose2 = liftCompose (.)
 
-liftA2 :: (b -> c -> d) -> (a -> b) -> (a -> c) -> a -> d
-liftA2 = compose2 (<*>) (.)
-
-apply2 :: (_v3 -> _v4 -> a -> b) -> (_v3 -> _v4 -> a) -> _v3 -> _v4 -> b
-apply2 = liftA2 (<*>)
-
-apply3 :: (_v5 -> _v6 -> _v7 -> a -> b) -> (_v5 -> _v6 -> _v7 -> a) -> _v5 -> _v6 -> _v7 -> b
-apply3 = liftA2 apply2
-
-flip :: (a -> b -> c) -> b -> a -> c
-flip = apply3 const (const const)
+flip :: Applicative f => f (a -> b) -> a -> f b
+flip = liftA2 liftA (<*>) (pure pure)
 
 join :: (a -> a -> b) -> a -> b
 join = flip (<*>) id
