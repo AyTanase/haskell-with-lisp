@@ -298,6 +298,9 @@
   (rechask args)
   (%define-right " -> " expr))
 
+(defsyntax |curry| (&rest args)
+  (rechask args))
+
 (defkeyword |extension| (&rest args)
   `(format t "{-# LANGUAGE ~{~a~^, ~} #-}" ',args))
 

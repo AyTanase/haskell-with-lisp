@@ -79,18 +79,10 @@
 (defoperator /= :many (haskell-top (expand-/= args)))
 
 
-(defsyntax function (x)
-  (cond
-    ((atom x)
-      (haskell-top x))
-    ((atom (cdr x))
-      (haskell-top (car x)))
-    (t (rechask `(,(car x) ,(if (cddr x) x (cadr x)))))))
-
-#!(defconstant 1+ #'(+ 1))
+#!(defconstant 1+ (curry + 1))
 (def-syntax-macro 1+ (x) `(+ ,x 1))
 
-#!(defconstant 1- #'(+ (- 1)))
+#!(defconstant 1- (curry + (- 1)))
 (def-syntax-macro 1- (x) `(- ,x 1))
 
 (defhasq |pair| "(,)")
