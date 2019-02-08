@@ -154,6 +154,11 @@
 
 (defmethod haskell (x) (princ x))
 
+(defmethod haskell ((x real))
+  (if (< x 0)
+    (haskell `(- ,(- x)))
+    (call-next-method)))
+
 (defmethod haskell ((x character))
   (cond
     ((char= x #\')
