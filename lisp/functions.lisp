@@ -8,7 +8,7 @@
            ((null args)
              (write-string ,(or zero printed)))
            ((null (cdr args))
-             (haskell-top ,(or one '(car args))))
+             ,(or one '(haskell-top (car args))))
            (t ,(or many `(rechask args ,(format nil " ~a " op))))))
        (defhasq ,name ,printed))))
 
@@ -16,9 +16,9 @@
   `(def-binop-as ,op ,op ,@args))
 
 (defbinop + :zero "0")
-(defbinop - :one `(|negate| ,(car args)))
+(defbinop - :one (haskell-top `(|negate| ,(car args))))
 (defbinop * :zero "1")
-(defbinop / :one `(|recip| ,(car args)))
+(defbinop / :one (haskell-top `(|recip| ,(car args))))
 
 (def-binop-as |and| && :zero "True")
 (def-binop-as |or| "||" :zero "False")
@@ -43,9 +43,9 @@
 
 (defmacro defoperator (name &key (op name) many)
   `(def-binop-as ,name ,op
-     :one `#'(,',name ,(car args))
+     :one (call-next-method)
      :many (if (cddr args)
-             ,(or many `(rechask `(,',name ,@args)))
+             ,(or many '(call-next-method))
              (apply #'print-infix ',op args))))
 
 
@@ -97,7 +97,7 @@
 
 
 (def-binop-as |cons| |:|
-  :one `#'(|cons| ,(car args))
+  :one (call-next-method)
   :many (ds-bind (x y) args
           (haskell x)
           (if (and (atom x) (atom y))
