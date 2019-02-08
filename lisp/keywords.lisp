@@ -100,7 +100,7 @@
 (defun reduce-guards (assign defs expr)
   (let ((gs nil))
     (flet ((gpush (guard)
-             (if (atom guard)
+             (if (truep guard)
                guard
                (let ((v (genvar)))
                  (push (list v guard) gs)
