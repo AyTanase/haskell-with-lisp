@@ -15,10 +15,9 @@ apply :: (-> (-> a b c) (-> a b) a c)
 
 
 #|
-apply       :: (-> (-> a b a) (-> a b) a a)
-const       :: (-> a b a)
-apply const :: (-> (-> a b) a a)
-            :: (-> (-> a b a) a a)
+apply       :: (-> (-> a (-> b a) a) (-> a b a) a a)
+const       :: (-> a (-> b a) a)
+apply const :: (-> (-> a b a) a a)
 |#
 (type id (-> a a))
 (define id (apply const const))
@@ -69,7 +68,7 @@ liftCompose f x     = (.) (f x)
 #|
 liftApply f g h x = f (g x) (h x)
                   = (.) f g x (h x)
-liftApply f g     = (<*>) ((.) f g)
+liftApply f g     = apply ((.) f g)
 |#
 (type liftApply (-> (-> b c d) (-> a b) (-> a c) a d))
 (define liftApply (compose2 apply compose))
