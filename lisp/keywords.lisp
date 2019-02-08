@@ -30,8 +30,10 @@
 
 
 (defun tuple (xs)
-  (with-paren
-    (arrange xs)))
+  (if (listp xs)
+    (with-paren
+      (arrange xs))
+    (haskell-top xs)))
 
 (defpattern |tuple| (&rest xs)
   (tuple xs))
