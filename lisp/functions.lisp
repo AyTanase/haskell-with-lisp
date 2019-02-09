@@ -43,7 +43,7 @@
 
 (defmacro defoperator (name &key (op name) one many)
   `(def-binop-as ,name ,op
-     :one ,(or one '(call-nextmethod))
+     :one ,(or one '(call-next-method))
      :many (if (cddr args)
              ,(or many '(call-next-method))
              (apply #'print-infix ',op args))))
