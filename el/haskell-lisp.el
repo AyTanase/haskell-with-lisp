@@ -1,5 +1,8 @@
 (require 'lisp-custom)
 
+(defun symbol-regexp-opt (symbols &optional paren)
+  (regexp-opt (mapcar #'symbol-name symbols) paren))
+
 (defun lisp-to-haskell (file-name)
   (interactive "sFile Name: ")
   (shell-command (format "cl2hs %S" file-name)))
@@ -20,25 +23,30 @@
 (add-cl-indent-rule 'do '(&body))
 (add-cl-indent-rule 'if-bind '((&whole 4 &body) &body))
 
-(defconst haskell-lisp-keywords
-  '(class curry data define defmodule enum-from
-    if-bind import instance newtype setf type
-    ucase uclass udef ulabels ulet uinstance uwhere where))
+(let ((keywords
+        '(class curry data define defmodule enum-from
+          if-bind import instance newtype setf type
+          ucase uclass udef ulabels ulet uinstance uwhere where))
+      (operators
+        '(+ - * / and or append compose -> => = <= >= < > /=))
+      (constructors '(nil cons list* list tuple pair)))
+  (font-lock-add-keywords
+   'haskell-lisp-mode
+   `((,(concat "(" (symbol-regexp-opt keywords t) "\\_>") 1 font-lock-keyword-face)
+     ("(type\\s-+(\\([^)]*\\))" 1 font-lock-function-name-face)
+     ("(\\(?:define\\s-+(?\\|type\\s-\\)\\s-*\\(\\S-+\\)" 1 font-lock-function-name-face)
+     ("(\\(extension\\s-[^)]*\\))" 1 font-lock-preprocessor-face)
+     (,(concat "(" (symbol-regexp-opt operators t) "\\_>") 1 font-lock-variable-name-face)
+     ("#\\(?:\\?\\|\\\\.\\)" . font-lock-negation-char-face)
+     ,(cons (concat "\\_<\\(?:[[:upper:]][[:word:]']*\\|"
+                    (symbol-regexp-opt constructors)
+                    "\\_>\\)")
+            font-lock-type-face)
+     ("\\_<\\?.+?\\_>" . font-lock-builtin-face))))
 
-(font-lock-add-keywords
- 'haskell-lisp-mode
- `((,(concat "(" (regexp-opt (mapcar #'symbol-name haskell-lisp-keywords) t) "\\_>")
-     1 font-lock-keyword-face)
-   ("(type\\s-+(\\([^)]*\\))" 1 font-lock-function-name-face)
-   ("(\\(?:define\\s-+(?\\|type\\s-\\)\\s-*\\(\\S-*\\)" 1 font-lock-function-name-face)
-   ("(\\(extension\\s-[^)]*\\))" 1 font-lock-preprocessor-face)
-   ("(\\(a\\(?:ppe\\)?nd\\|or\\|compose\\|->?\\|[+*/]\\)\\_>" 1 font-lock-variable-name-face)
-   ("#\\(?:\\?\\|\\\\.\\)" . font-lock-negation-char-face)
-   ("\\_<\\([[:upper:]][[:word:]']*\\|\\(?:list\\*?\\|tuple\\|nil\\|cons\\|pair\\)\\_>\\)" 1 font-lock-type-face)
-   ("\\_<\\?.*?\\_>" . font-lock-builtin-face)))
-
-(modify-syntax-entry ?{ "_ 2bn" haskell-lisp-mode-syntax-table)
-(modify-syntax-entry ?} "_ 3bn" haskell-lisp-mode-syntax-table)
+(let ((table haskell-lisp-mode-syntax-table))
+  (modify-syntax-entry ?{ "_ 2bn" table)
+  (modify-syntax-entry ?} "_ 3bn" table))
 
 (define-key haskell-lisp-mode-map (kbd "C-c C-c") 'to-haskell)
 
