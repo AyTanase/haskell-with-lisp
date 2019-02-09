@@ -5,16 +5,20 @@
   (:use Common Control.Applicative))
 
 (type exec (=> (Num a) (-> Op String (Maybe a))))
-(define exec
-  (ulabels ((exec' (n Finite _)
-              (Just n))
-            (exec' (n (Compare ?x rx) (cons ?x xs))
-              (exec' (1+ n) rx xs))
+(define (exec rx cs)
+  (ulabels ((exec' (n Finite xs)
+              (Just (tuple n xs)))
+            (exec' (n (Compare ?x p) (cons ?x xs))
+              (exec' (1+ n) p xs))
             (exec' (_ (Compare _ _) _)
               Nothing)
             (exec' (n (Split p q) xs)
-              (alt (exec' n p xs) (exec' n q xs))))
-    (exec' 0)))
+              (alt (exec' n p xs) (exec' n q xs)))
+            (exec' (n (Atomic p q r) xs)
+              (maybe (exec' n r xs)
+                     (uncurry (flip exec' q))
+                     (exec' n p xs))))
+    (fmap fst (exec' 0 rx cs))))
 
 (type match (=> (Num a) (-> Op String (Maybe (tuple a a)))))
 (define match

@@ -5,7 +5,7 @@ import Data.Bifunctor
 
 
 {- Q :: Quantifier -}
-type QMaker = BinOp NFA -> NFA -> NFA
+type QMaker = (NFA -> NFA -> NFA) -> NFA -> NFA
 
 makeStar, makePlus, makeOpt :: QMaker
 
@@ -22,6 +22,8 @@ parse' :: Parser
 
 {- G :: Greediness -}
 checkG :: QMaker -> Parser
+
+checkG make f ('+':xs) = (make atomic f, xs)
 
 checkG make f ('?':xs) = (make (flip split) f, xs)
 

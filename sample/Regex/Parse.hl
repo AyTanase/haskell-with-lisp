@@ -4,7 +4,7 @@
 
 
 #{ Q :: Quantifier }#
-(deftype QMaker (-> (BinOp NFA) NFA NFA))
+(deftype QMaker (-> (-> NFA NFA NFA) NFA NFA))
 
 (type (makeStar makePlus makeOpt) QMaker)
 
@@ -23,6 +23,9 @@
 
 #{ G :: Greediness }#
 (type checkG (-> QMaker Parser))
+
+(define (checkG make f (cons #\+ xs))
+  (tuple (make atomic f) xs))
 
 (define (checkG make f (cons #\? xs))
   (tuple (make (flip split) f) xs))

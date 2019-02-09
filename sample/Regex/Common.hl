@@ -1,13 +1,18 @@
 (defpackage Common (:use GHC.Base))
 
-(data Op (or Finite (Compare Char Op) (Split Op Op)))
+(data Op (or Finite
+             (Compare Char Op)
+             (Split Op Op)
+             (Atomic Op Op Op)))
 
 (deftype NFA (-> Op Op))
 
-(deftype (BinOp a) (-> a a a))
-
-(type split (BinOp NFA))
+(type split (-> NFA NFA NFA))
 (define split (liftA2 Split))
+
+(type atomic (-> NFA NFA NFA))
+(define (atomic f g x)
+  (Atomic (f Finite) x (g x)))
 
 (type safeTail (-> (list a) (Maybe (list a))))
 (define (safeTail nil) Nothing)
