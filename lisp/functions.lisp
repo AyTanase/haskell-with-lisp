@@ -41,31 +41,25 @@
   (format t " ~a " op)
   (haskell y))
 
-(defmacro defoperator (name &key (op name) many)
+(defmacro defoperator (name &key (op name) one many)
   `(def-binop-as ,name ,op
-     :one (call-next-method)
+     :one ,(or one '(call-nextmethod))
      :many (if (cddr args)
              ,(or many '(call-next-method))
              (apply #'print-infix ',op args))))
 
+(defmacro defrelation (name &rest args)
+  `(defoperator ,name :one (write-string "True") ,@args))
 
-(defun expand-ord-op (op args)
-  (flet ((expand-1 (vs)
-           (list op (car vs) (car (or (cdr vs) (last args))))))
-    (let ((vs (genvars (- (length args) 2))))
-      `#!(let ,#?(mapcar #'list vs (cdr args))
-           (and ,@#?(maplist #'expand-1 (cons (car args) vs)))))))
 
-(defmacro def-ord-op (name &optional (op name))
-  `(defoperator ,name :op ,op
-     :many (haskell-top (expand-ord-op ',name args))))
+(defun expand-= (args)
+  (let ((v (genvar)))
+    (flet ((expand-1 (w) `(= ,w ,v)))
+      `#!(let #?((,v ,(car args)))
+           (and ,@#?(mapcar #'expand-1 (cdr args)))))))
 
-(def-ord-op = ==)
-(def-ord-op <=)
-(def-ord-op >=)
-(def-ord-op <)
-(def-ord-op >)
-
+(defrelation = :op ==
+  :many (haskell-top (expand-= args)))
 
 (defun expand-/= (args)
   (let ((vs (genvars (length args))))
@@ -76,7 +70,23 @@
     `#!(let ,#?(mapcar #'list vs args)
          (and ,@#?(mapcan #'expand-1 vs))))))
 
-(defoperator /= :many (haskell-top (expand-/= args)))
+(defrelation /= :many (haskell-top (expand-/= args)))
+
+(defun expand-ord-op (op args)
+  (let ((var (genvar)))
+    `#!(let #?((,var ,(cadr args)))
+         (and #?(,op ,(car args) ,var)
+              #?(,op ,var ,@(cddr args))))))
+
+(defmacro def-ord-op (op)
+  `(defrelation ,op
+     :many (haskell-top (expand-ord-op ',op args))))
+
+(def-ord-op <=)
+(def-ord-op >=)
+(def-ord-op <)
+(def-ord-op >)
+
 
 
 #!(defconstant 1+ (curry + 1))
@@ -127,6 +137,6 @@
 ;; Local Variables:
 ;; eval: (cl-indent-rules (quote (&body)) (quote with-paren) (quote with-square-brackets))
 ;; eval: (add-cl-indent-rule (quote defbinop) (quote (4 &body)))
-;; eval: (add-cl-indent-rule (quote defoperator) (quote (4 2 2 &body)))
+;; eval: (add-cl-indent-rule (quote defrelation) (quote (4 2 2 &body)))
 ;; eval: (add-cl-indent-rule (quote ds-bind) (quote (&lambda 4 &body)))
 ;; End:
