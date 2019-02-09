@@ -8,15 +8,18 @@ pure  :: Applicative f => a -> f a
 apply :: Applicative f => f (a -> b) -> f a -> f b
 |#
 
+(type const (-> a b a))
+(define const pure)
+
 
 #|
-apply      :: (a -> (b -> a) -> a) -> (a -> b -> a) -> a -> a
-pure       :: a -> (b -> a) -> a
-apply pure :: (a -> b -> a) -> a -> a
-pure       :: a -> b -> a
+apply       :: (a -> (b -> a) -> a) -> (a -> b -> a) -> a -> a
+const       :: a -> (b -> a) -> a
+apply const :: (a -> b -> a) -> a -> a
+const       :: a -> b -> a
 |#
 (type id (-> a a))
-(define id (apply pure (type pure (-> a b a))))
+(define id (apply const const))
 
 
 #|
@@ -28,41 +31,42 @@ apply (pure f) :: f a -> f b
 
 apply
   :: ((a -> b) -> f (a -> b) -> f a -> f b) -> ((a -> b) -> f (a -> b)) -> (a -> b) -> f a -> f b
-pure apply
+const apply
   :: (a -> b) -> f (a -> b) -> f a -> f b
-apply (pure apply)
+apply (const apply)
   :: ((a -> b) -> f (a -> b)) -> (a -> b) -> f a -> f b
 pure
   :: (a -> b) -> f (a -> b)
 |#
 (type liftA (=> (Applicative f) (-> (-> a b) (f a) (f b))))
-(define liftA (apply (pure apply) pure))
+(define liftA (apply (const apply) pure))
+
+(type compose (-> (-> b c) (-> a b) a c))
+(define compose liftA)
 
 
 #|
-apply       :: f (b -> c) -> f b -> f c
-liftA apply :: (f a -> f (b -> c)) -> f a -> f b -> f c
-liftA       :: (a -> b -> c) -> f a -> f (b -> c)
-
-liftA :: (y -> z) -> (x -> y) -> x -> z
+apply         :: f (b -> c) -> f b -> f c
+compose apply :: (f a -> f (b -> c)) -> f a -> f b -> f c
+liftA         :: (a -> b -> c) -> f a -> f (b -> c)
 |#
 (type liftA2 (=> (Applicative f) (-> (-> a b c) (f a) (f b) (f c))))
-(define liftA2 (liftA (liftA apply) liftA))
+(define liftA2 (compose (curry compose apply) liftA))
 
 
 #|
-f                    :: f (a -> b)
-apply                :: f (a -> b) -> f a -> f b
-apply f              :: f a -> f b
-pure                 :: a -> f a
-liftA                :: (f a -> f b) -> (a -> f a) -> a -> f b
-liftA (apply f) pure :: a -> f b
+f                      :: f (a -> b)
+apply                  :: f (a -> b) -> f a -> f b
+apply f                :: f a -> f b
+pure                   :: a -> f a
+compose                :: (f a -> f b) -> (a -> f a) -> a -> f b
+compose (apply f) pure :: a -> f b
 
-apply     :: f (a -> b) -> f a -> f b
-pure pure :: f (a -> b) -> a -> f a
+apply      :: f (a -> b) -> f a -> f b
+const pure :: f (a -> b) -> a -> f a
 |#
 (type flip (=> (Applicative f) (-> (f (-> a b)) a (f b))))
-(define flip (liftA2 liftA apply (pure pure)))
+(define flip (liftA2 compose apply (const pure)))
 
 (type join (-> (-> a a b) a b))
 (define join (flip apply id))
