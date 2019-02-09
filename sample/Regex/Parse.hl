@@ -49,12 +49,20 @@
 (define (parseChar f x xs) (checkQ f (Compare x) xs))
 
 
+(type parseGroup (-> String (tuple NFA String)))
+
+(define (parseGroup (list* #\? #\> xs))
+  (first cut (parse' id xs)))
+
+(define (parseGroup xs) (parse' id xs))
+
+
 (define (parse' f nil) (tuple f nil))
 
 (define (parse' f (list* #\\ x xs)) (parseChar f x xs))
 
 (define (parse' f (cons #\( xs))
-  (uncurry (checkQ f) (parse' id xs)))
+  (uncurry (checkQ f) (parseGroup xs)))
 
 (define (parse' f (cons #\) xs)) (tuple f xs))
 

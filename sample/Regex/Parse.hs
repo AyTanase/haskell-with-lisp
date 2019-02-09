@@ -45,11 +45,18 @@ parseChar :: NFA -> Char -> String -> (NFA, String)
 parseChar f x xs = checkQ f (Compare x) xs
 
 
+parseGroup :: String -> (NFA, String)
+
+parseGroup ('?':'>':xs) = first cut (parse' id xs)
+
+parseGroup xs = parse' id xs
+
+
 parse' f [] = (f, [])
 
 parse' f ('\\':x:xs) = parseChar f x xs
 
-parse' f ('(':xs) = uncurry (checkQ f) (parse' id xs)
+parse' f ('(':xs) = uncurry (checkQ f) (parseGroup xs)
 
 parse' f (')':xs) = (f, xs)
 

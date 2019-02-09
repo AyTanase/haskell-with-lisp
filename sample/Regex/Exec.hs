@@ -8,8 +8,8 @@ exec rx cs = fmap fst (exec' 0 rx cs)
     exec' n Finite xs = Just (n, xs)
     exec' n (Compare x p) (_v1:xs)
       | (x == _v1) = exec' (n + 1) p xs
-    exec' _ (Compare _ _) _ = Nothing
     exec' n (If p q r) xs = maybe (exec' n r xs) (uncurry (flip exec' q)) (exec' n p xs)
+    exec' _ _ _ = Nothing
 
 match :: Num a => Op -> String -> Maybe (a, a)
 match = match' 0

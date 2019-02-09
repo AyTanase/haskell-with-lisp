@@ -1,6 +1,6 @@
 (defpackage Common)
 
-(data Op (or Finite (Compare Char Op) (If Op Op Op)))
+(data Op (or Finite Cut (Compare Char Op) (If Op Op Op)))
 
 (deftype NFA (-> Op Op))
 
@@ -11,6 +11,9 @@
 (type atomic (-> NFA NFA NFA))
 (define (atomic f g x)
   (If (f Finite) x (g x)))
+
+(type cut (-> NFA NFA))
+(define cut (flip atomic (const Cut)))
 
 (type safeTail (-> (list a) (Maybe (list a))))
 (define (safeTail nil) Nothing)

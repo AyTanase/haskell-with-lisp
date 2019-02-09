@@ -1,6 +1,6 @@
 module Common where
 
-data Op = Finite | Compare Char Op | If Op Op Op
+data Op = Finite | Cut | Compare Char Op | If Op Op Op
 
 type NFA = Op -> Op
 
@@ -9,6 +9,9 @@ split f g x = If (f x) Finite (g x)
 
 atomic :: NFA -> NFA -> NFA
 atomic f g x = If (f Finite) x (g x)
+
+cut :: NFA -> NFA
+cut = flip atomic (const Cut)
 
 safeTail :: [a] -> Maybe [a]
 safeTail [] = Nothing
