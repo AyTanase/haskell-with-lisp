@@ -3,15 +3,15 @@ import Common
 import Control.Applicative
 
 exec :: Num a => Op -> String -> Maybe a
-exec rx cs = fmap fst (exec' 0 rx cs)
+exec s = (fmap fst) . (exec' s 0)
   where
-    exec' n Finite xs = Just (n, xs)
-    exec' n (Compare x p) (_v1:xs)
-      | (x == _v1) = exec' (n + 1) p xs
-    exec' n (If p q r) xs = maybe (exec' n r xs) (uncurry (flip exec' q)) (exec' n p xs)
+    exec' Finite n xs = Just (n, xs)
+    exec' (Compare x p) n (_v1:xs)
+      | (x == _v1) = exec' p (n + 1) xs
+    exec' (If p q r) n xs = maybe (exec' r n xs) (uncurry (exec' q)) (exec' p n xs)
     exec' _ _ _ = Nothing
 
 match :: Num a => Op -> String -> Maybe (a, a)
 match = match' 0
   where
-    match' n rx xs = (fmap ((,) n) (exec rx xs)) <|> ((match' (n + 1) rx) =<< (safeTail xs))
+    match' n r xs = (fmap ((,) n) (exec r xs)) <|> ((match' (n + 1) r) =<< (safeTail xs))
