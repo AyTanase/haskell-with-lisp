@@ -1,15 +1,14 @@
 module Common where
-import GHC.Base
 
-data Op = Finite | Compare Char Op | Split Op Op | Atomic Op Op Op
+data Op = Finite | Compare Char Op | If Op Op Op
 
 type NFA = Op -> Op
 
 split :: NFA -> NFA -> NFA
-split = liftA2 Split
+split f g x = If (f x) Finite (g x)
 
 atomic :: NFA -> NFA -> NFA
-atomic f g x = Atomic (f Finite) x (g x)
+atomic f g x = If (f Finite) x (g x)
 
 safeTail :: [a] -> Maybe [a]
 safeTail [] = Nothing
