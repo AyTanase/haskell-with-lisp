@@ -142,7 +142,8 @@
 
 (flet ((invalidp (x)
          (and (consp x)
-              (gethash (car x) *specials*))))
+              (case (gethash (car x) *specials*)
+                ((special pattern) t)))))
   (defbinop |funcall| :op $
     :many (ds-bind (x y &rest rest) args
             (if (or rest
