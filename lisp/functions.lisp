@@ -7,8 +7,7 @@
       (cond
         ((eq spec '|funcall|)
           (rechask (cdr expr)))
-        ((eq (gethash (car expr) *specials*)
-             'operator)
+        ((keytypep spec 'operator)
           (haskell expr))
         (t (haskell-top expr))))))
 
@@ -153,13 +152,10 @@
 (defbinop |funcall| :op $
   :many (ds-bind (x y &rest rest) args
           (if (or rest
-                  (if (atom x)
-                    (atom y)
-                    (eq (gethash (car x) *specials*)
-                        'special))
-                  (and (consp y)
-                       (eq (gethash (car y) *specials*)
-                           'pattern)))
+                  (if (consp x)
+                    (keytypep (car x) 'special)
+                    (or (atom y)
+                        (keytypep (car y) 'pattern))))
             (rechask args)
             (progn
               (if (callp x '|funcall|)

@@ -173,6 +173,10 @@
      (setf (gethash ',name *specials*) 'pattern)
      (defsyntax ,name ,@body)))
 
+(declaim (inline keytypep))
+(defun keytypep (key symbol)
+  (eq (gethash key *specials*) symbol))
+
 
 (defmethod print-as-hs (expr) (princ expr))
 
@@ -192,7 +196,7 @@
 (defmethod print-as-hs ((expr cons))
   (let ((spec (car expr)))
     (flet ((call () (apply-syntax spec expr)))
-      (if (eq (gethash spec *specials*) 'pattern)
+      (if (keytypep spec 'pattern)
         (call)
         (with-paren (call))))))
 
