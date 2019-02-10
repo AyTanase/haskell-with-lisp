@@ -78,6 +78,10 @@
        (declare (ignore ,spec))
        (hs-macro-expand (ds-bind ,args (cdr ,expr) ,@body)))))
 
+(defmacro defsynonym (synonym original)
+  `(def-syntax-macro ,synonym (&rest args)
+     `(,',original ,@args)))
+
 
 (defvar *symbol-macros* (make-hash-table :test 'eq))
 

@@ -1,65 +1,87 @@
 (in-package :hs)
 
-(defmacro def-binop-as (name op &key zero one many)
-  (let ((printed (format nil "(~a)" op)))
-    `(progn
-       (defsyntax ,name (&rest args)
-         (cond
-           ((null args)
-             (write-string ,(or zero printed)))
-           ((null (cdr args))
-             ,(or one '(haskell-top (car args))))
-           (t ,(or many `(rechask args ,(format nil " ~a " op))))))
-       (defhasq ,name ,printed))))
-
-(defmacro defbinop (op &rest args)
-  `(def-binop-as ,op ,op ,@args))
-
-(defbinop + :zero "0")
-(defbinop - :one (haskell-top `(|negate| ,(car args))))
-(defbinop * :zero "1")
-(defbinop / :one (haskell-top `(|recip| ,(car args))))
-
-(def-binop-as |and| && :zero "True")
-(def-binop-as |or| "||" :zero "False")
-(def-binop-as |append| ++ :zero "[]")
-(def-binop-as |compose| |.| :zero "id")
-
-
-(defun %-> (expr)
-  (if (callp expr '->)
-    (haskell expr)
-    (haskell-top expr)))
-
-(defbinop ->
-  :zero "()"
-  :many (%rechask args #'%-> " -> "))
-
-
 (defun print-infix (op x y)
   (haskell x)
   (format t " ~a " op)
   (haskell y))
 
-(defmacro defoperator (name &key (op name) one many)
-  `(def-binop-as ,name ,op
-     :one ,(or one '(call-next-method))
-     :many (if (cddr args)
-             ,(or many '(call-next-method))
-             (apply #'print-infix ',op args))))
+(defun %operator (op expr)
+  (let ((args (cdr expr)))
+    (cond
+      ((atom args)
+        (format nil "(~a)" op))
+      ((and (consp (cdr args))
+            (atom (cddr args)))
+        (apply #'print-infix op args))
+      (t (rechask expr)))))
 
-(defmacro defrelation (name &rest args)
-  `(defoperator ,name :one (write-string "True") ,@args))
+(defmacro defoperator (name &optional (op name))
+  `(progn
+     (defmethod apply-syntax ((spec (eql ',name)) expr)
+       (declare (ignore spec))
+       (%operator ',op expr))
+     (defhasq ,name ,(format nil "(~a)" op))))
 
+
+(defmacro def-op-macro
+    (name &key (op name) (zero `',name) (one 'expr) (many 'expr))
+  (with-gensyms (spec)
+    `(progn
+       (defmethod apply-macro ((,spec (eql ',name)) expr)
+         (declare (ignore ,spec))
+         (let ((args (cdr expr)))
+           (cond
+             ((atom args) ,zero)
+             ((atom (cdr args)) ,one)
+             (t ,many))))
+       (defhasq ,name ,(format nil "(~a)" op)))))
+
+
+(defmacro defbinop
+    (name &key (op name) (zero `',name) one many)
+  `(progn
+     (def-op-macro ,name :op ,op :zero ,zero
+                   :one ,(or one '(hs-macro-expand (car args))))
+     (defsyntax ,name (&rest args)
+       ,(or many `(rechask args ,(format nil " ~a " op))))))
+
+(defbinop + :zero 0)
+(defbinop - :one `(|negate| ,(car args)))
+(defbinop * :zero 1)
+(defbinop / :one `(|recip| ,(car args)))
+
+(defbinop |and|     :op &&   :zero '|True|)
+(defbinop |or|      :op "||" :zero '|False|)
+(defbinop |append|  :op ++   :zero '|nil|)
+(defbinop |compose| :op |.|  :zero '|id|)
+
+
+(defun ->-print-1 (expr)
+  (if (callp expr '->)
+    (haskell expr)
+    (haskell-top expr)))
+
+(defbinop -> :many (%rechask args #'->-print-1 " -> "))
+
+
+(defsynonym let |let|)
+(defsynonym and |and|)
+
+(defmacro defrelation (name many &optional (op name))
+  `(progn
+     (def-op-macro ,name :op ,op
+       :one '|True|
+       :many (if (atom (cddr args)) expr ,many))
+     (defsyntax ,name (x y)
+       (print-infix ',op x y))))
 
 (defun expand-= (args)
   (let ((v (genvar)))
     (flet ((expand-1 (w) `(= ,w ,v)))
-      `#!(let #?((,v ,(car args)))
-           (and ,@#?(mapcar #'expand-1 (cdr args)))))))
+      `(let ((,v ,(car args)))
+         (and ,@(mapcar #'expand-1 (cdr args)))))))
 
-(defrelation = :op ==
-  :many (haskell-top (expand-= args)))
+(defrelation = (expand-= args) ==)
 
 (defun expand-/= (args)
   (let ((vs (genvars (length args))))
@@ -67,20 +89,19 @@
              (loop for w in vs
                until (eq v w)
                collect `(/= ,w ,v))))
-      `#!(let ,#?(mapcar #'list vs args)
-           (and ,@#?(mapcan #'expand-1 vs))))))
+      `(let ,(mapcar #'list vs args)
+         (and ,@(mapcan #'expand-1 vs))))))
 
-(defrelation /= :many (haskell-top (expand-/= args)))
+(defrelation /= (expand-/= args))
 
 (defun expand-ord-op (op args)
   (let ((var (genvar)))
-    `#!(let #?((,var ,(cadr args)))
-         (and #?(,op ,(car args) ,var)
-              #?(,op ,var ,@(cddr args))))))
+    `(let ((,var ,(cadr args)))
+       (and (,op ,(car args) ,var)
+            (,op ,var ,@(cddr args))))))
 
 (defmacro def-ord-op (op)
-  `(defrelation ,op
-     :many (haskell-top (expand-ord-op ',op args))))
+  `(defrelation ,op (expand-ord-op ',op args)))
 
 (def-ord-op <=)
 (def-ord-op >=)
@@ -100,14 +121,16 @@
 
 (defhasq |nil| "[]")
 
-(def-binop-as |cons| |:|
-  :one (call-next-method)
-  :many (ds-bind (x y) args
-          (haskell x)
-          (if (and (atom x) (atom y))
-            (write-string ":")
-            (write-string " : "))
-          (haskell y)))
+(def-op-macro |cons| :op |:|)
+(defsyntax |cons| (x &optional (y nil svar))
+  (if svar
+    (progn
+      (haskell x)
+      (if (and (atom x) (atom y))
+        (write-string ":")
+        (write-string " : "))
+      (haskell y))
+    (call-next-method)))
 
 (defsyntax |list*| (&rest args)
   (if (find-if #'consp args)
@@ -115,7 +138,6 @@
     (rechask args ":")))
 
 ;; Local Variables:
-;; eval: (add-cl-indent-rule (quote defbinop) (quote (4 &body)))
-;; eval: (add-cl-indent-rule (quote defrelation) (quote (4 2 2 &body)))
 ;; eval: (add-cl-indent-rule (quote ds-bind) (quote (&lambda 4 &body)))
+;; eval: (cl-indent-rules (quote (4 2 2 &body)) (quote def-op-macro) (quote defrelation))
 ;; End:
