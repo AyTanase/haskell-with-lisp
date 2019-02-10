@@ -17,6 +17,7 @@
 
 (defmacro defoperator (name &optional (op name))
   `(progn
+     (setf (gethash ',name *specials*) 'operator)
      (defmethod apply-syntax ((spec (eql ',name)) expr)
        (declare (ignore spec))
        (%operator ',op expr))
@@ -27,6 +28,7 @@
     (name &key (op name) (zero `',name) (one 'expr) (many 'expr))
   (with-gensyms (spec)
     `(progn
+       (setf (gethash ',name *specials*) 'operator)
        (defmethod apply-macro ((,spec (eql ',name)) expr)
          (declare (ignore ,spec))
          (let ((args (cdr expr)))
@@ -37,6 +39,13 @@
        (defhasq ,name ,(format nil "(~a)" op)))))
 
 
+(defun binop-print-1 (expr)
+  (if (and (consp expr)
+           (eq (gethash (car expr) *specials*)
+               'operator))
+    (haskell expr)
+    (haskell-top expr)))
+
 (defmacro defbinop
     (name &key (op name) (zero `',name) one many)
   `(progn
@@ -44,7 +53,7 @@
        :zero ,zero
        :one ,(or one '(hs-macro-expand (car args))))
      (defsyntax ,name (&rest args)
-       ,(or many `(rechask args ,(format nil " ~a " op))))))
+       ,(or many `(%rechask args #'binop-print-1 ,(format nil " ~a " op))))))
 
 (defbinop + :zero 0)
 (defbinop - :one `(|negate| ,(car args)))
@@ -59,7 +68,7 @@
 (defun compose-print-1 (expr)
   (if (callp expr '|compose|)
     (haskell-top expr)
-    (haskell expr)))
+    (binop-print-1 expr)))
 
 (defbinop |compose| :op |.|
   :zero '|id|
@@ -161,10 +170,13 @@
       (haskell y))
     (call-next-method)))
 
-(defsyntax |list*| (&rest args)
-  (if (find-if #'consp args)
-    (rechask args " : ")
-    (rechask args ":")))
+
+(defbinop |list*| :op |:|
+  :many (flet ((call (between)
+                 (%rechask args #'binop-print-1 between)))
+          (if (find-if #'consp args)
+            (call " : ")
+            (call ":"))))
 
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote ds-bind) (quote (&lambda 4 &body)))
