@@ -31,6 +31,24 @@
 (defparen with-square-brackets "[" "]")
 
 
+(defvar *indent* 0
+  "the current indentation level")
+
+(defun indent (&optional (n *indent*))
+  (fresh-line)
+  (loop repeat n
+    do (write-string "  ")))
+
+(defmacro with-indent (n &body body)
+  `(let ((*indent* (+ *indent* ,n)))
+     ,@body))
+
+(defun map-indent (fn xs &optional (n *indent*))
+  (dolist (x xs)
+    (indent n)
+    (apply fn x)))
+
+
 (defpackage :|haskell|
   (:nicknames :|hs|)
   (:documentation
@@ -177,11 +195,12 @@
          (write-string ,value)))))
 
 
-(load-relative "keywords.lisp")
+(load-relative "define.lisp")
+(load-relative "macros.lisp")
+(load-relative "specials.lisp")
 (load-relative "cl-keywords.lisp")
 (load-relative "unify.lisp")
 (load-relative "functions.lisp")
-
 
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote mv-bind) (quote (&lambda 4 &body)))

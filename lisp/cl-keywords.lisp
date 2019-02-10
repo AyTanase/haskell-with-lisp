@@ -1,5 +1,9 @@
 (in-package :hs)
 
+(def-syntax-macro |cond| (x &body xs)
+  `(|if| ,@x ,@(if xs `((|cond| ,@xs)))))
+
+
 (defun defun->define (def)
   (ds-bind (name args &body body) def
     (if (eq name '|type|) def `((,name ,@args) ,@body))))

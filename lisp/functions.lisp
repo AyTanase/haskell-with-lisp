@@ -67,8 +67,8 @@
              (loop for w in vs
                until (eq v w)
                collect `(/= ,w ,v))))
-    `#!(let ,#?(mapcar #'list vs args)
-         (and ,@#?(mapcan #'expand-1 vs))))))
+      `#!(let ,#?(mapcar #'list vs args)
+           (and ,@#?(mapcan #'expand-1 vs))))))
 
 (defrelation /= :many (haskell-top (expand-/= args)))
 
@@ -114,28 +114,7 @@
     (rechask args " : ")
     (rechask args ":")))
 
-(defhasq |list| "pure")
-
-(defpattern |list| (&rest args)
-  (with-square-brackets
-    (arrange args)))
-
-
-(defpattern |enum-from| (expr &rest args)
-  (with-square-brackets
-    (haskell-top expr)
-    (loop
-      for xs on args
-      for x = (car xs)
-      until (eq x :|to|)
-      do (haskell-tops "," x)
-      finally
-         (write-string "..")
-         (if (consp (cdr xs))
-           (haskell-top (cadr xs))))))
-
 ;; Local Variables:
-;; eval: (cl-indent-rules (quote (&body)) (quote with-paren) (quote with-square-brackets))
 ;; eval: (add-cl-indent-rule (quote defbinop) (quote (4 &body)))
 ;; eval: (add-cl-indent-rule (quote defrelation) (quote (4 2 2 &body)))
 ;; eval: (add-cl-indent-rule (quote ds-bind) (quote (&lambda 4 &body)))
