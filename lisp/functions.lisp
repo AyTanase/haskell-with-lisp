@@ -164,11 +164,11 @@
 (defsyntax |cons| (x &optional (y nil svar))
   (if svar
     (progn
-      (haskell x)
+      (op-print-1 x)
       (if (and (atom x) (atom y))
         (write-string ":")
         (write-string " : "))
-      (haskell y))
+      (op-print-1 y))
     (call-next-method)))
 
 
