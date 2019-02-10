@@ -157,8 +157,6 @@
                   (haskell-top x))
                 (haskell-tops " $ " y))))))
 
-(remhash '|funcall| *specials*)
-
 
 (defhasq |nil| "[]")
 
