@@ -1,18 +1,19 @@
 (in-package :hs)
 
-(defun op-print-1 (x)
-  (let ((expr (hs-macro-expand x)))
-    (if (atom expr)
-      (print-as-hs expr)
-      (let ((spec (car expr)))
-        (cond
-          ((eq spec '|funcall|)
-            (rechask (cdr expr)))
-          ((eq (gethash (car expr) *specials*)
-               'operator)
-            (with-paren
-              (apply-syntax spec expr)))
-          (t (apply-syntax spec expr)))))))
+(defun %op-print-1 (expr)
+  (if (atom expr)
+    (haskell expr)
+    (let ((spec (car expr)))
+      (cond
+        ((eq spec '|funcall|)
+          (rechask (cdr expr)))
+        ((eq (gethash (car expr) *specials*)
+             'operator)
+          (haskell expr))
+        (t (haskell-top expr))))))
+
+(defun op-print-1 (expr)
+  (%op-print-1 (hs-macro-expand expr)))
 
 (defun print-infix (op x y)
   (op-print-1 x)
@@ -72,20 +73,22 @@
 (defbinop |append|  :op ++   :zero '|nil|)
 
 
-(defun compose-print-1 (expr)
-  (if (callp expr '|compose|)
-    (haskell-top expr)
-    (op-print-1 expr)))
+(defun compose-print-1 (x)
+  (let ((expr (hs-macro-expand x)))
+    (if (callp expr '|compose|)
+      (haskell-top expr)
+      (%op-print-1 expr))))
 
 (defbinop |compose| :op |.|
   :zero '|id|
   :many (%rechask args #'compose-print-1 " . "))
 
 
-(defun ->-print-1 (expr)
-  (if (callp expr '->)
-    (haskell expr)
-    (haskell-top expr)))
+(defun ->-print-1 (x)
+  (let ((expr (hs-macro-expand x)))
+    (if (callp expr '->)
+      (haskell expr)
+      (haskell-top expr))))
 
 (defbinop -> :many (%rechask args #'->-print-1 " -> "))
 
