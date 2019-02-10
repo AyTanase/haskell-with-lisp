@@ -28,12 +28,14 @@
   (ds-bind (f x &rest xs) expr
     (if xs
       expr
-      (if (callp x '|funcall|)
-        (ds-bind (g y &rest ys) (cdr x)
-          (if (or (atom y) ys)
-            `(|funcall| ,f ,(cdr x))
-            `(|funcall| (|compose| ,f ,g) ,y)))
-        `(|funcall| ,@expr)))))
+      (cond
+        ((callp x '|funcall|)
+          (ds-bind (g y &rest ys) (cdr x)
+            (if ys
+              `(|funcall| ,f ,(cdr x))
+              `(|funcall| (|compose| ,f ,g) ,y))))
+        ((and (atom f) (atom x)) expr)
+        (t `(|funcall| ,@expr))))))
 
 (defun %define-expand (x)
   (let ((expr (hs-macro-expand x)))
