@@ -45,5 +45,5 @@ instance Num a => Num (Ratio a) where
   (*) = (*)
   negate = negate
   abs (x :% y) = (abs x) :% (abs y)
-  signum (x :% y) = pure ((signum x) * (signum y))
+  signum (x :% y) = pure $ (signum x) * (signum y)
   fromInteger = pure . fromInteger

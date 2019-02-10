@@ -63,7 +63,7 @@ instance {-# INCOHERENT #-} Fractional a => Div a a where
   (/) = (Prelude./)
 
 instance (Div a b, Functor f) => Div a (f b) where
-  (/) = flip (fmap . (flip (/)))
+  (/) = flip $ fmap . (flip (/))
 
 instance (Div a b, Applicative f) => Div (f a) (f b) where
   (/) = liftA2 (/)

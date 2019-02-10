@@ -36,7 +36,7 @@ instance {-# OVERLAPPING #-} (Action a b, Group b) => Action (Complex a) (Comple
 
 
 instance {-# OVERLAPPING #-} Div a b => Div a (Complex b) where
-  (/) = flip (cmap . (flip (/)))
+  (/) = flip $ cmap . (flip (/))
 
 instance {-# OVERLAPPING #-} (Div a b, Ring a, Group b) => Div (Complex a) (Complex b) where
   z / (Complex x y) = (Complex x (negate y)) * (z / ((x * x) + (y * y)))

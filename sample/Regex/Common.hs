@@ -15,4 +15,4 @@ cut = flip atomic (const Cut)
 
 safeTail :: [a] -> Maybe [a]
 safeTail [] = Nothing
-safeTail xs = Just (tail xs)
+safeTail xs = Just $ tail xs

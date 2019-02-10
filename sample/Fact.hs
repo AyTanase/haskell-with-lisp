@@ -10,4 +10,4 @@ fact1 = fact' 1
 
 fact2 n = product [1..n]
 
-fact3 n = product (take n [1..])
+fact3 n = product $ take n [1..]
