@@ -133,23 +133,20 @@
   `(%define ',var ',val))
 
 
-(defun %let (defs val)
-  (write-string "let")
-  (with-indent 1
-    (map-indent #'%define defs)
-    (indent)
-    (haskell-tops "in " val)))
-
-(defsyntax #!(let where) (defs val)
+(defsyntax |let| (defs val)
   (if defs
-    (%let defs val)
+    (with-indent 1
+      (write-string "let")
+      (map-indent #'%define defs)
+      (indent)
+      (haskell-tops "in " val))
     (haskell-top val)))
 
-(def-sexp-rule #!(let where) (defs val)
-  (if defs
-    (with-paren
-      (%let defs val))
-    (haskell val)))
+
+(shadow-haskell '|where|)
+
+(defmethod apply-syntax ((spec (eql '|where|)) expr)
+  (apply-syntax '|let| expr))
 
 
 (defun =>-left (args)

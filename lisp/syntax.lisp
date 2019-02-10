@@ -48,12 +48,50 @@
           ,(progn ,@rest)))))
 
 
-(defgeneric haskell (x)
-  (:documentation "Print X as Haskell code."))
+(defgeneric apply-macro (spec expr))
 
-(defshadow defhasq (name expr)
-  `(defmethod haskell ((x (eql ',name)))
-     (write-string ,expr)))
+(defmethod apply-macro (spec expr)
+  (declare (ignore spec))
+  expr)
+
+(defshadow def-syntax-macro (name args &body body)
+  (with-gensyms (spec expr)
+    `(defmethod apply-macro ((,spec (eql ',name)) ,expr)
+       (declare (ignore ,spec))
+       (hs-macro-expand (ds-bind ,args (cdr ,expr) ,@body)))))
+
+
+(defvar *symbol-macros* (make-hash-table :test 'eq))
+
+(defshadow |define-symbol-macro| (name expr)
+  `(setf (gethash ',name *symbol-macros*) ',expr))
+
+
+(defgeneric hs-macro-expand (expr))
+
+(defmethod hs-macro-expand (expr) expr)
+
+(defmethod hs-macro-expand ((expr symbol))
+  (mv-bind (value present-p)
+      (gethash expr *symbol-macros*)
+    (if present-p
+      (hs-macro-expand value)
+      expr)))
+
+(defmethod hs-macro-expand ((expr real))
+  (if (< expr 0)
+    `(|negate| ,(- expr))
+    expr))
+
+(defmethod hs-macro-expand ((expr cons))
+  (apply-macro (car expr) expr))
+
+
+(defgeneric print-as-hs (expr)
+  (:documentation "print EXPR as Haskell code"))
+
+(defun haskell (expr)
+  (print-as-hs (hs-macro-expand expr)))
 
 (defun haskells (&rest args)
   (mapc #'haskell args))
@@ -76,63 +114,23 @@
 (defrechask rechask #'haskell " ")
 
 
-(defgeneric apply-macro (spec expr))
-
-(defmethod apply-macro (spec expr)
-  (declare (ignore spec))
-  expr)
-
-(defshadow def-syntax-macro (name args &body body)
-  (with-gensyms (spec expr)
-    `(defmethod apply-macro ((,spec (eql ',name)) ,expr)
-       (declare (ignore ,spec))
-       (hs-macro-expand (ds-bind ,args (cdr ,expr) ,@body)))))
-
-
-(defvar *symbol-macros* (make-hash-table :test 'eq))
-
-(defshadow |define-symbol-macro| (name expr)
-  `(setf (gethash ',name *symbol-macros*) ',expr))
-
-(defun hs-macro-expand (expr)
-  (if (consp expr)
-    (apply-macro (car expr) expr)
-    (mv-bind (value present-p)
-        (gethash expr *symbol-macros*)
-      (if present-p
-        (hs-macro-expand value)
-        expr))))
-
-
-(defshadow defapply-1 (method name fn)
-  (with-gensyms (spec expr)
-    `(defmethod ,method ((,spec (eql ',name)) ,expr)
-       (declare (ignore ,spec))
-       (apply ,fn (cdr ,expr)))))
-
-(defmacro defapply (method name f)
-  (flet ((generate (name f)
-           `(defapply-1 ,method ,name ,f)))
-    (if (atom name)
-      (generate name f)
-      `(let ((g ,f))
-         ,@(loop for v in name
-             collect (generate v 'g))))))
-
-
 (defgeneric apply-syntax (spec expr))
 
 (defmethod apply-syntax (spec expr)
   (declare (ignore spec))
   (rechask expr))
 
-(defmacro defsyntax (name &body body)
-  `(defapply apply-syntax ,name #'(lambda ,@body)))
+(defshadow defsyntax (name args &body body)
+  (with-gensyms (spec expr)
+    `(defmethod apply-syntax ((,spec (eql ',name)) ,expr)
+       (declare (ignore ,spec))
+       (ds-bind ,args (cdr ,expr) ,@body))))
+
 
 (defun haskell-top (x)
   (let ((expr (hs-macro-expand x)))
     (if (atom expr)
-      (haskell expr)
+      (print-as-hs expr)
       (apply-syntax (car expr) expr))))
 
 (defun haskell-tops (&rest args)
@@ -141,53 +139,49 @@
 (defrechask arrange #'haskell-top ", ")
 
 
-(defgeneric apply-sexp-rule (spec expr))
-
-(defmethod apply-sexp-rule (spec expr)
-  (with-paren
-    (apply-syntax spec expr)))
-
-(defmacro def-sexp-rule (name &body body)
-  `(defapply apply-sexp-rule ,name #'(lambda ,@body)))
-
+(defvar *patterns* (make-hash-table :test 'eq))
 
 (defmacro defpattern (name &body body)
-  `(let ((fn #'(lambda ,@body)))
-     (defapply apply-syntax ,name fn)
-     (defapply apply-sexp-rule ,name fn)))
+  `(progn
+     (setf (gethash ',name *patterns*) t)
+     (defsyntax ,name ,@body)))
 
 
-(defmethod haskell (x) (princ x))
+(defmethod print-as-hs (expr) (princ expr))
 
-(defmethod haskell ((x real))
-  (if (< x 0)
-    (haskell `(- ,(- x)))
-    (call-next-method)))
-
-(defmethod haskell ((x character))
+(defmethod print-as-hs ((expr character))
   (cond
-    ((char= x #\')
+    ((char= expr #\')
       (write-string "'\\''"))
-    ((char= x #\\)
+    ((char= expr #\\)
       (write-string "'\\\\'"))
-    ((graphic-char-p x)
-      (format t "'~c'" x))
-    (t (format t "'\\x~x'" (char-code x)))))
+    ((graphic-char-p expr)
+      (format t "'~c'" expr))
+    (t (format t "'\\x~x'" (char-code expr)))))
 
-(defmethod haskell ((x null))
+(defmethod print-as-hs ((expr null))
   (write-string "()"))
 
-(defmethod haskell ((x cons))
-  (let ((expr (hs-macro-expand x)))
-    (if (atom expr)
-      (haskell expr)
-      (apply-sexp-rule (car expr) expr))))
+(defmethod print-as-hs ((expr cons))
+  (let ((spec (car expr)))
+    (flet ((call () (apply-syntax spec expr)))
+      (if (gethash spec *patterns*)
+        (call)
+        (with-paren (call))))))
+
+(defshadow defhasq (name string)
+  (with-gensyms (value)
+    `(let ((,value ,string))
+       (defmethod print-as-hs ((expr (eql ',name)))
+         (declare (ignore expr))
+         (write-string ,value)))))
 
 
 (load-relative "keywords.lisp")
 (load-relative "cl-keywords.lisp")
 (load-relative "unify.lisp")
 (load-relative "functions.lisp")
+
 
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote mv-bind) (quote (&lambda 4 &body)))
