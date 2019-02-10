@@ -40,8 +40,9 @@
 (defmacro defbinop
     (name &key (op name) (zero `',name) one many)
   `(progn
-     (def-op-macro ,name :op ,op :zero ,zero
-                   :one ,(or one '(hs-macro-expand (car args))))
+     (def-op-macro ,name :op ,op
+       :zero ,zero
+       :one ,(or one '(hs-macro-expand (car args))))
      (defsyntax ,name (&rest args)
        ,(or many `(rechask args ,(format nil " ~a " op))))))
 
@@ -71,7 +72,9 @@
   `(progn
      (def-op-macro ,name :op ,op
        :one '|True|
-       :many (if (atom (cddr args)) expr ,many))
+       :many (if (cddr args)
+               (hs-macro-expand ,many)
+               expr))
      (defsyntax ,name (x y)
        (print-infix ',op x y))))
 
