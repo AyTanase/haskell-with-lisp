@@ -25,29 +25,28 @@
     (t `(|and| ,x ,y))))
 
 (defun reduce-funcall (expr)
-  (let ((spec (car expr))
-        (args (cdr expr)))
-    (cond
-      ((null args) spec)
-      ((consp (cdr args)) expr)
-      (t (let ((exp2 (car args)))
-           (cond
-             ((callp exp2 '|funcall|)
-               `(|funcall| (|compose| ,spec ,(cadr exp2))
-                           ,@(cddr exp2)))
-             ((or (consp spec) (consp exp2))
-               `(|funcall| ,spec ,exp2))
-             (t expr)))))))
+  (ds-bind (f x &rest xs) expr
+    (if xs
+      expr
+      (if (callp x '|funcall|)
+        (ds-bind (g y &rest ys) (cdr x)
+          (if ys
+            `(|funcall| ,f ,(cdr x))
+            `(|funcall| (|compose| ,f ,g) ,y)))
+        `(|funcall| ,@expr)))))
 
 (defun %define-expand (x)
   (let ((expr (hs-macro-expand x)))
     (if (atom expr)
       expr
-      (let ((spec (car expr)))
+      (let ((spec (car expr))
+            (args (cdr expr)))
         (case (gethash spec *specials*)
           (special expr)
-          (pattern (cons spec (mapcar #'%define-expand (cdr expr))))
-          (t (reduce-funcall (mapcar #'%define-expand expr))))))))
+          (pattern (cons spec (mapcar #'%define-expand args)))
+          (t (if (null args)
+               (%define-expand spec)
+               (reduce-funcall (mapcar #'%define-expand expr)))))))))
 
 (defun %define-print (expr)
   (haskell-top (%define-expand expr)))

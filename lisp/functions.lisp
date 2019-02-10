@@ -130,11 +130,18 @@
 
 (defhasq |pair| "(,)")
 
-(defbinop |funcall| :op $
-  :many (ds-bind (x y &rest rest) args
-          (if rest
-            (rechask args)
-            (haskell-tops x " $ " y))))
+
+(flet ((invalidp (x)
+         (and (consp x)
+              (gethash (car x) *specials*))))
+  (defbinop |funcall| :op $
+    :many (ds-bind (x y &rest rest) args
+            (if (or rest
+                    (and (atom x) (atom y))
+                    (invalidp x)
+                    (invalidp y))
+              (rechask args)
+              (haskell-tops x " $ " y)))))
 
 
 (defhasq |nil| "[]")
