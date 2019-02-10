@@ -161,11 +161,16 @@
 (defrechask arrange #'haskell-top ", ")
 
 
-(defvar *patterns* (make-hash-table :test 'eq))
+(defvar *specials* (make-hash-table :test 'eq))
+
+(defmacro defspecial (name &body body)
+  `(progn
+     (setf (gethash ',name *specials*) 'special)
+     (defsyntax ,name ,@body)))
 
 (defmacro defpattern (name &body body)
   `(progn
-     (setf (gethash ',name *patterns*) t)
+     (setf (gethash ',name *specials*) 'pattern)
      (defsyntax ,name ,@body)))
 
 
@@ -187,7 +192,7 @@
 (defmethod print-as-hs ((expr cons))
   (let ((spec (car expr)))
     (flet ((call () (apply-syntax spec expr)))
-      (if (gethash spec *patterns*)
+      (if (eq (gethash spec *specials*) 'pattern)
         (call)
         (with-paren (call))))))
 

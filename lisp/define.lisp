@@ -8,7 +8,7 @@
 (def-hs-macro |type| (vars type)
   `(%type ',vars ',type))
 
-(defsyntax |type| (expr type)
+(defspecial |type| (expr type)
   (haskell-tops expr " :: " type))
 
 
@@ -23,6 +23,28 @@
     ((truep x) y)
     ((truep y) x)
     (t `(|and| ,x ,y))))
+
+(defun %define-expand (x)
+  (let ((expr (hs-macro-expand x)))
+    (if (atom expr)
+      expr
+      (let ((spec (car expr)))
+        (if (or (eq spec '|funcall|)
+                (gethash spec *specials*)
+                (atom (cdr expr))
+                (consp (cddr expr)))
+          expr
+          (let ((exp2 (%define-expand (cadr expr))))
+            (cond
+              ((callp exp2 '|funcall|)
+                `(|funcall| (|compose| ,spec ,(cadr exp2))
+                            ,@(cddr exp2)))
+              ((or (consp spec) (consp exp2))
+                `(|funcall| ,spec ,exp2))
+              (t `(,spec ,exp2)))))))))
+
+(defun %define-print (expr)
+  (haskell-top (%define-expand expr)))
 
 (defun where (defs)
   (if defs
@@ -41,7 +63,8 @@
   (flet ((print-1 (g v)
            (write-string "| ")
            (print-guard-1 g)
-           (haskell-tops assign v)))
+           (write-string assign)
+           (%define-print v)))
     (with-indent 1
       (map-indent #'print-1 gvs))
     (where defs)))
@@ -85,7 +108,8 @@
   (if (callp expr '|if|)
     (reduce-guards assign defs expr)
     (progn
-      (haskell-tops assign expr)
+      (write-string assign)
+      (%define-print expr)
       (where defs))))
 
 (defun %define-right (assign value)

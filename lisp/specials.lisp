@@ -1,7 +1,7 @@
 (in-package :hs)
 
 
-(defsyntax |let| (defs val)
+(defspecial |let| (defs val)
   (if defs
     (with-indent 1
       (write-string "let")
@@ -13,11 +13,13 @@
 
 (shadow-haskell '|where|)
 
+(setf (gethash '|where| *specials*) 'special)
+
 (defmethod apply-syntax ((spec (eql '|where|)) expr)
   (apply-syntax '|let| expr))
 
 
-(defsyntax |if| (x y &optional (z nil svar))
+(defspecial |if| (x y &optional (z nil svar))
   (cond
     ((not svar)
       (assert (truep x) () "if: missing else-form")
@@ -32,7 +34,7 @@
          (haskell-tops "else " z)))))
 
 
-(defsyntax |case| (x &rest xs)
+(defspecial |case| (x &rest xs)
   (flet ((case-val (x y)
            (%define x y " -> ")))
     (haskells "case " x " of")
@@ -43,7 +45,7 @@
 (defpattern |setf| (x y)
   (haskell-tops x " <- " y))
 
-(defsyntax |do| (&rest body)
+(defspecial |do| (&rest body)
   (write-string "do")
   (with-indent 1
     (dolist (expr body)
@@ -51,12 +53,12 @@
       (haskell-top expr))))
 
 
-(defsyntax |lambda| (args expr)
+(defspecial |lambda| (args expr)
   (write-char #\\)
   (rechask args)
   (%define-right " -> " expr))
 
-(defsyntax |curry| (&rest args)
+(defspecial |curry| (&rest args)
   (rechask args))
 
 (defhasq :|as| "@")

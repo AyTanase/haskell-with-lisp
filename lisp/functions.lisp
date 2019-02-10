@@ -54,7 +54,16 @@
 (defbinop |and|     :op &&   :zero '|True|)
 (defbinop |or|      :op "||" :zero '|False|)
 (defbinop |append|  :op ++   :zero '|nil|)
-(defbinop |compose| :op |.|  :zero '|id|)
+
+
+(defun compose-print-1 (expr)
+  (if (callp expr 'compose)
+    (haskell-top expr)
+    (haskell expr)))
+
+(defbinop |compose| :op |.|
+  :zero '|id|
+  :many (%rechask args #'compose-print-1 " . "))
 
 
 (defun ->-print-1 (expr)
@@ -142,5 +151,5 @@
 
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote ds-bind) (quote (&lambda 4 &body)))
-;; eval: (cl-indent-rules (quote (4 2 2 &body)) (quote def-op-macro) (quote defrelation))
+;; eval: (cl-indent-rules (quote (4 2 2 &body)) (quote def-op-macro) (quote defbinop) (quote defrelation))
 ;; End:
