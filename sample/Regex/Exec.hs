@@ -3,7 +3,7 @@ import Common
 import Control.Applicative
 
 exec :: Num a => Op -> String -> Maybe a
-exec s = (fmap fst) . (exec' s 0)
+exec s = fmap fst . exec' s 0
   where
     exec' Finite n xs = Just (n, xs)
     exec' (Compare x p) n (_v1:xs)
@@ -14,4 +14,4 @@ exec s = (fmap fst) . (exec' s 0)
 match :: Num a => Op -> String -> Maybe (a, a)
 match = match' 0
   where
-    match' n r xs = (fmap ((,) n) (exec r xs)) <|> ((match' (n + 1) r) =<< (safeTail xs))
+    match' n r xs = fmap ((,) n) (exec r xs) <|> (match' (n + 1) r =<< safeTail xs)

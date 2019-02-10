@@ -10,14 +10,14 @@ id = const <*> const
 
 
 liftA :: Applicative f => (a -> b) -> f a -> f b
-liftA = (const (<*>)) <*> pure
+liftA = const (<*>) <*> pure
 
 (.) :: (b -> c) -> (a -> b) -> a -> c
 (.) = liftA
 
 
 liftA2 :: Applicative f => (a -> b -> c) -> f a -> f b -> f c
-liftA2 = ((.) (<*>)) . liftA
+liftA2 = (.) (<*>) . liftA
 
 
 flip :: Applicative f => f (a -> b) -> a -> f b

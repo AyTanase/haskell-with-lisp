@@ -11,7 +11,7 @@ makeStar, makePlus, makeOpt :: QMaker
 
 makeStar method f = fix (\g -> method (f . g) id)
 
-makePlus method f = f . (makeStar method f)
+makePlus method f = f . makeStar method f
 
 makeOpt method f = method f id
 

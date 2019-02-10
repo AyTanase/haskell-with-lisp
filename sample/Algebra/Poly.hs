@@ -9,12 +9,12 @@ import Classes
 newtype Poly a = Poly [a] deriving Show
 
 instance (Eq a, Group a) => Eq (Poly a) where
-  (Poly us) == (Poly vs) = equal us vs
+  Poly us == Poly vs = equal us vs
     where
       zerop xs = and $ map ((==) zero) xs
       equal xs [] = zerop xs
       equal [] ys = zerop ys
-      equal (x:xs) (y:ys) = (x == y) && (equal xs ys)
+      equal (x:xs) (y:ys) = (x == y) && equal xs ys
 
 
 instance {-# OVERLAPPING #-} Pure Poly a where
@@ -30,21 +30,21 @@ add xs [] = xs
 
 add [] ys = ys
 
-add (x:xs) (y:ys) = (x + y) : (add xs ys)
+add (x:xs) (y:ys) = (x + y) : add xs ys
 
 
 instance {-# OVERLAPPING #-} Group a => Group (Poly a) where
   zero = Poly []
   negate = pmap negate
-  (Poly xs) + (Poly ys) = Poly $ add xs ys
+  Poly xs + Poly ys = Poly $ add xs ys
 
 
 instance {-# OVERLAPPING #-} Action a b => Action a (Poly b) where
   (*) = pmap . (*)
 
 instance {-# OVERLAPPING #-} (Action a b, Group b) => Action (Poly a) (Poly b) where
-  _ * (Poly []) = zero
-  (Poly xs) * (Poly (y:ys)) = Poly $ foldr (\x zs -> (x * y) : (add (x * ys) zs)) [] xs
+  _ * Poly [] = zero
+  Poly xs * Poly (y:ys) = Poly $ foldr (\x zs -> (x * y) : add (x * ys) zs) [] xs
 
 
 instance Num a => Num (Poly a) where

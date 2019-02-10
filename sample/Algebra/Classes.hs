@@ -18,7 +18,7 @@ class Group g where
   negate :: g -> g
   (+), (-) :: g -> g -> g
   negate = (-) zero
-  x - y = x + (negate y)
+  x - y = x + negate y
 
 instance Num a => Group a where
   zero = 0
@@ -63,7 +63,7 @@ instance {-# INCOHERENT #-} Fractional a => Div a a where
   (/) = (Prelude./)
 
 instance (Div a b, Functor f) => Div a (f b) where
-  (/) = flip $ fmap . (flip (/))
+  (/) = flip $ fmap . flip (/)
 
 instance (Div a b, Applicative f) => Div (f a) (f b) where
   (/) = liftA2 (/)
@@ -77,4 +77,4 @@ recip :: Field k => k -> k
 recip = (/) unit
 
 instance (Action k a, Field k) => Div k a where
-  x / y = (recip y) * x
+  x / y = recip y * x

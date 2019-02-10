@@ -1,7 +1,7 @@
 module Fact where
 
 fact0 0 = 1
-fact0 n = n * (fact0 $ n - 1)
+fact0 n = n * fact0 (n - 1)
 
 fact1 = fact' 1
   where

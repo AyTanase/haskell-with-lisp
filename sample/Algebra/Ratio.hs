@@ -16,7 +16,7 @@ instance {-# OVERLAPPING #-} Ring a => Pure Ratio a where
   pure = flip (:%) unit
 
 rmap :: (a -> a) -> Ratio a -> Ratio a
-rmap f (x :% y) = (f x) :% y
+rmap f (x :% y) = f x :% y
 
 
 instance {-# OVERLAPPING #-} Ring r => Group (Ratio r) where
@@ -44,6 +44,6 @@ instance Num a => Num (Ratio a) where
   (-) = (-)
   (*) = (*)
   negate = negate
-  abs (x :% y) = (abs x) :% (abs y)
-  signum (x :% y) = pure $ (signum x) * (signum y)
+  abs (x :% y) = abs x :% abs y
+  signum (x :% y) = pure $ signum x * signum y
   fromInteger = pure . fromInteger
