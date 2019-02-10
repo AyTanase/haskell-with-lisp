@@ -99,7 +99,9 @@
     (apply-macro (car expr) expr)
     (mv-bind (value present-p)
         (gethash expr *symbol-macros*)
-      (if present-p value expr))))
+      (if present-p
+        (hs-macro-expand value)
+        expr))))
 
 
 (defshadow defapply-1 (method name fn)
