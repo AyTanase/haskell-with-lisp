@@ -158,7 +158,7 @@
                     (eq (gethash (car x) *specials*)
                         'special))
                   (and (consp y)
-                       (eq (gethash (car x) *specials*)
+                       (eq (gethash (car y) *specials*)
                            'pattern)))
             (rechask args)
             (progn
