@@ -24,26 +24,30 @@
     ((truep y) x)
     (t `(|and| ,x ,y))))
 
+(defun reduce-funcall (expr)
+  (let ((spec (car expr))
+        (args (cdr expr)))
+    (cond
+      ((null args) spec)
+      ((consp (cdr args)) expr)
+      (t (let ((exp2 (car args)))
+           (cond
+             ((callp exp2 '|funcall|)
+               `(|funcall| (|compose| ,spec ,(cadr exp2))
+                           ,@(cddr exp2)))
+             ((or (consp spec) (consp exp2))
+               `(|funcall| ,spec ,exp2))
+             (t expr)))))))
+
 (defun %define-expand (x)
   (let ((expr (hs-macro-expand x)))
     (if (atom expr)
       expr
       (let ((spec (car expr)))
-        (if (or (eq spec '|funcall|)
-                (gethash spec *specials*)
-                (atom (cdr expr))
-                (consp (cddr expr)))
-          expr
-          (let ((exp2 (%define-expand (cadr expr))))
-            (cond
-              ((callp exp2 '|funcall|)
-                `(|funcall| (|compose| ,spec ,(cadr exp2))
-                            ,@(cddr exp2)))
-              ((or (consp spec)
-                   (and (consp exp2)
-                        (null (gethash (car exp2) *specials*))))
-                `(|funcall| ,spec ,exp2))
-              (t `(,spec ,exp2)))))))))
+        (case (gethash spec *specials*)
+          (special expr)
+          (pattern (cons spec (mapcar #'%define-expand (cdr expr))))
+          (t (reduce-funcall (mapcar #'%define-expand expr))))))))
 
 (defun %define-print (expr)
   (haskell-top (%define-expand expr)))
