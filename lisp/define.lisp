@@ -39,7 +39,9 @@
               ((callp exp2 '|funcall|)
                 `(|funcall| (|compose| ,spec ,(cadr exp2))
                             ,@(cddr exp2)))
-              ((or (consp spec) (consp exp2))
+              ((or (consp spec)
+                   (and (consp exp2)
+                        (null (gethash (car exp2) *specials*))))
                 `(|funcall| ,spec ,exp2))
               (t `(,spec ,exp2)))))))))
 
