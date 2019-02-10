@@ -140,7 +140,7 @@
       (map-indent #'%define defs)
       (indent)
       (haskell-tops "in " val))
-    (haskell-top val)))
+    (haskell-tops "let in " val)))
 
 
 (shadow-haskell '|where|)
