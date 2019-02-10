@@ -57,7 +57,7 @@
 
 
 (defun compose-print-1 (expr)
-  (if (callp expr 'compose)
+  (if (callp expr '|compose|)
     (haskell-top expr)
     (haskell expr)))
 
