@@ -1,9 +1,16 @@
 (in-package :hs)
 
+(defun op-print-1 (expr)
+  (if (and (consp expr)
+           (eq (gethash (car expr) *specials*)
+               'operator))
+    (haskell expr)
+    (haskell-top expr)))
+
 (defun print-infix (op x y)
-  (haskell x)
+  (op-print-1 x)
   (format t " ~a " op)
-  (haskell y))
+  (op-print-1 y))
 
 (defun %operator (op expr)
   (let ((args (cdr expr)))
@@ -39,13 +46,6 @@
        (defhasq ,name ,(format nil "(~a)" op)))))
 
 
-(defun binop-print-1 (expr)
-  (if (and (consp expr)
-           (eq (gethash (car expr) *specials*)
-               'operator))
-    (haskell expr)
-    (haskell-top expr)))
-
 (defmacro defbinop
     (name &key (op name) (zero `',name) one many)
   `(progn
@@ -53,7 +53,7 @@
        :zero ,zero
        :one ,(or one '(hs-macro-expand (car args))))
      (defsyntax ,name (&rest args)
-       ,(or many `(%rechask args #'binop-print-1 ,(format nil " ~a " op))))))
+       ,(or many `(%rechask args #'op-print-1 ,(format nil " ~a " op))))))
 
 (defbinop + :zero 0)
 (defbinop - :one `(|negate| ,(car args)))
@@ -68,7 +68,7 @@
 (defun compose-print-1 (expr)
   (if (callp expr '|compose|)
     (haskell-top expr)
-    (binop-print-1 expr)))
+    (op-print-1 expr)))
 
 (defbinop |compose| :op |.|
   :zero '|id|
@@ -175,7 +175,7 @@
 
 (defbinop |list*| :op |:|
   :many (flet ((call (between)
-                 (%rechask args #'binop-print-1 between)))
+                 (%rechask args #'op-print-1 between)))
           (if (find-if #'consp args)
             (call " : ")
             (call ":"))))
