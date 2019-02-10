@@ -1,4 +1,4 @@
-#?(defoperator |apply| :op <*>)
+#?(defoperator |apply| <*>)
 
 (defpackage Logic
   (:import Prelude (Applicative (pure apply))))

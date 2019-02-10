@@ -1,5 +1,5 @@
-#?(def-binop-as |alt| "<|>" :zero "empty")
-#?(defoperator |join-fmap| :op =<<)
+#?(defbinop |alt| :op "<|>" :zero '|empty|)
+#?(defoperator |join-fmap| =<<)
 
 (defpackage Exec
   (:use Common Control.Applicative))

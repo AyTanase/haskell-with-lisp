@@ -1,4 +1,4 @@
-#?(defoperator |ratio| :op |:%|)
+#?(defoperator |ratio| |:%|)
 
 (extension FlexibleInstances
            MonoLocalBinds
