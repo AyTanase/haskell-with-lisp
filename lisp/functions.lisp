@@ -1,11 +1,18 @@
 (in-package :hs)
 
-(defun op-print-1 (expr)
-  (if (and (consp expr)
-           (eq (gethash (car expr) *specials*)
-               'operator))
-    (haskell expr)
-    (haskell-top expr)))
+(defun op-print-1 (x)
+  (let ((expr (hs-macro-expand x)))
+    (if (atom expr)
+      (print-as-hs expr)
+      (let ((spec (car expr)))
+        (cond
+          ((eq spec '|funcall|)
+            (rechask (cdr expr)))
+          ((eq (gethash (car expr) *specials*)
+               'operator)
+            (with-paren
+              (apply-syntax spec expr)))
+          (t (apply-syntax spec expr)))))))
 
 (defun print-infix (op x y)
   (op-print-1 x)
@@ -182,4 +189,5 @@
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote ds-bind) (quote (&lambda 4 &body)))
 ;; eval: (cl-indent-rules (quote (4 2 2 &body)) (quote def-op-macro) (quote defbinop) (quote defrelation))
+;; eval: (add-cl-indent-rule (quote with-paren) (quote (&body)))
 ;; End:
