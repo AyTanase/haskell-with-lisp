@@ -130,6 +130,12 @@
 
 (defhasq |pair| "(,)")
 
+(defbinop |funcall| :op $
+  :many (ds-bind (x y &rest rest) args
+          (if rest
+            (rechask args)
+            (haskell-tops x " $ " y))))
+
 
 (defhasq |nil| "[]")
 
