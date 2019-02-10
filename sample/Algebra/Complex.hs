@@ -12,7 +12,7 @@ instance Show a => Show (Complex a) where
   show (Complex x y) = "Complex " ++ (shows' x " ") ++ (shows' y "")
     where
       shows' = showsPrec 11
-  showsPrec p = (showParen (p >= 11)) . (++) . show
+  showsPrec p = (showParen $ p >= 11) . (++) . show
 
 
 instance {-# OVERLAPPING #-} Group a => Pure Complex a where
