@@ -51,9 +51,9 @@
 (defgeneric haskell (x)
   (:documentation "Print X as Haskell code."))
 
-(defun strhask (x)
-  (with-output-to-string (*standard-output*)
-    (haskell x)))
+(defshadow defhasq (name expr)
+  `(defmethod haskell ((x (eql ',name)))
+     (write-string ,expr)))
 
 (defun haskells (&rest args)
   (mapc #'haskell args))
@@ -153,10 +153,6 @@
   `(let ((fn #'(lambda ,@body)))
      (defapply apply-syntax ,name fn)
      (defapply apply-sexp-rule ,name fn)))
-
-(defshadow defhasq (name expr)
-  `(defmethod haskell ((x (eql ',name)))
-     (write-string ,expr)))
 
 
 (defmethod haskell (x) (princ x))
