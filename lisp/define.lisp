@@ -30,7 +30,7 @@
       expr
       (if (callp x '|funcall|)
         (ds-bind (g y &rest ys) (cdr x)
-          (if ys
+          (if (or (atom y) ys)
             `(|funcall| ,f ,(cdr x))
             `(|funcall| (|compose| ,f ,g) ,y)))
         `(|funcall| ,@expr)))))
