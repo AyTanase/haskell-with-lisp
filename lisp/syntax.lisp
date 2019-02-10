@@ -12,23 +12,6 @@
     finally (return (values decs xs))))
 
 
-(defpackage :|haskell|
-  (:nicknames :|hs|)
-  (:documentation
-   "shadowing keywords to use them as names in Haskell code"))
-
-(defun shadow-haskell (x)
-  (export (intern (string x) :|hs|) :|hs|))
-
-(defmacro defshadow (macro args &body body)
-  (mv-bind (decs rest) (collect-decs body)
-    `(defmacro ,macro ,args
-       ,@decs
-       `(progn
-          (shadow-haskell ',name)
-          ,(progn ,@rest)))))
-
-
 (defmacro def-hs-macro (name args &body body)
   (mv-bind (decs rest) (collect-decs body)
     `(defmacro ,name ,args
@@ -46,6 +29,23 @@
 
 (defparen with-paren "(" ")")
 (defparen with-square-brackets "[" "]")
+
+
+(defpackage :|haskell|
+  (:nicknames :|hs|)
+  (:documentation
+   "shadowing keywords to use them as names in Haskell code"))
+
+(defun shadow-haskell (x)
+  (export (intern (string x) :|hs|) :|hs|))
+
+(defmacro defshadow (macro args &body body)
+  (mv-bind (decs rest) (collect-decs body)
+    `(defmacro ,macro ,args
+       ,@decs
+       `(progn
+          (shadow-haskell ',name)
+          ,(progn ,@rest)))))
 
 
 (defgeneric haskell (x)
@@ -82,17 +82,24 @@
   (declare (ignore spec))
   expr)
 
-(declaim (inline hs-macro-expand))
-(defun hs-macro-expand (expr)
-  (if (atom expr)
-    expr
-    (apply-macro (car expr) expr)))
-
 (defshadow def-syntax-macro (name args &body body)
   (with-gensyms (spec expr)
     `(defmethod apply-macro ((,spec (eql ',name)) ,expr)
        (declare (ignore ,spec))
        (hs-macro-expand (ds-bind ,args (cdr ,expr) ,@body)))))
+
+
+(defvar *symbol-macros* (make-hash-table :test 'eq))
+
+(defshadow |define-symbol-macro| (name expr)
+  `(setf (gethash ',name *symbol-macros*) ',expr))
+
+(defun hs-macro-expand (expr)
+  (if (consp expr)
+    (apply-macro (car expr) expr)
+    (mv-bind (value present-p)
+        (gethash expr *symbol-macros*)
+      (if present-p value expr))))
 
 
 (defshadow defapply-1 (method name fn)

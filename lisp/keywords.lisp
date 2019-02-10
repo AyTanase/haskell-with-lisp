@@ -311,9 +311,6 @@
 
 (defhasq :|as| "@")
 
-(defmacro |defconstant| (name expr)
-  `(defhasq ,name ,(strhask expr)))
-
 ;; Local Variables:
 ;; eval: (cl-indent-rules (quote (&body)) (quote with-paren) (quote with-pragma))
 ;; eval: (add-cl-indent-rule (quote ds-bind) (quote (&lambda 4 &body)))

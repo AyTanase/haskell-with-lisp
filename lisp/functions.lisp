@@ -89,14 +89,16 @@
 
 
 
-#!(defconstant 1+ (curry + 1))
+#!(define-symbol-macro 1+ (curry + 1))
 (def-syntax-macro 1+ (x) `(+ ,x 1))
 
-#!(defconstant 1- (curry + -1))
+#!(define-symbol-macro 1- (curry + -1))
 (def-syntax-macro 1- (x) `(- ,x 1))
 
 (defhasq |pair| "(,)")
 
+
+(defhasq |nil| "[]")
 
 (def-binop-as |cons| |:|
   :one (call-next-method)
@@ -112,14 +114,12 @@
     (rechask args " : ")
     (rechask args ":")))
 
+(defhasq |list| "pure")
 
 (defpattern |list| (&rest args)
   (with-square-brackets
     (arrange args)))
 
-#!(defconstant nil (list))
-
-#!(defconstant list pure)
 
 (defpattern |enum-from| (expr &rest args)
   (with-square-brackets
