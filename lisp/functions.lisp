@@ -141,7 +141,11 @@
                     (invalidp x)
                     (invalidp y))
               (rechask args)
-              (haskell-tops x " $ " y)))))
+              (progn
+                (if (callp x '|funcall|)
+                  (rechask (cdr x))
+                  (haskell-top x))
+                (haskell-tops " $ " y))))))
 
 
 (defhasq |nil| "[]")
