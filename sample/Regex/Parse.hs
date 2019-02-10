@@ -9,7 +9,7 @@ type QMaker = (NFA -> NFA -> NFA) -> NFA -> NFA
 
 makeStar, makePlus, makeOpt :: QMaker
 
-makeStar method f = fix (\g -> method (f . g) id)
+makeStar method f = fix $ \g -> method (f . g) id
 
 makePlus method f = f . makeStar method f
 
