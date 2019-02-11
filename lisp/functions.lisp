@@ -19,24 +19,6 @@
   (format t " ~a " op)
   (op-print-1 y))
 
-(defun %operator (op expr)
-  (let ((args (cdr expr)))
-    (cond
-      ((atom args)
-        (format nil "(~a)" op))
-      ((and (consp (cdr args))
-            (atom (cddr args)))
-        (apply #'print-infix op args))
-      (t (rechask expr)))))
-
-(defmacro defoperator (name &optional (op name))
-  `(progn
-     (setf (gethash ',name *specials*) 'operator)
-     (defmethod apply-syntax ((spec (eql ',name)) expr)
-       (declare (ignore spec))
-       (%operator ',op expr))
-     (defhasq ,name ,(format nil "(~a)" op))))
-
 
 (defmacro def-op-macro
     (name &key (op name) (zero `',name) (one 'expr) (many 'expr))
@@ -51,6 +33,15 @@
              ((atom (cdr args)) ,one)
              (t ,many))))
        (defhasq ,name ,(format nil "(~a)" op)))))
+
+
+(defmacro defoperator (name &optional (op name))
+  `(progn
+     (def-op-macro ,name :op ,op :zero `(|curry| ,@expr))
+     (defsyntax ,name (x y &rest rest)
+       (if rest
+         (call-next-method)
+         (print-infix ',op x y)))))
 
 
 (defmacro defbinop
