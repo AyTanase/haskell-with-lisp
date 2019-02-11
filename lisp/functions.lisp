@@ -37,7 +37,7 @@
 
 (defmacro defoperator (name &optional (op name))
   `(progn
-     (def-op-macro ,name :op ,op :zero `(|curry| ,@expr))
+     (def-op-macro ,name :op ,op :one `(|curry| ,@expr))
      (defsyntax ,name (x y &rest rest)
        (if rest
          (call-next-method)
