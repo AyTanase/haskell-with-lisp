@@ -180,16 +180,12 @@
 
 (defbinop |funcall| :op $
   :many (ds-bind (x y &rest rest) args
-          (cond
-            (rest (funcall-many args))
-            ((if (consp x)
-               (keytypep (car x) 'special)
-               (simplep y))
-              (rechask args))
-            (t (if (callp x '|funcall|)
-                 (rechask (cdr x))
-                 (haskell-top x))
-               (haskell-tops " $ " y)))))
+          (if (and (atom rest)
+                   (if (consp x)
+                     (keytypep (car x) 'special)
+                     (simplep y)))
+            (rechask args)
+            (funcall-many args))))
 
 
 (defhasq |nil| "[]")
