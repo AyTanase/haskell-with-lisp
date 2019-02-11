@@ -32,7 +32,7 @@ instance {-# OVERLAPPING #-} Div a b => Div a (Complex b) where
   (/) = flip $ cmap . flip (/)
 
 instance {-# OVERLAPPING #-} (Div a b, Ring a, Group b) => Div (Complex a) (Complex b) where
-  z / (x :+ y) = (x :+ negate y) * (z / ((x * x) + (y * y)))
+  z / (x :+ y) = ((x :+ negate y) * z) / ((x * x) + (y * y))
 
 
 instance Num a => Num (Complex a) where

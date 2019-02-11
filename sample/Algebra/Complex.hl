@@ -37,8 +37,7 @@
 
 (instance (Div (Complex a) (Complex b))
     (:overlapping (Div a b) (Ring a) (Group b))
-  ((/ z (c+ x y))
-    (* (c+ x (- y)) (/ z (+ (* x x) (* y y))))))
+  ((/ z (c+ x y)) (/ (* (c+ x (- y)) z) (+ (* x x) (* y y)))))
 
 
 (instance (Num (Complex a)) ((Num a))
