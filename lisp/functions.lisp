@@ -153,6 +153,20 @@
   (or (atom expr)
       (keytypep (car expr) 'pattern)))
 
+(defun funcall-last (expr)
+  (if (eq (car expr) '|funcall|)
+    (ds-bind (f x &rest xs) (cdr expr)
+      (if xs
+        (haskell-tops "$ " expr)
+        (let ((y (hs-macro-expand x)))
+          (write-string ". ")
+          (op-print-1 f)
+          (write-string " ")
+          (if (simplep y)
+            (haskell y)
+            (funcall-last y)))))
+    (haskell-tops "$ " expr)))
+
 (defun funcall-many (args)
   (haskell (car args))
   (loop
@@ -162,7 +176,7 @@
        (cond
          ((simplep x) (haskell x))
          ((atom (cdr xs))
-           (haskell-tops "$ " x))
+           (funcall-last x))
          (t (return (rechask xs))))))
 
 (defbinop |funcall| :op $
