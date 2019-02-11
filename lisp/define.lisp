@@ -34,7 +34,7 @@
         ((callp x '|funcall|)
           (ds-bind (g y &rest ys) (cdr x)
             (if ys
-              `(|funcall| ,f ,(cdr x))
+              `(|funcall| ,f (|curry| ,@(cdr x)))
               `(|funcall| (|compose| ,f ,g) ,y))))
         (t `(|funcall| ,@expr))))))
 
