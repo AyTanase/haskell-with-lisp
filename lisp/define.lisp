@@ -26,16 +26,15 @@
 
 (defun reduce-funcall (expr)
   (ds-bind (f x &rest xs) expr
-    (if xs
-      expr
-      (cond
-        ((callp x '|funcall|)
-          (ds-bind (g y &rest ys) (cdr x)
-            (if ys
-              `(|funcall| ,f ,(cdr x))
-              `(|funcall| (|compose| ,f ,g) ,y))))
-        ((and (atom f) (atom x)) expr)
-        (t `(|funcall| ,@expr))))))
+    (cond
+      ((or xs (and (atom f) (atom x)))
+        expr)
+      ((callp x '|funcall|)
+        (ds-bind (g y &rest ys) (cdr x)
+          (if ys
+            `(|funcall| ,f ,(cdr x))
+            `(|funcall| (|compose| ,f ,g) ,y))))
+      (t `(|funcall| ,@expr)))))
 
 (defun %define-expand (x)
   (let ((expr (hs-macro-expand x)))
