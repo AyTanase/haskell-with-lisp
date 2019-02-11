@@ -21,6 +21,10 @@ const       :: a -> b -> a
 (type id (-> a a))
 (define id (apply const const))
 
+#?(write-line "infixr 0 $")
+(type funcall (-> (-> a b) a b))
+(define funcall id)
+
 
 #|
 f              :: a -> b

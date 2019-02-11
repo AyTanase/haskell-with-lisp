@@ -8,6 +8,10 @@ const = pure
 id :: a -> a
 id = const <*> const
 
+infixr 0 $
+($) :: (a -> b) -> a -> b
+($) = id
+
 
 liftA :: Applicative f => (a -> b) -> f a -> f b
 liftA = const (<*>) <*> pure
