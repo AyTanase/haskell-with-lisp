@@ -162,7 +162,7 @@
               do (cond
                    ((atom z)
                      (haskell z)
-                     (if zs (write-string " ")))
+                     (if (cdr zs) (write-string " ")))
                    ((atom (cdr zs))
                      (haskell-tops " $ " z))
                    (t (rechask zs)
