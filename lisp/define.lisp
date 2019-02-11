@@ -41,12 +41,10 @@
   (let ((expr (hs-macro-expand x)))
     (if (atom expr)
       expr
-      (let ((spec (car expr))
-            (args (cdr expr)))
+      (let ((spec (car expr)))
         (case (gethash spec *specials*)
-          (special expr)
-          (pattern (cons spec (mapcar #'%define-expand args)))
-          (t (if (null args)
+          ((special pattern) expr)
+          (t (if (null (cdr expr))
                (%define-expand spec)
                (reduce-funcall (mapcar #'%define-expand expr)))))))))
 
