@@ -149,29 +149,31 @@
 (defhasq |pair| "(,)")
 
 
+(defun funcall-many (args)
+  (haskell (car args))
+  (loop
+    for xs on (cdr args)
+    for x = (hs-macro-expand (car xs))
+    do (write-string " ")
+       (cond
+         ((atom x) (haskell x))
+         ((atom (cdr xs))
+           (haskell-tops "$ " x))
+         (t (rechask xs) (return)))))
+
 (defbinop |funcall| :op $
   :many (ds-bind (x y &rest rest) args
-          (if (or rest
-                  (if (consp x)
-                    (keytypep (car x) 'special)
-                    (or (atom y)
-                        (keytypep (car y) 'pattern))))
-            (loop
-              for zs on args
-              for z = (hs-macro-expand (car zs))
-              do (cond
-                   ((atom z)
-                     (haskell z)
-                     (if (cdr zs) (write-string " ")))
-                   ((atom (cdr zs))
-                     (haskell-tops " $ " z))
-                   (t (rechask zs)
-                      (return))))
-            (progn
-              (if (callp x '|funcall|)
-                (rechask (cdr x))
-                (haskell-top x))
-              (haskell-tops " $ " y)))))
+          (cond
+            (rest (funcall-many args))
+            ((if (consp x)
+               (keytypep (car x) 'special)
+               (or (atom y)
+                   (keytypep (car y) 'pattern)))
+              (rechask args))
+            (t (if (callp x '|funcall|)
+                 (rechask (cdr x))
+                 (haskell-top x))
+               (haskell-tops " $ " y)))))
 
 
 (defhasq |nil| "[]")
