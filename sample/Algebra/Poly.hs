@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleContexts, FlexibleInstances, MultiParamTypeClasses #-}
 
 module Poly (Poly (..)) where
-import Prelude hiding (pure, negate, (+), (-), (*))
+import Prelude hiding (pure, negate, (+), (-), (*), Fractional (..))
 import qualified Prelude
 import Classes
 
@@ -45,6 +45,10 @@ instance {-# OVERLAPPING #-} Action a b => Action a (Poly b) where
 instance {-# OVERLAPPING #-} (Action a b, Group b) => Action (Poly a) (Poly b) where
   _ * Poly [] = zero
   Poly xs * Poly (y:ys) = Poly $ foldr (\x zs -> (x * y) : add (x * ys) zs) [] xs
+
+
+instance Div a b => Div a (Poly b) where
+  (/) = flip $ pmap . flip (/)
 
 
 instance Num a => Num (Poly a) where

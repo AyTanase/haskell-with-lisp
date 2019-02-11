@@ -3,7 +3,7 @@
            MultiParamTypeClasses)
 
 (defpackage Poly
-  (:shadow Prelude pure negate + - *)
+  (:shadow Prelude pure negate + - * (Fractional :all))
   (:use (:q Prelude) Classes)
   (:export (Poly :all)))
 
@@ -54,6 +54,10 @@
     (Poly (foldr (lambda (x zs)
                    (cons (* x y) (add (* x ys) zs)))
                  nil xs))))
+
+
+(instance (Div a (Poly b)) ((Div a b))
+  (/ (flip (compose pmap (flip /)))))
 
 
 (instance (Num (Poly a)) ((Num a))
