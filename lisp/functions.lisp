@@ -149,6 +149,10 @@
 (defhasq |pair| "(,)")
 
 
+(defun simplep (expr)
+  (or (atom expr)
+      (keytypep (car expr) 'pattern)))
+
 (defun funcall-many (args)
   (haskell (car args))
   (loop
@@ -156,7 +160,7 @@
     for x = (hs-macro-expand (car xs))
     do (write-string " ")
        (cond
-         ((atom x) (haskell x))
+         ((simplep x) (haskell x))
          ((atom (cdr xs))
            (haskell-tops "$ " x))
          (t (rechask xs) (return)))))
@@ -167,8 +171,7 @@
             (rest (funcall-many args))
             ((if (consp x)
                (keytypep (car x) 'special)
-               (or (atom y)
-                   (keytypep (car y) 'pattern)))
+               (simplep y))
               (rechask args))
             (t (if (callp x '|funcall|)
                  (rechask (cdr x))
