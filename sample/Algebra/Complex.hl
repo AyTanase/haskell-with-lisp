@@ -1,3 +1,5 @@
+#?(defoperator |c+| |:+|)
+
 (extension FlexibleInstances MultiParamTypeClasses)
 
 (defpackage Complex
@@ -6,27 +8,19 @@
   (:export (Complex :all)))
 
 
-(data (Complex a) (Complex :name (re a) (im a)) Eq)
-
-(instance (Show (Complex a)) ((Show a))
-  ((show (Complex x y))
-    (where ((shows' (showsPrec 11)))
-      (append "Complex " (shows' x " ") (shows' y ""))))
-  ((showsPrec p)
-    (compose (showParen (>= p 11)) append show)))
-
+(data (Complex a) (c+ a a) (Eq Show))
 
 (instance (Pure Complex a) (:overlapping (Group a))
-  (pure (flip Complex zero)))
+  (pure (flip c+ zero)))
 
 (type cmap (-> (-> a b) (Complex a) (Complex b)))
-(define (cmap f (Complex x y)) (Complex (f x) (f y)))
+(define (cmap f (c+ x y)) (c+ (f x) (f y)))
 
 
 (instance (Group (Complex a)) (:overlapping (Group a))
   (zero (pure zero))
   (negate (cmap negate))
-  ((+ (Complex u v) (Complex x y)) (Complex (+ u x) (+ v y))))
+  ((+ (c+ u v) (c+ x y)) (c+ (+ u x) (+ v y))))
 
 
 (instance (Action a (Complex b)) (:overlapping (Action a b))
@@ -34,8 +28,8 @@
 
 (instance (Action (Complex a) (Complex b))
     (:overlapping (Action a b) (Group b))
-  ((* (Complex u v) (Complex x y))
-    (Complex (- (* u x) (* v y)) (+ (* u y) (* v x)))))
+  ((* (c+ u v) (c+ x y))
+    (c+ (- (* u x) (* v y)) (+ (* u y) (* v x)))))
 
 
 (instance (Div a (Complex b)) (:overlapping (Div a b))
@@ -43,8 +37,8 @@
 
 (instance (Div (Complex a) (Complex b))
     (:overlapping (Div a b) (Ring a) (Group b))
-  ((/ z (Complex x y))
-    (* (Complex x (- y)) (/ z (+ (* x x) (* y y))))))
+  ((/ z (c+ x y))
+    (* (c+ x (- y)) (/ z (+ (* x x) (* y y))))))
 
 
 (instance (Num (Complex a)) ((Num a))
