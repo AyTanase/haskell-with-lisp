@@ -47,7 +47,7 @@ parseChar f x xs = checkQ f (Compare x) xs
 
 parseGroup :: String -> (NFA, String)
 
-parseGroup ('?':'>':xs) = first cut (parse' id xs)
+parseGroup ('?':'>':xs) = first cut $ parse' id xs
 
 parseGroup xs = parse' id xs
 

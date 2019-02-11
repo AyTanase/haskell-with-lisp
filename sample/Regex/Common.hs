@@ -11,7 +11,7 @@ atomic :: NFA -> NFA -> NFA
 atomic f g x = If (f Finite) x (g x)
 
 cut :: NFA -> NFA
-cut = flip atomic (const Cut)
+cut = flip atomic $ const Cut
 
 safeTail :: [a] -> Maybe [a]
 safeTail [] = Nothing
