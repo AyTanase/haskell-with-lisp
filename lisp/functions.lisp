@@ -70,17 +70,7 @@
 (defbinop |and|     :op &&   :zero '|True|)
 (defbinop |or|      :op "||" :zero '|False|)
 (defbinop |append|  :op ++   :zero '|nil|)
-
-
-(defun compose-print-1 (x)
-  (let ((expr (hs-macro-expand x)))
-    (if (callp expr '|compose|)
-      (haskell-top expr)
-      (%op-print-1 expr))))
-
-(defbinop |compose| :op |.|
-  :zero '|id|
-  :many (%rechask args #'compose-print-1 " . "))
+(defbinop |compose| :op |.|  :zero '|id|)
 
 
 (defun ->-print-1 (x)
