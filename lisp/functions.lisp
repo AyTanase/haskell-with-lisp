@@ -163,7 +163,7 @@
          ((simplep x) (haskell x))
          ((atom (cdr xs))
            (haskell-tops "$ " x))
-         (t (rechask xs) (return)))))
+         (t (return (rechask xs))))))
 
 (defbinop |funcall| :op $
   :many (ds-bind (x y &rest rest) args
