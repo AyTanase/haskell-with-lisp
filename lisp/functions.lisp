@@ -155,16 +155,14 @@
 
 (defun funcall-last (expr)
   (if (eq (car expr) '|funcall|)
-    (ds-bind (f x &rest xs) (cdr expr)
-      (if xs
+    (ds-bind (f x &rest xs)
+        (mapcar #'hs-macro-expand (cdr expr))
+      (if (or xs (simplep x))
         (haskell-tops "$ " expr)
-        (let ((y (hs-macro-expand x)))
+        (progn
           (write-string ". ")
           (op-print-1 f)
-          (write-string " ")
-          (if (simplep y)
-            (haskell y)
-            (funcall-last y)))))
+          (funcall-last x))))
     (haskell-tops "$ " expr)))
 
 (defun funcall-many (args)

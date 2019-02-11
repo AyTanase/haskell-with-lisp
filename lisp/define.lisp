@@ -24,20 +24,6 @@
     ((truep y) x)
     (t `(|and| ,x ,y))))
 
-(defun reduce-funcall (expr)
-  (ds-bind (f x &rest xs) expr
-    (if xs
-      `(|funcall| ,@expr)
-      (cond
-        ((and (atom f) (atom x))
-          expr)
-        ((callp x '|funcall|)
-          (ds-bind (g y &rest ys) (cdr x)
-            (if ys
-              `(|funcall| ,@expr)
-              `(|funcall| (|compose| ,f ,g) ,y))))
-        (t `(|funcall| ,@expr))))))
-
 (defun %define-expand (x)
   (let ((expr (hs-macro-expand x)))
     (if (atom expr)
@@ -49,7 +35,7 @@
           (operator (cons spec (mapcar #'%define-expand args)))
           (t (if (null args)
                (%define-expand spec)
-               (reduce-funcall (mapcar #'%define-expand expr)))))))))
+               (cons '|funcall| (mapcar #'%define-expand expr)))))))))
 
 (defun %define-print (expr)
   (haskell-top (%define-expand expr)))
