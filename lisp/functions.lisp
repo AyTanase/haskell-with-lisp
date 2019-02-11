@@ -162,6 +162,7 @@
         (progn
           (write-string ". ")
           (op-print-1 f)
+          (write-string " ")
           (funcall-last x))))
     (haskell-tops "$ " expr)))
 
