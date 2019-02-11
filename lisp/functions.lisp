@@ -156,7 +156,17 @@
                     (keytypep (car x) 'special)
                     (or (atom y)
                         (keytypep (car y) 'pattern))))
-            (rechask args)
+            (loop
+              for zs on args
+              for z = (hs-macro-expand (car zs))
+              do (cond
+                   ((atom z)
+                     (haskell z)
+                     (if zs (write-string " ")))
+                   ((atom (cdr zs))
+                     (haskell-tops " $ " z))
+                   (t (rechask zs)
+                      (return))))
             (progn
               (if (callp x '|funcall|)
                 (rechask (cdr x))
