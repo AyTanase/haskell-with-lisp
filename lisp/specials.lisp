@@ -56,7 +56,8 @@
 (defspecial |lambda| (args expr)
   (write-char #\\)
   (rechask args)
-  (%define-right " -> " expr))
+  (write-string " -> ")
+  (%define-print expr))
 
 (defspecial |curry| (&rest args)
   (rechask args))
