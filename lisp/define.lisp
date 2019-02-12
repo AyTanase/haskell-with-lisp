@@ -148,7 +148,7 @@
     (if bound
       (prog1 `(|and| ,@(nreverse bound))
         (setf bound nil))))
-  (defsyntax unify (expr)
+  (defpattern unify (expr)
     (cond
       ((not (symbolp expr))
         (haskell-top expr))
