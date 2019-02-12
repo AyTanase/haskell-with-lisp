@@ -62,7 +62,7 @@
 (defspecial |curry| (&rest args)
   (rechask args))
 
-(defspecial |as| (var expr)
+(defpattern |as| (var expr)
   (haskells var "@" expr))
 
 
