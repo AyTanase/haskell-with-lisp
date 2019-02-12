@@ -198,11 +198,10 @@
   (write-string "()"))
 
 (defmethod %haskell ((expr cons))
-  (let ((spec (car expr)))
-    (flet ((call () (apply-syntax spec expr)))
-      (if (keytypep spec 'pattern)
-        (call)
-        (with-paren (call))))))
+  (if (keytypep (car expr) 'pattern)
+    (%haskell-top expr)
+    (with-paren
+      (%haskell-top expr))))
 
 (defshadow defhasq (name string)
   (with-gensyms (value)
