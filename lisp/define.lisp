@@ -149,7 +149,7 @@
   (defpattern unify (expr)
     (cond
       ((not accept)
-        (haskell-tops "?" expr))
+        (haskells "?" expr))
       ((not (symbolp expr))
         (haskell-top expr))
       ((member expr found :test #'eq)
