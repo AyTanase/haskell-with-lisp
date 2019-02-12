@@ -151,7 +151,7 @@
       ((not accept)
         (haskells "?" expr))
       ((not (symbolp expr))
-        (haskell-top expr))
+        (haskell expr))
       ((member expr found :test #'eq)
         (let ((var (genvar)))
           (push `(= ,expr ,var) bound)
