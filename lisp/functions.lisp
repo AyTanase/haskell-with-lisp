@@ -142,7 +142,7 @@
            (%haskell-top expr)))
     (if (eq (car expr) '|funcall|)
       (ds-bind (f x &rest xs)
-          (mapcar #'hs-macro-expand (cdr expr))
+          (mapcar #'%define-expand (cdr expr))
         (if (or xs (simplep x))
           (print-1)
           (progn
@@ -153,24 +153,25 @@
       (print-1))))
 
 (defun funcall-many (args)
-  (haskell (car args))
+  (%haskell (car args))
   (loop
     for xs on (cdr args)
-    for x = (hs-macro-expand (car xs))
+    for x = (car xs)
     do (write-string " ")
        (cond
          ((simplep x) (%haskell x))
          ((atom (cdr xs))
            (funcall-last x))
-         (t (return (rechask xs))))))
+         (t (return (rec%hask xs))))))
 
 (defbinop |funcall| :op $
-  :many (ds-bind (x y &rest rest) args
+  :many (ds-bind (x y &rest rest)
+            (mapcar #'%define-expand args)
           (if (and (atom rest)
                    (if (consp x)
                      (keytypep (car x) 'special)
                      (simplep y)))
-            (rechask args)
+            (rec%hask args)
             (funcall-many args))))
 
 

@@ -23,7 +23,7 @@
           (operator (cons spec (mapcar #'%define-expand args)))
           (t (if (null args)
                (%define-expand spec)
-               (cons '|funcall| (mapcar #'%define-expand expr)))))))))
+               `(|funcall| ,@expr))))))))
 
 (declaim (inline %define-print))
 (defun %define-print (expr)
