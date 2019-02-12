@@ -183,15 +183,12 @@
 (defhasq |nil| "[]")
 
 (def-op-macro |cons| :op |:|)
-(defsyntax |cons| (x &optional (y nil svar))
-  (if svar
-    (progn
-      (op-print-1 x)
-      (if (and (simplep x) (simplep y))
-        (write-string ":")
-        (write-string " : "))
-      (op-print-1 y))
-    (call-next-method)))
+(defsyntax |cons| (x y)
+  (op-print-1 x)
+  (if (and (simplep x) (simplep y))
+    (write-string ":")
+    (write-string " : "))
+  (op-print-1 y))
 
 (defbinop |list*| :op |:|
   :many (if (every #'simplep args)
