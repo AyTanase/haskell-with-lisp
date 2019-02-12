@@ -62,7 +62,8 @@
 (defspecial |curry| (&rest args)
   (rechask args))
 
-(defhasq :|as| "@")
+(defspecial |as| (var expr)
+  (haskells var "@" expr))
 
 
 (defhasq |list| "pure")
