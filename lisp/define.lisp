@@ -21,7 +21,7 @@
         (case (gethash spec *specials*)
           ((special pattern) expr)
           (operator (cons spec (mapcar #'%define-expand args)))
-          (t (if (null args)
+          (t (if (atom args)
                (%define-expand spec)
                `(|funcall| ,@expr))))))))
 
