@@ -24,7 +24,7 @@
 
 
 (defmacro def-op-macro
-    (name &key (op name) (zero `',name) (one 'expr) (many 'expr))
+    (name &key (op name) (zero `',name) (one '`(|curry| ,@expr)) (many 'expr))
   (with-gensyms (spec)
     `(progn
        (setf (gethash ',name *specials*) 'operator)
@@ -40,7 +40,7 @@
 
 (defmacro defoperator (name &optional (op name))
   `(progn
-     (def-op-macro ,name :op ,op :one `(|curry| ,@expr))
+     (def-op-macro ,name :op ,op)
      (defsyntax ,name (x y &rest rest)
        (if rest
          (call-next-method)
