@@ -109,11 +109,11 @@
   (apply-macro (car expr) expr))
 
 
-(defgeneric print-as-hs (expr)
+(defgeneric %haskell (expr)
   (:documentation "print EXPR as Haskell code"))
 
 (defun haskell (expr)
-  (print-as-hs (hs-macro-expand expr)))
+  (%haskell (hs-macro-expand expr)))
 
 (defun haskells (&rest args)
   (mapc #'haskell args))
@@ -152,7 +152,7 @@
 (defun haskell-top (x)
   (let ((expr (hs-macro-expand x)))
     (if (atom expr)
-      (print-as-hs expr)
+      (%haskell expr)
       (apply-syntax (car expr) expr))))
 
 (defun haskell-tops (&rest args)
@@ -178,9 +178,9 @@
   (eq (gethash key *specials*) symbol))
 
 
-(defmethod print-as-hs (expr) (princ expr))
+(defmethod %haskell (expr) (princ expr))
 
-(defmethod print-as-hs ((expr character))
+(defmethod %haskell ((expr character))
   (cond
     ((char= expr #\')
       (write-string "'\\''"))
@@ -190,10 +190,10 @@
       (format t "'~c'" expr))
     (t (format t "'\\x~x'" (char-code expr)))))
 
-(defmethod print-as-hs ((expr null))
+(defmethod %haskell ((expr null))
   (write-string "()"))
 
-(defmethod print-as-hs ((expr cons))
+(defmethod %haskell ((expr cons))
   (let ((spec (car expr)))
     (flet ((call () (apply-syntax spec expr)))
       (if (keytypep spec 'pattern)
@@ -203,7 +203,7 @@
 (defshadow defhasq (name string)
   (with-gensyms (value)
     `(let ((,value ,string))
-       (defmethod print-as-hs ((expr (eql ',name)))
+       (defmethod %haskell ((expr (eql ',name)))
          (declare (ignore expr))
          (write-string ,value)))))
 
