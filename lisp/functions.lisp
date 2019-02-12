@@ -165,14 +165,14 @@
          (t (return (rec%hask xs))))))
 
 (defbinop |funcall| :op $
-  :many (ds-bind (x y &rest rest)
-            (mapcar #'%define-expand args)
-          (if (and (atom rest)
-                   (if (consp x)
-                     (keytypep (car x) 'special)
-                     (simplep y)))
-            (rec%hask args)
-            (funcall-many args))))
+  :many (let ((xs (mapcar #'%define-expand args)))
+          (ds-bind (x y &rest rest) xs
+            (if (and (atom rest)
+                     (if (consp x)
+                       (keytypep (car x) 'special)
+                       (simplep y)))
+              (rec%hask xs)
+              (funcall-many xs)))))
 
 
 (defhasq |nil| "[]")
