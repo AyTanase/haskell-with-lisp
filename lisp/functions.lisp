@@ -187,14 +187,14 @@
   (if svar
     (progn
       (op-print-1 x)
-      (if (and (atom x) (atom y))
+      (if (and (simplep x) (simplep y))
         (write-string ":")
         (write-string " : "))
       (op-print-1 y))
     (call-next-method)))
 
 (defbinop |list*| :op |:|
-  :many (if (find-if #'consp args)
+  :many (if (find-if (complement #'simplep) args)
           (rec-op-1 args " : ")
           (rec-op-1 args ":")))
 
