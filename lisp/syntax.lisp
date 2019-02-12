@@ -209,9 +209,10 @@
 
 
 (defshadow defhasq (name string)
-  `(defmethod %haskell ((expr (eql ',name)))
-     (declare (ignore expr))
-     (write-string ,string)))
+  (with-gensyms (expr)
+    `(defmethod %haskell ((,expr (eql ',name)))
+       (declare (ignore ,expr))
+       (write-string ,string))))
 
 (defhasq nil "()")
 
