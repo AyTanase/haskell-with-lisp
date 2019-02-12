@@ -138,21 +138,22 @@
   (or (atom expr)
       (keytypep (car expr) 'pattern)))
 
+(declaim (ftype function %funcall))
 (defun funcall-last (expr)
-  (flet ((print-1 ()
-           (write-string "$ ")
-           (%haskell-top expr)))
-    (if (eq (car expr) '|funcall|)
-      (ds-bind (f x &rest xs)
-          (mapcar #'%define-expand (cdr expr))
-        (if (or xs (simplep x))
-          (print-1)
-          (progn
-            (write-string ". ")
-            (%op-print-1 f)
-            (write-string " ")
-            (funcall-last x))))
-      (print-1))))
+  (if (eq (car expr) '|funcall|)
+    (let ((args (mapcar #'%define-expand (cdr expr))))
+      (ds-bind (f x &rest xs) args
+        (cond
+          ((or xs (simplep x))
+            (write-string "$ ")
+            (%funcall args))
+          (t (write-string ". ")
+             (%op-print-1 f)
+             (write-string " ")
+             (funcall-last x)))))
+    (progn
+      (write-string "$ ")
+      (%haskell-top expr))))
 
 (defun funcall-many (args)
   (%haskell (car args))
@@ -166,15 +167,17 @@
            (funcall-last x))
          (t (return (rec%hask xs))))))
 
+(defun %funcall (args)
+  (ds-bind (x y &rest rest) args
+    (if (and (atom rest)
+             (if (consp x)
+               (keytypep (car x) 'special)
+               (simplep y)))
+      (rec%hask args)
+      (funcall-many args))))
+
 (defbinop |funcall| :op $
-  :many (let ((xs (mapcar #'%define-expand args)))
-          (ds-bind (x y &rest rest) xs
-            (if (and (atom rest)
-                     (if (consp x)
-                       (keytypep (car x) 'special)
-                       (simplep y)))
-              (rec%hask xs)
-              (funcall-many xs)))))
+  :many (%funcall (mapcar #'%define-expand args)))
 
 
 (defhasq |nil| "[]")
