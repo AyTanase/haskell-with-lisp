@@ -2,15 +2,16 @@
 
 (defun %op-print-1 (expr)
   (if (atom expr)
-    (haskell expr)
+    (%haskell expr)
     (let ((spec (car expr)))
       (cond
         ((eq spec '|funcall|)
           (rechask (cdr expr)))
         ((keytypep spec 'operator)
-          (haskell expr))
-        (t (haskell-top expr))))))
+          (%haskell expr))
+        (t (%haskell-top expr))))))
 
+(declaim (inline op-print-1))
 (defun op-print-1 (expr)
   (%op-print-1 (hs-macro-expand expr)))
 
