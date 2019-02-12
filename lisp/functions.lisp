@@ -201,11 +201,11 @@
 
 (defun read-at-mark (stream &rest args)
   (declare (ignore args))
-  `(destruct ,(read stream t nil t)))
+  `(destructuring ,(read stream t nil t)))
 
 (set-macro-char #\@ #'read-at-mark t *hs-readtable*)
 
-(def-syntax-macro destruct (expr)
+(def-syntax-macro destructuring (expr)
   (cond
     ((not (listp expr)) expr)
     ((last expr 0)
