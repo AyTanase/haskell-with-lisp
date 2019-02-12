@@ -147,17 +147,15 @@
     (if bound
       `(|and| ,@(nreverse bound))))
   (defpattern ? (expr)
-    (cond
-      ((not accept)
-        (haskells "?" expr))
-      ((not (symbolp expr))
-        (haskell expr))
-      ((member expr found :test #'eq)
+    (if (and accept (symbolp expr))
+      (if (member expr found :test #'eq)
         (let ((var (genvar)))
           (push `(= ,expr ,var) bound)
-          (%haskell var)))
-      (t (push expr found)
-         (haskell expr)))))
+          (haskell var))
+        (progn
+          (push expr found)
+          (haskell expr)))
+      (haskell expr))))
 
 (defun %define (var val &optional (assign " = "))
   (if (eq var '|type|)
