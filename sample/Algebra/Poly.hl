@@ -12,12 +12,11 @@
 
 (instance (Eq (Poly a)) ((Eq a) (Group a))
   ((= (Poly us) (Poly vs))
-    (labels ((zerop (xs)
-               (hs:and (map (curry = zero) xs)))
-             (equal (xs nil) (zerop xs))
-             (equal (nil ys) (zerop ys))
-             (equal ((cons x xs) (cons y ys))
-               (and (= x y) (equal xs ys))))
+    (where ((zerop (foldr (compose and (curry = zero)) True))
+            ((equal xs nil) (zerop xs))
+            ((equal nil ys) (zerop ys))
+            ((equal (cons x xs) (cons y ys))
+              (and (= x y) (equal xs ys))))
       (equal us vs))))
 
 
@@ -63,6 +62,7 @@
 (instance (Num (Poly a)) ((Num a))
   (+ +) (- -) (* *)
   (negate negate)
-  ((abs (Poly xs)) (pure (sum (map abs xs))))
+  ((abs (Poly xs))
+    (pure (foldr (compose + abs) 0 xs)))
   (signum undefined)
   (fromInteger (compose pure fromInteger)))
