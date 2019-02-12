@@ -46,7 +46,8 @@
 (defun map-tree (fn tree)
   (if (atom tree)
     (funcall fn tree)
-    (mapcar (curry #'map-tree fn) tree)))
+    (cons (map-tree fn (car tree))
+          (map-tree fn (cdr tree)))))
 
 (declaim (inline callp))
 (defun callp (expr symbol)

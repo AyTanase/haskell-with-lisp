@@ -193,7 +193,6 @@
       (op-print-1 y))
     (call-next-method)))
 
-
 (defbinop |list*| :op |:|
   :many (if (find-if #'consp args)
           (rec-op-1 args " : ")
