@@ -37,8 +37,9 @@
                (%define-expand spec)
                (cons '|funcall| (mapcar #'%define-expand expr)))))))))
 
+(declaim (inline %define-print))
 (defun %define-print (expr)
-  (haskell-top (%define-expand expr)))
+  (%haskell-top (%define-expand expr)))
 
 (defun where (defs)
   (if defs
