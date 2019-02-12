@@ -119,7 +119,7 @@
       (%define-guard assign nil expr))))
 
 
-(defun expand-char-? (list)
+(defun expand-? (list)
   (if (last list 0)
     `(|list*|
       ,@(loop for (x . xs) on list
@@ -128,15 +128,15 @@
                   (list x xs))))
     `(|list| ,@list)))
 
-(defun read-char-? (stream &rest args)
+(defun read-? (stream &rest args)
   (declare (ignore args))
   (let ((item (read stream t nil t)))
     (typecase item
-      (list (expand-char-? item))
+      (list (expand-? item))
       (symbol `(unify ,item))
       (t item))))
 
-(set-macro-char #\? #'read-char-? t *hs-readtable*)
+(set-macro-char #\? #'read-? t *hs-readtable*)
 
 
 (let ((accept nil) found bound)
