@@ -200,25 +200,22 @@
           (rec-op-1 args ":")))
 
 
-(defun expand-quote (list)
-  (if (last list 0)
-    `(|list*|
-      ,@(loop for (x . xs) on list
-          nconc (if (consp xs)
-                  (list x)
-                  (list x xs))))
-    `(|list| ,@list)))
+(defun read-at-mark (stream &rest args)
+  (declare (ignore args))
+  `(destruct ,(read stream t nil t)))
 
-(defmethod apply-macro ((spec (eql 'quote)) expr)
-  (declare (ignore spec))
-  (let ((item (second expr)))
-    (if (listp item)
-      (hs-macro-expand (expand-quote item))
-      expr)))
+(set-macro-char #\@ #'read-at-mark t *hs-readtable*)
 
-(defsyntax quote (x)
-  (write-char #\')
-  (haskell x))
+(def-syntax-macro destruct (expr)
+  (cond
+    ((not (listp expr)) expr)
+    ((last expr 0)
+      `(|list*|
+        ,@(loop for (x . xs) on expr
+            nconc (if (consp xs)
+                    (list x)
+                    (list x xs)))))
+    (t `(|list| ,@expr))))
 
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote ds-bind) (quote (&lambda 4 &body)))
