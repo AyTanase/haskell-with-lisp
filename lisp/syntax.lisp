@@ -196,14 +196,12 @@
       (format t "'~c'" expr))
     (t (format t "'\\x~x'" (char-code expr)))))
 
-(defmethod %haskell ((expr null))
-  (write-string "()"))
-
 (defmethod %haskell ((expr cons))
   (if (keytypep (car expr) 'pattern)
     (%haskell-top expr)
     (with-paren
       (%haskell-top expr))))
+
 
 (defshadow defhasq (name string)
   (with-gensyms (value)
@@ -211,6 +209,8 @@
        (defmethod %haskell ((expr (eql ',name)))
          (declare (ignore expr))
          (write-string ,value)))))
+
+(defhasq nil "()")
 
 
 (load-relative "define.lisp")
