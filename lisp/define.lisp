@@ -12,18 +12,6 @@
   (haskell-tops expr " :: " type))
 
 
-(declaim (ftype function %define reduce-guard-1))
-
-(defun truep (x)
-  (or (eq x '|True|)
-      (eq x '|otherwise|)))
-
-(defun merge-guards (x y)
-  (cond
-    ((truep x) y)
-    ((truep y) x)
-    (t `(|and| ,x ,y))))
-
 (defun %define-expand (x)
   (let ((expr (hs-macro-expand x)))
     (if (atom expr)
@@ -41,6 +29,8 @@
 (defun %define-print (expr)
   (%haskell-top (%define-expand expr)))
 
+
+(declaim (ftype function %define))
 (defun where (defs)
   (if defs
     (with-indent 1
@@ -63,6 +53,20 @@
     (with-indent 1
       (map-indent #'print-1 gvs))
     (where defs)))
+
+
+(declaim (ftype function reduce-guard-1)
+         (inline truep))
+
+(defun truep (x)
+  (or (eq x '|True|)
+      (eq x '|otherwise|)))
+
+(defun merge-guards (x y)
+  (cond
+    ((truep x) y)
+    ((truep y) x)
+    (t `(|and| ,x ,y))))
 
 (defun reduce-guard-if (f guard expr)
   (ds-bind (x y &optional (z nil svar)) (cdr expr)
