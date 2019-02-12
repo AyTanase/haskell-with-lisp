@@ -194,9 +194,9 @@
     (call-next-method)))
 
 (defbinop |list*| :op |:|
-  :many (if (find-if (complement #'simplep) args)
-          (rec-op-1 args " : ")
-          (rec-op-1 args ":")))
+  :many (if (every #'simplep args)
+          (rec-op-1 args ":")
+          (rec-op-1 args " : ")))
 
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote ds-bind) (quote (&lambda 4 &body)))
