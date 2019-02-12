@@ -25,13 +25,13 @@
 (type checkG (-> QMaker Parser))
 
 (define (checkG make f ?(#\+ . xs))
-  #((make atomic f) xs))
+  (tuple (make atomic f) xs))
 
 (define (checkG make f ?(#\? . xs))
-  #((make (flip split) f) xs))
+  (tuple (make (flip split) f) xs))
 
 (define (checkG make f xs)
-  #((make split f) xs))
+  (tuple (make split f) xs))
 
 
 (type checkQ' Parser)
