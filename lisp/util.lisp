@@ -43,12 +43,6 @@
   (loop repeat n collect (genvar)))
 
 
-(defun map-tree (fn tree)
-  (if (atom tree)
-    (funcall fn tree)
-    (cons (map-tree fn (car tree))
-          (map-tree fn (cdr tree)))))
-
 (declaim (inline callp))
 (defun callp (expr symbol)
   (and (consp expr) (eq (car expr) symbol)))
