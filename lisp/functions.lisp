@@ -199,6 +199,27 @@
           (rec-op-1 args " : ")
           (rec-op-1 args ":")))
 
+
+(defun expand-quote (list)
+  (if (last list 0)
+    `(|list*|
+      ,@(loop for (x . xs) on list
+          nconc (if (consp xs)
+                  (list x)
+                  (list x xs))))
+    `(|list| ,@list)))
+
+(defmethod apply-macro ((spec (eql 'quote)) expr)
+  (declare (ignore spec))
+  (let ((item (second expr)))
+    (if (listp item)
+      (hs-macro-expand (expand-quote item))
+      expr)))
+
+(defsyntax quote (x)
+  (write-char #\')
+  (haskell x))
+
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote ds-bind) (quote (&lambda 4 &body)))
 ;; eval: (cl-indent-rules (quote (4 2 2 &body)) (quote def-op-macro) (quote defbinop))
