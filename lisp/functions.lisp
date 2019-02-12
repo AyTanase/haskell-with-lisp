@@ -131,22 +131,26 @@
 (defhasq |pair| "(,)")
 
 
+(declaim (inline simplep))
 (defun simplep (expr)
   (or (atom expr)
       (keytypep (car expr) 'pattern)))
 
 (defun funcall-last (expr)
-  (if (eq (car expr) '|funcall|)
-    (ds-bind (f x &rest xs)
-        (mapcar #'hs-macro-expand (cdr expr))
-      (if (or xs (simplep x))
-        (haskell-tops "$ " expr)
-        (progn
-          (write-string ". ")
-          (%op-print-1 f)
-          (write-string " ")
-          (funcall-last x))))
-    (haskell-tops "$ " expr)))
+  (flet ((print-1 ()
+           (write-string "$ ")
+           (%haskell-top expr)))
+    (if (eq (car expr) '|funcall|)
+      (ds-bind (f x &rest xs)
+          (mapcar #'hs-macro-expand (cdr expr))
+        (if (or xs (simplep x))
+          (print-1)
+          (progn
+            (write-string ". ")
+            (%op-print-1 f)
+            (write-string " ")
+            (funcall-last x))))
+      (print-1))))
 
 (defun funcall-many (args)
   (haskell (car args))
@@ -155,7 +159,7 @@
     for x = (hs-macro-expand (car xs))
     do (write-string " ")
        (cond
-         ((simplep x) (haskell x))
+         ((simplep x) (%haskell x))
          ((atom (cdr xs))
            (funcall-last x))
          (t (return (rechask xs))))))
