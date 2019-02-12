@@ -22,7 +22,7 @@
 (defspecial |if| (x y &optional (z nil svar))
   (cond
     ((not svar)
-      (assert (truep x) () "if: missing else-form")
+      (assert (truep x) () "if: missing the else-form")
       (haskell-top y))
     ((and (atom x) (atom y) (atom z))
       (haskells "if " x " then " y " else " z))
