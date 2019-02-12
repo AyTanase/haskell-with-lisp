@@ -68,8 +68,8 @@
 (defun ->-print-1 (x)
   (let ((expr (hs-macro-expand x)))
     (if (callp expr '->)
-      (haskell expr)
-      (haskell-top expr))))
+      (%haskell expr)
+      (%haskell-top expr))))
 
 (defbinop -> :many (%rechask args #'->-print-1 " -> "))
 
