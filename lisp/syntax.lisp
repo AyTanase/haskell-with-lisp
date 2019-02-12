@@ -149,11 +149,15 @@
        (ds-bind ,args (cdr ,expr) ,@body))))
 
 
-(defun haskell-top (x)
-  (let ((expr (hs-macro-expand x)))
-    (if (atom expr)
-      (%haskell expr)
-      (apply-syntax (car expr) expr))))
+(declaim (inline %haskell-top haskell-top))
+
+(defun %haskell-top (expr)
+  (if (atom expr)
+    (%haskell expr)
+    (apply-syntax (car expr) expr)))
+
+(defun haskell-top (expr)
+  (%haskell-top (hs-macro-expand expr)))
 
 (defun haskell-tops (&rest args)
   (mapc #'haskell-top args))
