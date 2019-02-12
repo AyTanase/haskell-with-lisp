@@ -13,7 +13,7 @@
   (If (f Finite) x (g x)))
 
 (type cut (-> NFA NFA))
-(define cut (flip atomic (const Cut)))
+(define (cut f x) (If (f Finite) x Cut))
 
 (type safeTail (-> (list a) (Maybe (list a))))
 (define (safeTail nil) Nothing)
