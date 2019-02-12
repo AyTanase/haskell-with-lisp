@@ -118,12 +118,53 @@
                      (hs-macro-expand (third expr)))
       (%define-guard assign nil expr))))
 
+
+(defun expand-char-? (list)
+  (if (last list 0)
+    `(|list*|
+      ,@(loop for (x . xs) on list
+          nconc (if (consp xs)
+                  (list x)
+                  (list x xs))))
+    `(|list| ,@list)))
+
+(defun read-char-? (stream &rest args)
+  (declare (ignore args))
+  (let ((item (read stream t nil t)))
+    (typecase item
+      (list (expand-char-? item))
+      (symbol `(unify ,item))
+      (t item))))
+
+(set-macro-char #\? #'read-char-? t *hs-readtable*)
+
+
+(let ((found nil) (bound nil))
+  (defun %define-left (expr)
+    (assert (and (null found) (null bound))
+            () "recursive %DEFINE call")
+    (haskell-top expr)
+    (setf found nil)
+    (if bound
+      (prog1 `(|and| ,@(nreverse bound))
+        (setf bound nil))))
+  (defsyntax unify (expr)
+    (cond
+      ((not (symbolp expr))
+        (haskell-top expr))
+      ((member expr found :test #'eq)
+        (let ((var (genvar)))
+          (push `(= ,expr ,var) bound)
+          (%haskell var)))
+      (t (push expr found)
+         (haskell expr)))))
+
 (defun %define (var val &optional (assign " = "))
   (if (eq var '|type|)
     (%type val assign)
-    (progn
-      (haskell-top var)
-      (%define-right assign val))))
+    (let* ((bound (%define-left var))
+           (expr (if bound `(|if| ,bound ,val) val)))
+      (%define-right assign expr))))
 
 (def-hs-macro |define| (var val)
   `(%define ',var ',val))

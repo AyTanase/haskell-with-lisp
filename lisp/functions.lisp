@@ -198,24 +198,6 @@
           (rec-op-1 args " : ")
           (rec-op-1 args ":")))
 
-
-(defun read-at-mark (stream &rest args)
-  (declare (ignore args))
-  `(destructuring ,(read stream t nil t)))
-
-(set-macro-char #\@ #'read-at-mark t *hs-readtable*)
-
-(def-syntax-macro destructuring (expr)
-  (cond
-    ((not (listp expr)) expr)
-    ((last expr 0)
-      `(|list*|
-        ,@(loop for (x . xs) on expr
-            nconc (if (consp xs)
-                    (list x)
-                    (list x xs)))))
-    (t `(|list| ,@expr))))
-
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote ds-bind) (quote (&lambda 4 &body)))
 ;; eval: (cl-indent-rules (quote (4 2 2 &body)) (quote def-op-macro) (quote defbinop))
