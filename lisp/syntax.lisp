@@ -112,6 +112,7 @@
 (defgeneric %haskell (expr)
   (:documentation "print EXPR as Haskell code"))
 
+(declaim (inline haskell))
 (defun haskell (expr)
   (%haskell (hs-macro-expand expr)))
 
