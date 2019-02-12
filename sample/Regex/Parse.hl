@@ -17,7 +17,7 @@
 (define (makeOpt method f) (method f id))
 
 
-(deftype Parser (-> NFA String (tuple NFA String)))
+(deftype Parser (-> NFA String #(NFA String)))
 (type parse' Parser)
 
 
@@ -45,11 +45,11 @@
   (let ((#(h ys) (checkQ' g xs)))
     (parse' (compose f h) ys)))
 
-(type parseChar (-> NFA Char String (tuple NFA String)))
+(type parseChar (-> NFA Char String #(NFA String)))
 (define (parseChar f x xs) (checkQ f (Compare x) xs))
 
 
-(type parseGroup (-> String (tuple NFA String)))
+(type parseGroup (-> String #(NFA String)))
 
 (define (parseGroup ?(#\? #\> . xs))
   (first cut (parse' id xs)))
@@ -57,7 +57,7 @@
 (define (parseGroup xs) (parse' id xs))
 
 
-(define (parse' f nil) (tuple f nil))
+(define (parse' f nil) #(f nil))
 
 (define (parse' f ?(#\\ x . xs)) (parseChar f x xs))
 

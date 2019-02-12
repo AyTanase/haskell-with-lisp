@@ -17,7 +17,7 @@
            (exec' (_ _ _) Nothing))
     (compose (fmap fst) (exec' s 0))))
 
-(type match (=> (Num a) (-> Op String (Maybe (tuple a a)))))
+(type match (=> (Num a) (-> Op String (Maybe #(a a)))))
 (define match
   (labels ((match' (n r xs)
              (alt (fmap (pair n) (exec r xs))
