@@ -106,9 +106,9 @@
     expr))
 
 (defmethod hs-macro-expand ((expr vector))
-  `(|tuple| ,@(coerce expr 'list)))
-
-(defmethod hs-macro-expand ((expr string)) expr)
+  (if (stringp expr)
+    expr
+    `(|tuple| ,@(coerce expr 'list))))
 
 (defmethod hs-macro-expand ((expr cons))
   (apply-macro (car expr) expr))
