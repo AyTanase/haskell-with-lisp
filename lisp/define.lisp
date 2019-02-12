@@ -139,17 +139,17 @@
 (set-macro-char #\? #'read-char-? t *hs-readtable*)
 
 
-(let ((found nil) (bound nil))
+(let ((accept nil) found bound)
   (defun %define-left (expr)
-    (assert (and (null found) (null bound))
-            () "recursive %DEFINE call")
+    (setf accept t found nil bound nil)
     (haskell-top expr)
-    (setf found nil)
+    (setf accept nil)
     (if bound
-      (prog1 `(|and| ,@(nreverse bound))
-        (setf bound nil))))
+      `(|and| ,@(nreverse bound))))
   (defpattern unify (expr)
     (cond
+      ((not accept)
+        (haskell-tops "?" expr))
       ((not (symbolp expr))
         (haskell-top expr))
       ((member expr found :test #'eq)
