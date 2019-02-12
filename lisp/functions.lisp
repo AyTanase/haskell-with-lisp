@@ -15,6 +15,8 @@
 (defun op-print-1 (expr)
   (%op-print-1 (hs-macro-expand expr)))
 
+(defrechask rec-op-1 #'op-print-1 "")
+
 (defun print-infix (op x y)
   (op-print-1 x)
   (format t " ~a " op)
@@ -52,7 +54,7 @@
        :zero ,zero
        :one ,(or one '(hs-macro-expand (car args))))
      (defsyntax ,name (&rest args)
-       ,(or many `(%rechask args #'op-print-1 ,(format nil " ~a " op))))))
+       ,(or many `(rec-op-1 args ,(format nil " ~a " op))))))
 
 (defbinop + :zero 0)
 (defbinop - :one `(|negate| ,(car args)))
@@ -190,11 +192,9 @@
 
 
 (defbinop |list*| :op |:|
-  :many (flet ((call (between)
-                 (%rechask args #'op-print-1 between)))
-          (if (find-if #'consp args)
-            (call " : ")
-            (call ":"))))
+  :many (if (find-if #'consp args)
+          (rec-op-1 args " : ")
+          (rec-op-1 args ":")))
 
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote ds-bind) (quote (&lambda 4 &body)))
