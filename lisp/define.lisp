@@ -133,7 +133,7 @@
   (let ((item (read stream t nil t)))
     (typecase item
       (list (expand-? item))
-      (symbol `(unify ,item))
+      (symbol `(? ,item))
       (t item))))
 
 (set-macro-char #\? #'read-? t *hs-readtable*)
@@ -146,7 +146,7 @@
     (setf accept nil)
     (if bound
       `(|and| ,@(nreverse bound))))
-  (defpattern unify (expr)
+  (defpattern ? (expr)
     (cond
       ((not accept)
         (haskells "?" expr))
