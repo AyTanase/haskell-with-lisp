@@ -25,24 +25,24 @@
 (type checkG (-> QMaker Parser))
 
 (define (checkG make f ?(#\+ . xs))
-  (tuple (make atomic f) xs))
+  #((make atomic f) xs))
 
 (define (checkG make f ?(#\? . xs))
-  (tuple (make (flip split) f) xs))
+  #((make (flip split) f) xs))
 
 (define (checkG make f xs)
-  (tuple (make split f) xs))
+  #((make split f) xs))
 
 
 (type checkQ' Parser)
 (define (checkQ' f ?(#\* . xs)) (checkG makeStar f xs))
 (define (checkQ' f ?(#\+ . xs)) (checkG makePlus f xs))
 (define (checkQ' f ?(#\? . xs)) (checkG makeOpt  f xs))
-(define (checkQ' f xs) (tuple f xs))
+(define (checkQ' f xs) #(f xs))
 
 (type checkQ (-> NFA Parser))
 (define (checkQ f g xs)
-  (let (((tuple h ys) (checkQ' g xs)))
+  (let ((#(h ys) (checkQ' g xs)))
     (parse' (compose f h) ys)))
 
 (type parseChar (-> NFA Char String (tuple NFA String)))
@@ -64,7 +64,7 @@
 (define (parse' f ?(#\( . xs))
   (uncurry (checkQ f) (parseGroup xs)))
 
-(define (parse' f ?(#\) . xs)) (tuple f xs))
+(define (parse' f ?(#\) . xs)) #(f xs))
 
 (define (parse' f ?(#\| . xs))
   (first (split f) (parse' id xs)))
