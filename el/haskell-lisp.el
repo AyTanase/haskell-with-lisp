@@ -15,18 +15,15 @@
   :after-hook
   (setq-local font-lock-keywords-case-fold-search nil))
 
-(cl-indent-rules '(4 &body) 'define 'udef 'defmodule)
-(cl-indent-rules '((&whole 4 &rest (&whole 1 &body)) &body) 'where 'uwhere)
-(cl-indent-rules '(4 &lambda &rest (&whole 2 &body)) 'class 'uclass 'instance 'uinstance)
-(add-cl-indent-rule 'ulet 'lisp-indent-let-method)
-(add-cl-indent-rule 'ulabels '((&whole 4 &rest (&whole 1 &lambda &body)) &body))
+(cl-indent-rules '(4 &body) 'define 'defmodule)
+(cl-indent-rules '((&whole 4 &rest (&whole 1 &body)) &body) 'wher)
+(cl-indent-rules '(4 &lambda &rest (&whole 2 &body)) 'class 'instance)
 (add-cl-indent-rule 'do '(&body))
 (add-cl-indent-rule 'if-bind '((&whole 4 &body) &body))
 
 (let ((keywords
         '(as class curry data define defmodule enum-from
-          if-bind import instance newtype setf type
-          ucase uclass udef ulabels ulet uinstance uwhere where))
+          if-bind import instance newtype setf type where))
       (operators
         '(+ - * / and or append compose -> => = <= >= < > /=))
       (constructors '(nil cons list* list tuple pair)))
