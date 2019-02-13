@@ -155,7 +155,7 @@
       (write-string "$ ")
       (%haskell-top expr))))
 
-(defun funcall-many (args)
+(defun %funcall (args)
   (%haskell (car args))
   (loop
     for xs on (cdr args)
@@ -166,15 +166,6 @@
          ((atom (cdr xs))
            (funcall-last x))
          (t (return (rec%hask xs))))))
-
-(defun %funcall (args)
-  (ds-bind (x y &rest rest) args
-    (if (and (atom rest)
-             (if (consp x)
-               (keytypep (car x) 'special)
-               (simplep y)))
-      (rec%hask args)
-      (funcall-many args))))
 
 (defbinop |funcall| :op $
   :many (%funcall (mapcar #'%define-expand args)))
