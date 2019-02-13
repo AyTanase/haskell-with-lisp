@@ -31,13 +31,8 @@
   (%partition (compose test key) xs))
 
 
-(declaim (inline format-symbol))
-(defun format-symbol (&rest args)
-  (intern (apply #'format nil args)))
-
-(let ((i 0))
-  (defun genvar ()
-    (format-symbol "_v~d" (incf i))))
+(declaim (inline genvar))
+(defun genvar () (gentemp "v"))
 
 (defun genvars (n)
   (loop repeat n collect (genvar)))
