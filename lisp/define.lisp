@@ -119,6 +119,26 @@
       (%define-guard assign nil expr))))
 
 
+(defclass question ()
+  ((value :reader get-? :initarg :value)))
+
+(declaim (inline cons-?))
+(defun cons-? (value)
+  (make-instance 'question :value value))
+
+(defun print-? (stream object)
+  (write-char #\? stream)
+  (prin1 (get-? object) stream))
+
+(set-pprint-dispatch 'question #'print-?)
+
+(defun read-? (stream &rest args)
+  (declare (ignore args))
+  (cons-? (read stream t nil t)))
+
+(set-macro-char #\? #'read-? t *hs-readtable*)
+
+
 (defun remove-dot (list)
   (loop for (x . xs) on list
     nconc (cons x (if (atom xs) (list xs)))))
@@ -128,16 +148,12 @@
     `(|list*| ,@(remove-dot list))
     `(|list| ,@list)))
 
-(defun read-? (stream &rest args)
-  (declare (ignore args))
-  (let ((item (read stream t nil t)))
-    (typecase item
-      (list (expand-? item))
-      (symbol `(? ,item))
-      (t item))))
-
-(set-macro-char #\? #'read-? t *hs-readtable*)
-
+(defmethod hs-macro-expand ((expr question))
+  (let ((value (get-? expr)))
+    (typecase value
+      (list (expand-? value))
+      (symbol `(? ,value))
+      (t (hs-macro-expand value)))))
 
 (let ((accept nil) found bound)
   (defun %define-left (expr)
