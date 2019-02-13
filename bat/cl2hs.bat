@@ -6,20 +6,20 @@ endlocal
 exit /b
 
 :compile-all
-set "FILES="
+set FILES=
 call :collect-files .
 call runcl %SRC% --eval "(hs:compile-all %FILES%)"
 exit /b
 
 :collect-files
+for %%f in (*.hl) do (call :collect-file-1 "%~1/%%f")
 for /d %%d in (*) do (
 	cd %%d
 	call :collect-files "%~1/%%d"
 	cd ..
 )
-for %%f in (*.hl) do (call :collect-file-1 "%~1/%%f")
 exit /b
 
 :collect-file-1
-set "FILES=\"%~1\" %FILES%"
+set FILES=%FILES% \"%~1\"
 exit /b
