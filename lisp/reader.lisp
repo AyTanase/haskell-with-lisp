@@ -109,11 +109,9 @@
 
 (defun read-hs-comment (ins &rest args)
   (declare (ignore args))
-  `(progn
-     (write-string
-      ,(with-output-to-string (outs)
-         (read-hs-comment-1 ins outs)))
-     (fresh-line)))
+  `(write-line
+    ,(with-output-to-string (outs)
+       (read-hs-comment-1 ins outs))))
 
 (defun read-hs-lf (stream &rest args)
   (declare (ignore args))
