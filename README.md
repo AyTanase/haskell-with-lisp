@@ -1,4 +1,4 @@
-# Lisp to Haskell
+# Haskell with Lisp
 Common Lisp macros for generating Haskell code
 
 ## Command Line
