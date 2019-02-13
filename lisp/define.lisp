@@ -119,13 +119,13 @@
       (%define-guard assign nil expr))))
 
 
+(defun remove-dot (list)
+  (loop for (x . xs) on list
+    nconc (cons x (if (atom xs) (list xs)))))
+
 (defun expand-? (list)
   (if (last list 0)
-    `(|list*|
-      ,@(loop for (x . xs) on list
-          nconc (if (consp xs)
-                  (list x)
-                  (list x xs))))
+    `(|list*| ,@(remove-dot list))
     `(|list| ,@list)))
 
 (defun read-? (stream &rest args)
