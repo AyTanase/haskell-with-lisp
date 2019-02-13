@@ -152,7 +152,7 @@
   (let ((value (get-? expr)))
     (typecase value
       (list (expand-? value))
-      (symbol `(? ,value))
+      (symbol `(question ,value))
       (t (hs-macro-expand value)))))
 
 (let ((accept nil) found bound)
@@ -162,7 +162,7 @@
     (setf accept nil)
     (if bound
       `(|and| ,@(nreverse bound))))
-  (defpattern ? (expr)
+  (defpattern question (expr)
     (if (and accept (symbolp expr))
       (if (member expr found :test #'eq)
         (let ((var (genvar)))
