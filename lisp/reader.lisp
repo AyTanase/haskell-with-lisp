@@ -139,8 +139,7 @@
 
 (defun compile (src &optional (out (default-out src)))
   (let ((*package* (find-package :hs))
-        (*readtable* *hs-toplevel*)
-        (*print-right-margin* most-positive-fixnum))
+        (*readtable* *hs-toplevel*))
     (with-open-file (*standard-output* out
                      :direction :output
                      :if-exists :supersede)
