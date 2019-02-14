@@ -43,7 +43,7 @@
 
 (let ((table haskell-lisp-mode-syntax-table))
   (modify-syntax-entry ?{ "_ 2bn" table)
-  (modify-syntax-entry ?} "_ 3bn" table))
+  (modify-syntax-entry ?} "> bn" table))
 
 (define-key haskell-lisp-mode-map (kbd "C-c C-c") 'to-haskell)
 
