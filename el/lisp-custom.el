@@ -9,30 +9,6 @@
           (add-cl-indent-rule symbol rule))
         symbols))
 
-(defun lisp-indent-let-method
-    (path state indent-point sexp-column normal-indent)
-  (if (>= (car path) 2)
-      (if (cdr path)
-          normal-indent
-        (+ sexp-column 2))
-    (+ sexp-column
-       (cond ((null (cdr path)) 4)
-             ((null (cddr path)) 1)
-             (t 2)))))
-
-(defun lisp-indent-cond-method
-    (path state indent-point sexp-column normal-indent)
-  (if (and (cdr path) (cddr path))
-      normal-indent
-    (max normal-indent
-         (+ sexp-column 2))))
-
-(defun lisp-indent-defpackage-method
-    (path state indent-point sexp-column normal-indent)
-  (if (cdr path)
-      normal-indent
-    (+ sexp-column (if (= (car path) 1) 4 2))))
-
 (defun runcl (file-name)
   (interactive "sFile Name: ")
   (shell-command (format "runcl %S" file-name)))
@@ -49,14 +25,13 @@
 (add-cl-indent-rule 'if '(4 &rest 2))
 (add-cl-indent-rule 'with-open-file '(&lambda &body))
 (add-cl-indent-rule 'ftype '((&whole 4 &lambda 2) &rest 2))
-(add-cl-indent-rule 'cond 'lisp-indent-cond-method)
+(add-cl-indent-rule 'cond '(&rest (&whole 2 &body)))
 (add-cl-indent-rule 'case '(4 &rest (&whole 2 &body)))
-(add-cl-indent-rule 'defpackage 'lisp-indent-defpackage-method)
-(cl-indent-rules 'lisp-indent-let-method 'let 'let*)
+(cl-indent-rules '((&whole 4 &rest (&whole 1 2)) &body) 'let 'let*)
 
 (font-lock-add-keywords 'lisp-mode '(("#:.+?\\_>" . font-lock-builtin-face)))
 
-(modify-syntax-entry ?. "'2" lisp-mode-syntax-table)
+(modify-syntax-entry ?| "_ 23bn" lisp-mode-syntax-table)
 
 (define-key lisp-mode-map (kbd "C-c C-c") 'runcl-this)
 
