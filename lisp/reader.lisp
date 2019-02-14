@@ -98,7 +98,7 @@
         ((and (char= c #\#) (char= d #\{))
           (read-hs-comment-1 ins outs)
           (recurse (read-1)))
-        ((or (char/= c #\}) (char/= d #\#))
+        ((char/= c #\})
           (write-char c outs)
           (recurse d))))))
 
