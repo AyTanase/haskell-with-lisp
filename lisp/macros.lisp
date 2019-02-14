@@ -45,7 +45,7 @@
       (map-indent #'%define defs))))
 
 (defmacro def-class-macro (key)
-  `(def-hs-macro ,key (name &optional derive &rest defs)
+  `(def-hs-macro ,key (name &optional derive &body defs)
      `(%class ',',key ',name ',derive ',defs)))
 
 (def-class-macro |class|)

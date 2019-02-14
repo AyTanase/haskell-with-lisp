@@ -34,7 +34,7 @@
          (haskell-tops "else " z)))))
 
 
-(defspecial |case| (x &rest xs)
+(defspecial |case| (x &body xs)
   (flet ((case-val (x y)
            (%define x y " -> ")))
     (haskells "case " x " of")
@@ -45,7 +45,7 @@
 (defpattern |setf| (x y)
   (haskell-tops x " <- " y))
 
-(defspecial |do| (&rest body)
+(defspecial |do| (&body body)
   (write-string "do")
   (with-indent 1
     (dolist (expr body)
