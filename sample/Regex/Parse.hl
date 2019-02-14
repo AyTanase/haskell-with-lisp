@@ -3,7 +3,7 @@
   (:export parse))
 
 
-#{ Q :: Quantifier }#
+#{ Q :: Quantifier }
 (deftype QMaker (-> (-> NFA NFA NFA) NFA NFA))
 
 (type (makeStar makePlus makeOpt) QMaker)
@@ -21,7 +21,7 @@
 (type parse' Parser)
 
 
-#{ G :: Greediness }#
+#{ G :: Greediness }
 (type checkG (-> QMaker Parser))
 
 (define (checkG make f ?(#\+ . xs))
