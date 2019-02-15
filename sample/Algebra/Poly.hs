@@ -11,7 +11,7 @@ newtype Poly a = Poly [a] deriving Show
 instance (Eq a, Group a) => Eq (Poly a) where
   Poly us == Poly vs = equal us vs
     where
-      zerop = and . map ((==) zero)
+      zerop = all $ (==) zero
       equal xs [] = zerop xs
       equal [] ys = zerop ys
       equal (x:xs) (y:ys) = (x == y) && equal xs ys
