@@ -12,7 +12,7 @@
 
 (instance (Eq (Poly a)) ((Eq a) (Group a))
   ((= (Poly us) (Poly vs))
-    (where ((zerop (all (?= zero)))
+    (where ((zerop (all (? = zero)))
             ((equal xs nil) (zerop xs))
             ((equal nil ys) (zerop ys))
             ((equal ?(x . xs) ?(y . ys))
