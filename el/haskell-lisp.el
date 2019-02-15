@@ -42,6 +42,7 @@
      ("\\_<\\?.*?\\_>" . font-lock-builtin-face))))
 
 (let ((table haskell-lisp-mode-syntax-table))
+  (modify-syntax-entry ?. "." table)
   (modify-syntax-entry ?{ "_ 2bn" table)
   (modify-syntax-entry ?} "> bn" table))
 
