@@ -17,6 +17,12 @@
   (interactive)
   (runcl (buffer-file-name)))
 
+(defun lisp-indent-cond-method
+    (path state indent-point sexp-column normal-indent)
+  (if (and (cdr path) (cddr path))
+      normal-indent
+    (max normal-indent (+ sexp-column 2))))
+
 
 (setq lisp-indent-function 'common-lisp-indent-function
       lisp-loop-keyword-indentation 2
@@ -25,7 +31,7 @@
 (add-cl-indent-rule 'if '(4 &rest 2))
 (add-cl-indent-rule 'with-open-file '(&lambda &body))
 (add-cl-indent-rule 'ftype '((&whole 4 &lambda 2) &rest 2))
-(add-cl-indent-rule 'cond '(&rest (&whole 2 &body)))
+(add-cl-indent-rule 'cond 'lisp-indent-cond-method)
 (add-cl-indent-rule 'case '(4 &rest (&whole 2 &body)))
 (cl-indent-rules '((&whole 4 &rest (&whole 1 2)) &body) 'let 'let*)
 
