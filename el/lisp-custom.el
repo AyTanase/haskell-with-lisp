@@ -29,6 +29,12 @@
 (add-cl-indent-rule 'case '(4 &rest (&whole 2 &body)))
 (cl-indent-rules '((&whole 4 &rest (&whole 1 2)) &body) 'let 'let*)
 
+(font-lock-add-keywords
+ 'lisp-mode
+ '(("(\\(def.*?\\_>\\)" 1 font-lock-keyword-face)
+   ("(def.*?\\_>\\s-+\\_<\\(.*?\\_>\\)" 1 font-lock-function-name-face))
+ t)
+
 (font-lock-add-keywords 'lisp-mode '(("#:.+?\\_>" . font-lock-builtin-face)))
 
 (modify-syntax-entry ?| "_ 23bn" lisp-mode-syntax-table)
