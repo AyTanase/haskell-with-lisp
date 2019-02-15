@@ -68,14 +68,11 @@
 
 (defgeneric apply-macro (spec expr))
 
-(defmethod apply-macro (spec expr)
-  (declare (ignore spec))
-  expr)
+(defmethod/i apply-macro (_ expr) expr)
 
 (defshadow def-syntax-macro (name args &body body)
-  (with-gensyms (spec expr)
-    `(defmethod apply-macro ((,spec (eql ',name)) ,expr)
-       (declare (ignore ,spec))
+  (with-gensyms (expr)
+    `(defmethod/i apply-macro ((_ (eql ',name)) ,expr)
        (hs-macro-expand (ds-bind ,args (cdr ,expr) ,@body)))))
 
 (defmacro defsynonym (synonym original)
@@ -145,14 +142,12 @@
 
 (defgeneric apply-syntax (spec expr))
 
-(defmethod apply-syntax (spec expr)
-  (declare (ignore spec))
+(defmethod/i apply-syntax (_ expr)
   (rechask expr))
 
 (defshadow defsyntax (name args &body body)
-  (with-gensyms (spec expr)
-    `(defmethod apply-syntax ((,spec (eql ',name)) ,expr)
-       (declare (ignore ,spec))
+  (with-gensyms (expr)
+    `(defmethod/i apply-syntax ((_ (eql ',name)) ,expr)
        (ds-bind ,args (cdr ,expr) ,@body))))
 
 
@@ -209,10 +204,8 @@
 
 
 (defshadow defhasq (name string)
-  (with-gensyms (expr)
-    `(defmethod %haskell ((,expr (eql ',name)))
-       (declare (ignore ,expr))
-       (write-string ,string))))
+  `(defmethod/i %haskell ((_ (eql ',name)))
+     (write-string ,string)))
 
 (defhasq nil "()")
 

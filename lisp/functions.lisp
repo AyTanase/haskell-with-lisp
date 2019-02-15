@@ -25,17 +25,15 @@
 
 (defmacro def-op-macro
     (name &key (op name) (zero `',name) (one '`(|curry| ,@expr)) (many 'expr))
-  (with-gensyms (spec)
-    `(progn
-       (setf (gethash ',name *specials*) 'operator)
-       (defmethod apply-macro ((,spec (eql ',name)) expr)
-         (declare (ignore ,spec))
-         (let ((args (cdr expr)))
-           (cond
-             ((atom args) ,zero)
-             ((atom (cdr args)) ,one)
-             (t ,many))))
-       (defhasq ,name ,(format nil "(~a)" op)))))
+  `(progn
+     (setf (gethash ',name *specials*) 'operator)
+     (defmethod/i apply-macro ((_ (eql ',name)) expr)
+       (let ((args (cdr expr)))
+         (cond
+           ((atom args) ,zero)
+           ((atom (cdr args)) ,one)
+           (t ,many))))
+     (defhasq ,name ,(format nil "(~a)" op))))
 
 
 (defmacro defoperator (name &optional (op name))

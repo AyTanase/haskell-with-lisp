@@ -39,8 +39,7 @@
   "for preserving the code style")
 
 
-(defun read-as-is (stream &rest args)
-  (declare (ignore args))
+(defun/i read-as-is (stream &rest _)
   (read stream t nil t))
 
 (defun make-hs-reader (reader)
@@ -64,8 +63,7 @@
 (defmacro cl-macro-char (&rest args)
   `(set-macro-char ,@args (make-cl-reader (get-macro-char ,@args))))
 
-(defun read-hs-string (ins &rest args)
-  (declare (ignore args))
+(defun/i read-hs-string (ins &rest _)
   (with-output-to-string (outs)
     (flet ((read-1 ()
              (read-not-cr ins))
@@ -100,28 +98,25 @@
           (recurse (read-1)))
         ((char/= c #\})
           (write-char c outs)
-          (recurse d))))))
+         (recurse d))))))
 
 (defun read-hs-comment-1 (ins outs)
   (write-string "{-" outs)
   (parse-hs-comment (read-not-cr ins) ins outs)
   (write-string "-}" outs))
 
-(defun read-hs-comment (ins &rest args)
-  (declare (ignore args))
+(defun/i read-hs-comment (ins &rest _)
   `(write-line
     ,(with-output-to-string (outs)
        (read-hs-comment-1 ins outs))))
 
-(defun read-hs-lf (stream &rest args)
-  (declare (ignore args))
+(defun/i read-hs-lf (stream &rest _)
   (if (case (peek-char nil stream nil nil t)
         ((#\Newline #\Return) t))
     '(terpri)
     (read stream nil nil t)))
 
-(defun read-hs-cr (stream &rest args)
-  (declare (ignore args))
+(defun/i read-hs-cr (stream &rest _)
   (convert-cr stream)
   (read-hs-lf stream))
 

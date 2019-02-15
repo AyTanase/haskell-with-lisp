@@ -132,8 +132,7 @@
 
 (set-pprint-dispatch 'question #'print-?)
 
-(defun read-? (stream &rest args)
-  (declare (ignore args))
+(defun/i read-? (stream &rest _)
   (cons-? (read stream t nil t)))
 
 (set-macro-char #\? #'read-? t *hs-readtable*)
