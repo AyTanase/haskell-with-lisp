@@ -2,7 +2,8 @@
 #?(defoperator |join-fmap| =<<)
 
 (defpackage Exec
-  (:use Common Control.Applicative))
+  (:use Common)
+  (:import Control.Applicative alt))
 
 (type exec (=> (Num a) (-> Op String (Maybe a))))
 (define (exec s)

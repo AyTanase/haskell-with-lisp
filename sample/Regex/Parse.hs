@@ -1,7 +1,7 @@
 module Parse (parse) where
 import Common
-import Data.Function
-import Data.Bifunctor
+import Data.Function (fix)
+import Data.Bifunctor (first)
 
 
 {- Q :: Quantifier -}

@@ -1,6 +1,6 @@
 module Exec where
 import Common
-import Control.Applicative
+import Control.Applicative ((<|>))
 
 exec :: Num a => Op -> String -> Maybe a
 exec s = fmap fst . exec' s 0
