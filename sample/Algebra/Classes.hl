@@ -25,7 +25,7 @@
   (type zero g)
   (type negate (-> g g))
   (type (+ -) (-> g g g))
-  (negate (curry - zero))
+  (negate (?- zero))
   ((- x y) (+ x (- y))))
 
 (instance (Group a) ((Num a))
@@ -84,7 +84,7 @@
 (instance (Field k) ((Ring k) (Div k k)))
 
 (type recip (=> (Field k) (-> k k)))
-(define recip (curry / unit))
+(define recip (?/ unit))
 
 (instance (Div k a) ((Action k a) (Field k))
   ((/ x y) (* (/ y) x)))
