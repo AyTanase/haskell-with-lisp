@@ -98,7 +98,7 @@
           (recurse (read-1)))
         ((char/= c #\})
           (write-char c outs)
-         (recurse d))))))
+          (recurse d))))))
 
 (defun read-hs-comment-1 (ins outs)
   (write-string "{-" outs)
