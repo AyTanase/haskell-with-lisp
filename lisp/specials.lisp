@@ -7,8 +7,11 @@
       (write-string "let")
       (map-indent #'%define defs)
       (indent)
-      (haskell-tops "in " val))
-    (haskell-tops "let in " val)))
+      (write-string "in ")
+      (%define-print val))
+    (progn
+      (write-string "let in ")
+      (%define-print val))))
 
 
 (shadow-haskell '|where|)
