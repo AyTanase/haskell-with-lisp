@@ -166,7 +166,14 @@
          (t (return (rec%hask xs))))))
 
 (defbinop |funcall| :op $
-  :many (%funcall (mapcar #'%define-expand args)))
+  :many (let ((xs (mapcar #'%define-expand args)))
+          (if (and (consp (car xs))
+                   (keytypep (caar xs) 'operator)
+                   (atom (cddr xs)))
+            (haskell-tops (car xs) " $ " (cadr xs))
+            (%funcall xs))))
+
+(setf (gethash '|funcall| *specials*) 'special)
 
 
 (defhasq |nil| "[]")
