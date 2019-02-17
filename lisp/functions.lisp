@@ -146,30 +146,28 @@
       (ds-bind (f x &rest xs) args
         (cond
           ((or xs (simplep x))
-            (write-string "$ ")
+            (write-string " $ ")
             (%funcall args))
-          (t (write-string ". ")
+          (t (write-string " . ")
              (%op-print-1 f)
-             (write-string " ")
              (funcall-last x)))))
     (progn
-      (write-string "$ ")
+      (write-string " $ ")
       (%haskell-top expr))))
 
 (defun %funcall-1 (args paren?)
   (if args
     (ds-bind (x &rest xs) args
-      (flet ((rec (p)
+      (flet ((recurse (p)
+               (write-string " ")
                (%haskell x)
                (%funcall-1 xs p)))
-        (write-string " ")
         (cond
           ((simplep x)
-            (rec paren?))
-          ((consp xs)
-            (rec t))
-          ((and paren? (every #'simplep x))
-            (%haskell x))
+            (recurse paren?))
+          ((or (consp xs)
+               (and paren? (every #'simplep x)))
+            (recurse t))
           (t (funcall-last x)))))))
 
 (defun %funcall (args)
