@@ -22,7 +22,7 @@
 (add-cl-indent-rule 'if-bind '((&whole 4 &body) &body))
 
 (let ((keywords
-        '(as class curry data define defmodule enum-from
+        '(as class curry data define defmodule enum-from funcall
           if-bind import instance newtype setf type where))
       (operators
         '(+ - * / and or append compose -> => = <= >= < > /=))
