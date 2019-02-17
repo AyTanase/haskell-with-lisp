@@ -156,17 +156,25 @@
       (write-string "$ ")
       (%haskell-top expr))))
 
+(defun %funcall-1 (args paren?)
+  (if args
+    (ds-bind (x &rest xs) args
+      (flet ((rec (p)
+               (%haskell x)
+               (%funcall-1 xs p)))
+        (write-string " ")
+        (cond
+          ((simplep x)
+            (rec paren?))
+          ((consp xs)
+            (rec t))
+          ((and paren? (every #'simplep x))
+            (%haskell x))
+          (t (funcall-last x)))))))
+
 (defun %funcall (args)
   (%haskell (car args))
-  (loop
-    for xs on (cdr args)
-    for x = (car xs)
-    do (write-string " ")
-       (cond
-         ((simplep x) (%haskell x))
-         ((atom (cdr xs))
-           (funcall-last x))
-         (t (return (rec%hask xs))))))
+  (%funcall-1 (cdr args) nil))
 
 (defbinop |funcall| :op $
   :many (let ((xs (mapcar #'%define-expand args)))
