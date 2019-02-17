@@ -53,7 +53,7 @@
   (with-indent 1
     (dolist (expr body)
       (indent)
-      (haskell-top expr))))
+      (%define-print expr))))
 
 
 (defspecial |lambda| (args expr)
