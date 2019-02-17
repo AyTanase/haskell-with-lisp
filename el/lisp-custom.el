@@ -37,11 +37,11 @@
 
 (font-lock-add-keywords
  'lisp-mode
- '(("(\\(def.*?\\_>\\)" 1 font-lock-keyword-face)
-   ("(def.*?\\_>\\s-+\\_<\\(.*?\\_>\\)" 1 font-lock-function-name-face))
+ '(("(\\(def\\S-*?\\_>\\)" 1 font-lock-keyword-face)
+   ("(def\\S-*?\\_>\\s-+\\_<\\(\\S-*?\\_>\\)" 1 font-lock-function-name-face))
  t)
 
-(font-lock-add-keywords 'lisp-mode '(("#:.+?\\_>" . font-lock-builtin-face)))
+(font-lock-add-keywords 'lisp-mode '(("#:\\S-+?\\_>" . font-lock-builtin-face)))
 
 (modify-syntax-entry ?| "_ 23bn" lisp-mode-syntax-table)
 

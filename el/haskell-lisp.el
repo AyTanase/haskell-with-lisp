@@ -39,7 +39,7 @@
                     (symbol-regexp-opt constructors)
                     "\\_>\\)")
             font-lock-type-face)
-     ("\\_<\\?.*?\\_>" . font-lock-builtin-face))))
+     ("\\_<\\?\\S-*?\\_>" . font-lock-builtin-face))))
 
 (let ((table haskell-lisp-mode-syntax-table))
   (modify-syntax-entry ?. "." table)
