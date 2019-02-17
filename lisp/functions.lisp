@@ -38,11 +38,14 @@
 
 (defmacro defoperator (name &optional (op name))
   `(progn
-     (def-op-macro ,name :op ,op)
-     (defsyntax ,name (x y &rest rest)
-       (if rest
-         (call-next-method)
-         (print-infix ',op x y)))))
+     (def-op-macro ,name
+       :op ,op
+       :many (ds-bind (x y &rest rest) args
+               (if rest
+                 `((,',name ,x ,y) ,@rest)
+                 expr)))
+     (defsyntax ,name (x y)
+       (print-infix ',op x y))))
 
 
 (defmacro defbinop
