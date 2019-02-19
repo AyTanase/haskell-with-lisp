@@ -144,10 +144,10 @@
 
 
 
-#!(define-symbol-macro 1+ (funcall + 1))
+#!(define-symbol-macro 1+ (apr + 1))
 (def-syntax-macro 1+ (x) `(+ ,x 1))
 
-#!(define-symbol-macro 1- (funcall + -1))
+#!(define-symbol-macro 1- (apr + -1))
 (def-syntax-macro 1- (x) `(- ,x 1))
 
 (defhasq |pair| "(,)")
