@@ -22,8 +22,8 @@
 (add-cl-indent-rule 'if-bind '((&whole 4 &body) &body))
 
 (let ((keywords
-        '(as class curry data define defmodule enum-from funcall
-          if-bind import instance newtype setf type where))
+        '(apl apply-left apply-right apr as class data define defmodule
+          enum-from funcall if-bind import instance newtype setf type where))
       (operators
         '(+ - * / and or append compose -> => = <= >= < > /=))
       (constructors '(nil cons list* list tuple pair)))
