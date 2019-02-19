@@ -13,7 +13,7 @@ instance (Eq a, Action a a) => Eq (Ratio a) where
 
 
 instance {-# OVERLAPPING #-} Ring a => Pure Ratio a where
-  pure = flip (:%) unit
+  pure = (:% unit)
 
 rmap :: (a -> a) -> Ratio a -> Ratio a
 rmap f (x :% y) = f x :% y

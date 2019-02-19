@@ -11,7 +11,7 @@
 (data (Complex a) (c+ a a) (Eq Show))
 
 (instance (Pure Complex a) (:overlapping (Group a))
-  (pure (flip c+ zero)))
+  (pure (apr c+ zero)))
 
 (type cmap (-> (-> a b) (Complex a) (Complex b)))
 (define (cmap f (c+ x y)) (c+ (f x) (f y)))

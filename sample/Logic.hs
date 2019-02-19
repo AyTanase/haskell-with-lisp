@@ -21,7 +21,7 @@ liftA = const (<*>) <*> pure
 
 
 liftA2 :: Applicative f => (a -> b -> c) -> f a -> f b -> f c
-liftA2 = (.) (<*>) . liftA
+liftA2 = ((<*>) .) . liftA
 
 
 flip :: Applicative f => f (a -> b) -> a -> f b

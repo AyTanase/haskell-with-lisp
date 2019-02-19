@@ -9,7 +9,7 @@ import Classes
 data Complex a = a :+ a deriving (Eq, Show)
 
 instance {-# OVERLAPPING #-} Group a => Pure Complex a where
-  pure = flip (:+) zero
+  pure = (:+ zero)
 
 cmap :: (a -> b) -> Complex a -> Complex b
 cmap f (x :+ y) = f x :+ f y
