@@ -117,8 +117,7 @@
 (definline haskell (expr)
   (%haskell (hs-macro-expand expr)))
 
-(defun haskells (&rest args)
-  (mapc #'haskell args))
+(defmapc haskells #'haskell)
 
 
 (defun %rechask (x fn between)
@@ -158,8 +157,7 @@
 (definline haskell-top (expr)
   (%haskell-top (hs-macro-expand expr)))
 
-(defun haskell-tops (&rest args)
-  (mapc #'haskell-top args))
+(defmapc haskell-tops #'haskell-top)
 
 (defrechask arrange #'haskell-top ", ")
 

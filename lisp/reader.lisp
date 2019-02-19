@@ -138,8 +138,7 @@
                      :if-exists :supersede)
       (load src))))
 
-(defun compile-all (&rest args)
-  (mapc #'compile args))
+(defmapc compile-all #'compile)
 
 (defun lazy-compile (src &optional (out (default-out src)))
   (if (or (not (probe-file out))
