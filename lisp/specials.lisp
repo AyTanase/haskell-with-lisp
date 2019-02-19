@@ -22,19 +22,21 @@
   (apply-syntax '|let| expr))
 
 
-(defspecial |if| (x y &optional (z nil svar))
-  (cond
-    ((not svar)
-      (assert (truep x) () "if: missing the else-form")
-      (haskell-top y))
-    ((and (atom y) (atom z))
-      (haskells "if " x " then " y " else " z))
-    (t (with-indent 1
-         (haskell-tops "if " x)
-         (indent)
-         (haskell-tops "then " y)
-         (indent)
-         (haskell-tops "else " z)))))
+(defspecial |if| (&rest args)
+  (ds-bind (x y &optional (z nil svar))
+      (mapcar #'%define-expand args)
+    (cond
+      ((not svar)
+        (assert (truep x) () "if: missing the else-form")
+        (%haskell-top y))
+      ((and (atom y) (atom z))
+        (%haskell-tops "if " x " then " y " else " z))
+      (t (with-indent 1
+           (%haskell-tops "if " x)
+           (indent)
+           (%haskell-tops "then " y)
+           (indent)
+           (%haskell-tops "else " z))))))
 
 
 (defspecial |case| (x &body xs)
