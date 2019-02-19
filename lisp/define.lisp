@@ -105,12 +105,16 @@
         (print-guards assign gvs (append defs (nreverse gs)))))))
 
 (defun %define-guard (assign defs expr)
-  (if (callp expr '|if|)
-    (reduce-guards assign defs expr)
-    (progn
+  (cond
+    ((callp expr '|if|)
+      (reduce-guards assign defs expr))
+    ((null defs)
       (write-string assign)
-      (%define-print expr)
-      (where defs))))
+      (%define-print expr))
+    (t (write-string assign)
+       (with-indent 1
+         (%define-print expr))
+       (where defs))))
 
 (defun %define-right (assign value)
   (let ((expr (hs-macro-expand value)))
