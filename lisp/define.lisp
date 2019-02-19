@@ -104,7 +104,9 @@
 
 (defun %define-guard (assign defs expr)
   (cond
-    ((callp expr '|if|)
+    ((and (consp expr)
+          (case (car expr)
+            ((|if| |if-bind|) t)))
       (reduce-guards assign defs expr))
     ((null defs)
       (write-string assign)
