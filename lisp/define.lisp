@@ -8,8 +8,9 @@
 (def-hs-macro |type| (vars type)
   `(%type ',vars ',type))
 
-(defspecial |type| (expr type)
-  (haskell-tops expr " :: " type))
+(defpattern |type| (expr type)
+  (with-paren
+    (haskell-tops expr " :: " type)))
 
 
 (defun %define-expand (x)
@@ -184,4 +185,5 @@
 
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote ds-bind) (quote (&lambda 4 &body)))
+;; eval: (add-cl-indent-rule (quote with-paren) (quote (&body)))
 ;; End:
