@@ -117,6 +117,7 @@
 (definline haskell (expr)
   (%haskell (hs-macro-expand expr)))
 
+(defmapc %haskells #'%haskell)
 (defmapc haskells #'haskell)
 
 
@@ -157,6 +158,7 @@
 (definline haskell-top (expr)
   (%haskell-top (hs-macro-expand expr)))
 
+(defmapc %haskell-tops #'%haskell-top)
 (defmapc haskell-tops #'haskell-top)
 
 (defrechask arrange #'haskell-top ", ")

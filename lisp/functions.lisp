@@ -170,16 +170,13 @@
           (t (write-string " . ")
              (%op-print-1 f)
              (funcall-last x)))))
-    (progn
-      (write-string " $ ")
-      (%haskell-top expr))))
+    (%haskell-tops " $ " expr)))
 
 (defun %funcall-1 (args paren?)
   (if args
     (ds-bind (x &rest xs) args
       (flet ((recurse (p)
-               (write-string " ")
-               (%haskell x)
+               (%haskells " " x)
                (%funcall-1 xs p)))
         (cond
           ((simplep x)
