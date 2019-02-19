@@ -15,7 +15,7 @@
   :after-hook
   (setq-local font-lock-keywords-case-fold-search nil))
 
-(cl-indent-rules '(4 &body) 'define 'defmodule)
+(cl-indent-rules '(4 &body) 'define 'defmodule 'handle)
 (cl-indent-rules '(4 &lambda &rest (&whole 2 &body)) 'class 'instance)
 (add-cl-indent-rule 'where '((&whole 4 &rest (&whole 1 &body)) &body))
 (add-cl-indent-rule 'do '(&body))
