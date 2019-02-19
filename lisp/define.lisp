@@ -42,7 +42,7 @@
 (defun print-guard-1 (expr)
   (if (callp expr '|and|)
     (%rechask (cdr expr) #'print-guard-1 ", ")
-    (haskell expr)))
+    (haskell-top expr)))
 
 (defun print-guards (assign gvs defs)
   (flet ((print-1 (g v)
