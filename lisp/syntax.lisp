@@ -201,8 +201,8 @@
   (write-string " ")
   (%haskell x))
 
-(defsynonym |apl| apply-left)
-(defsynonym |apr| apply-right)
+(defsynonym |apl| |apply-left|)
+(defsynonym |apr| |apply-right|)
 
 
 (defmethod %haskell (expr) (princ expr))
