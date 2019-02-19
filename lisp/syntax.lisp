@@ -191,12 +191,12 @@
   (or (gethash symbol *operators*)
       symbol))
 
-(defspecial |apply-left| (op x)
+(defpattern |apply-left| (op x)
   (%haskell x)
   (write-string " ")
   (princ (may-op op)))
 
-(defspecial |apply-right| (op x)
+(defpattern |apply-right| (op x)
   (princ (may-op op))
   (write-string " ")
   (%haskell x))
