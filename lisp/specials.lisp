@@ -62,9 +62,6 @@
   (write-string " -> ")
   (%define-print expr))
 
-(defspecial |curry| (&rest args)
-  (rechask args))
-
 (defpattern |as| (var expr)
   (haskells var "@" expr))
 
