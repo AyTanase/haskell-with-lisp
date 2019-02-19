@@ -45,8 +45,9 @@
       (map-indent #'case-val xs))))
 
 
-(defpattern |setf| (x y)
-  (haskell-tops x " <- " y))
+(defspecial |setf| (x y)
+  (haskell-tops x " <- ")
+  (%define-print y))
 
 (defspecial |do| (&body body)
   (write-string "do")
