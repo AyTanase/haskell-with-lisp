@@ -6,7 +6,9 @@
     (let ((spec (car expr)))
       (cond
         ((eq spec '|funcall|)
-          (rechask (cdr expr)))
+          (%rechask (cdr expr)
+                    (compose #'%haskell #'%define-expand)
+                    " "))
         ((keytypep spec 'operator)
           (%haskell expr))
         (t (%haskell-top expr))))))
