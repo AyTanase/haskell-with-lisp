@@ -27,7 +27,7 @@
     ((not svar)
       (assert (truep x) () "if: missing the else-form")
       (haskell-top y))
-    ((and (atom x) (atom y) (atom z))
+    ((and (atom y) (atom z))
       (haskells "if " x " then " y " else " z))
     (t (with-indent 1
          (haskell-tops "if " x)
