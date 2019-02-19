@@ -22,6 +22,26 @@
   (op-print-1 y))
 
 
+(definline may-op (symbol)
+  (or (gethash symbol *operators*)
+      symbol))
+
+(defpattern |apply-left| (op x)
+  (with-paren
+    (op-print-1 x)
+    (write-string " ")
+    (princ (may-op op))))
+
+(defpattern |apply-right| (op x)
+  (with-paren
+    (princ (may-op op))
+    (write-string " ")
+    (op-print-1 x)))
+
+(defsynonym |apl| |apply-left|)
+(defsynonym |apr| |apply-right|)
+
+
 (defmacro def-op-macro
     (name &key (op name) (zero `',name) (one '`(|apl| ,@expr)) (many 'expr))
   `(progn

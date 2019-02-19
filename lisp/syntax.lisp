@@ -166,6 +166,8 @@
 
 (defvar *specials* (make-hash-table :test 'eq))
 
+(defvar *operators* (make-hash-table :test 'eq))
+
 (defmacro defspecial (name &body body)
   `(progn
      (setf (gethash ',name *specials*) 'special)
@@ -178,28 +180,6 @@
 
 (definline keytypep (key symbol)
   (eq (gethash key *specials*) symbol))
-
-
-(defvar *operators* (make-hash-table :test 'eq))
-
-(definline may-op (symbol)
-  (or (gethash symbol *operators*)
-      symbol))
-
-(defpattern |apply-left| (op x)
-  (with-paren
-    (%haskell x)
-    (write-string " ")
-    (princ (may-op op))))
-
-(defpattern |apply-right| (op x)
-  (with-paren
-    (princ (may-op op))
-    (write-string " ")
-    (%haskell x)))
-
-(defsynonym |apl| |apply-left|)
-(defsynonym |apr| |apply-right|)
 
 
 (defmethod %haskell (expr) (princ expr))
