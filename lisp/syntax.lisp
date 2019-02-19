@@ -114,8 +114,7 @@
 (defgeneric %haskell (expr)
   (:documentation "print EXPR as Haskell code"))
 
-(declaim (inline haskell))
-(defun haskell (expr)
+(definline haskell (expr)
   (%haskell (hs-macro-expand expr)))
 
 (defun haskells (&rest args)
@@ -151,14 +150,12 @@
        (ds-bind ,args (cdr ,expr) ,@body))))
 
 
-(declaim (inline %haskell-top haskell-top))
-
-(defun %haskell-top (expr)
+(definline %haskell-top (expr)
   (if (atom expr)
     (%haskell expr)
     (apply-syntax (car expr) expr)))
 
-(defun haskell-top (expr)
+(definline haskell-top (expr)
   (%haskell-top (hs-macro-expand expr)))
 
 (defun haskell-tops (&rest args)
@@ -179,15 +176,13 @@
      (setf (gethash ',name *specials*) 'pattern)
      (defsyntax ,name ,@body)))
 
-(declaim (inline keytypep))
-(defun keytypep (key symbol)
+(definline keytypep (key symbol)
   (eq (gethash key *specials*) symbol))
 
 
 (defvar *operators* (make-hash-table :test 'eq))
 
-(declaim (inline may-op))
-(defun may-op (symbol)
+(definline may-op (symbol)
   (or (gethash symbol *operators*)
       symbol))
 

@@ -26,8 +26,7 @@
                (%define-expand spec)
                `(|funcall| ,@expr))))))))
 
-(declaim (inline %define-print))
-(defun %define-print (expr)
+(definline %define-print (expr)
   (%haskell-top (%define-expand expr)))
 
 
@@ -56,10 +55,9 @@
     (where defs)))
 
 
-(declaim (ftype function reduce-guard-1)
-         (inline truep))
+(declaim (ftype function reduce-guard-1))
 
-(defun truep (x)
+(definline truep (x)
   (or (eq x '|True|)
       (eq x '|otherwise|)))
 
@@ -127,8 +125,7 @@
 (defclass question ()
   ((value :reader get-? :initarg :value)))
 
-(declaim (inline cons-?))
-(defun cons-? (value)
+(definline cons-? (value)
   (make-instance 'question :value value))
 
 (defun print-? (stream object)

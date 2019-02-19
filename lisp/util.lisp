@@ -6,6 +6,11 @@
            collect `(,x (gensym)))
      ,@body))
 
+(defmacro definline (name &body body)
+  `(progn
+     (declaim (inline ,name))
+     (defun ,name ,@body)))
+
 
 (defun curry (f &rest xs)
   #'(lambda (&rest ys) (apply f (append xs ys))))
@@ -14,32 +19,27 @@
   (with-gensyms (ys)
     `#'(lambda (&rest ,ys) (apply ,f ,@xs ,ys))))
 
-(declaim (inline compose))
-(defun compose (f g)
+(definline compose (f g)
   #'(lambda (x) (funcall f (funcall g x))))
 
 
-(declaim (inline %partition partition))
-
-(defun %partition (test xs)
+(definline %partition (test xs)
   (loop for x in xs
     if (funcall test x) collect x into ys
     else collect x into ns
     finally (return (values ys ns))))
 
-(defun partition (test xs &key (key #'identity))
+(definline partition (test xs &key (key #'identity))
   (%partition (compose test key) xs))
 
 
-(declaim (inline genvar))
-(defun genvar () (gentemp "v"))
+(definline genvar () (gentemp "v"))
 
 (defun genvars (n)
   (loop repeat n collect (genvar)))
 
 
-(declaim (inline callp))
-(defun callp (expr symbol)
+(definline callp (expr symbol)
   (and (consp expr) (eq (car expr) symbol)))
 
 (defmacro ds-bind (&body body)

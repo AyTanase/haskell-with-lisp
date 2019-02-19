@@ -1,15 +1,13 @@
 (in-package :hs)
 
 
-(declaim (inline get-macro-char set-macro-char))
-
-(defun get-macro-char (char &rest args)
+(definline get-macro-char (char &rest args)
   (apply (if (char= char #\#)
            #'get-dispatch-macro-character
            #'get-macro-character)
          char args))
 
-(defun set-macro-char (char &rest args)
+(definline set-macro-char (char &rest args)
   (apply (if (char= char #\#)
            #'set-dispatch-macro-character
            #'set-macro-character)

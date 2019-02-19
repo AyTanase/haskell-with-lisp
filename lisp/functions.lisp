@@ -11,8 +11,7 @@
           (%haskell expr))
         (t (%haskell-top expr))))))
 
-(declaim (inline op-print-1))
-(defun op-print-1 (expr)
+(definline op-print-1 (expr)
   (%op-print-1 (hs-macro-expand expr)))
 
 (defrechask rec-op-1 #'op-print-1 "")
@@ -134,8 +133,7 @@
 (defhasq |pair| "(,)")
 
 
-(declaim (inline simplep))
-(defun simplep (expr)
+(definline simplep (expr)
   (or (atom expr)
       (keytypep (car expr) 'pattern)))
 
