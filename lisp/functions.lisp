@@ -51,7 +51,8 @@
        (let ((args (cdr expr)))
          (cond
            ((atom args) ,zero)
-           ((atom (cdr args)) ,one)
+           ((atom (cdr args))
+             (hs-macro-expand ,one))
            (t ,many))))))
 
 
@@ -68,11 +69,9 @@
 
 
 (defmacro defbinop
-    (name &key (op name) (zero `',name) one many)
+    (name &key (op name) (zero `',name) (one '(car args)) many)
   `(progn
-     (def-op-macro ,name :op ,op
-       :zero ,zero
-       :one ,(or one '(hs-macro-expand (car args))))
+     (def-op-macro ,name :op ,op :zero ,zero :one ,one)
      (defsyntax ,name (&rest args)
        ,(or many `(rec-op-1 args ,(format nil " ~a " op))))))
 
