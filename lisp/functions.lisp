@@ -24,7 +24,7 @@
 
 
 (defmacro def-op-macro
-    (name &key (op name) (zero `',name) (one '`(|curry| ,@expr)) (many 'expr))
+    (name &key (op name) (zero `',name) (one '`(|apl| ,@expr)) (many 'expr))
   `(progn
      (setf (gethash ',name *specials*) 'operator)
      (setf (gethash ',name *operators*) ',op)
