@@ -27,13 +27,13 @@
     (name &key (op name) (zero `',name) (one '`(|curry| ,@expr)) (many 'expr))
   `(progn
      (setf (gethash ',name *specials*) 'operator)
+     (setf (gethash ',name *operators*) ',op)
      (defmethod/i apply-macro ((_ (eql ',name)) expr)
        (let ((args (cdr expr)))
          (cond
            ((atom args) ,zero)
            ((atom (cdr args)) ,one)
-           (t ,many))))
-     (defhasq ,name ,(format nil "(~a)" op))))
+           (t ,many))))))
 
 
 (defmacro defoperator (name &optional (op name))

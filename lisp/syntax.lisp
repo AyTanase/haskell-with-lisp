@@ -184,7 +184,34 @@
   (eq (gethash key *specials*) symbol))
 
 
+(defvar *operators* (make-hash-table :test 'eq))
+
+(declaim (inline may-op))
+(defun may-op (symbol)
+  (or (gethash symbol *operators*)
+      symbol))
+
+(defspecial |apply-left| (op x)
+  (%haskell x)
+  (write-string " ")
+  (princ (may-op op)))
+
+(defspecial |apply-right| (op x)
+  (princ (may-op op))
+  (write-string " ")
+  (%haskell x))
+
+(defsynonym |apl| apply-left)
+(defsynonym |apr| apply-right)
+
+
 (defmethod %haskell (expr) (princ expr))
+
+(defmethod %haskell ((expr symbol))
+  (let ((op (gethash expr *operators*)))
+    (if op
+      (with-paren (princ op))
+      (princ expr))))
 
 (defmethod %haskell ((expr character))
   (cond
