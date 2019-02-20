@@ -49,7 +49,7 @@
       (map-indent #'case-val xs))))
 
 
-(defspecial |setf| (x y)
+(defspecial |bind| (x y)
   (haskell-tops x " <- ")
   (%define-print y))
 
