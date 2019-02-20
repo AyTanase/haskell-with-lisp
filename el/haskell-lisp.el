@@ -22,10 +22,11 @@
 (add-cl-indent-rule 'if-bind '((&whole 4 &body) &body))
 
 (let ((keywords
-        '(apl apply-left apply-right apr as class data define defmodule
-          enum-from funcall if-bind import instance newtype setf type where))
+        '(apl apply-left apply-right apr as
+          bind class data define defmodule enum-from
+          funcall import instance newtype type where))
       (operators
-        '(+ - * / and or append compose -> => = <= >= < > /=))
+        '(+ - * / and or append compose -> => = /= <= >= < >))
       (constructors '(nil cons list* list tuple pair)))
   (font-lock-add-keywords
    'haskell-lisp-mode
