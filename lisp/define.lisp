@@ -55,8 +55,6 @@
     (where defs)))
 
 
-(declaim (ftype function reduce-guard-1))
-
 (definline truep (x)
   (or (eq x '|True|)
       (eq x '|otherwise|)))
@@ -67,29 +65,28 @@
     ((truep y) x)
     (t `(|and| ,x ,y))))
 
-(defun reduce-guard-if (f guard expr)
-  (ds-bind (x y &optional (z nil svar)) (cdr expr)
-    (let ((vg (if svar (funcall f guard) guard)))
-      (nconc (reduce-guard-1 f (merge-guards vg x) y)
-             (if svar (reduce-guard-1 f vg z))))))
+(defun include-bind-p (expr)
+  (and (consp expr)
+       (case (car expr)
+         (|bind| t)
+         (|and| (some #'include-bind-p (cdr expr))))))
 
-(defun reduce-guard-if-bind (f guard expr)
-  (ds-bind (x y &optional (z nil svar)) (cdr expr)
-    (let ((w `(|setf| ,@x))
-          (vg (if svar (funcall f guard) guard)))
-      (cons (list (merge-guards vg w) y)
-            (if svar (reduce-guard-1 f vg z))))))
+(declaim (ftype function reduce-guard-1))
+(defun reduce-guard-if (gpush guard expr)
+  (ds-bind (test then &optional (else nil s?)) (cdr expr)
+    (if (and s? (include-bind-p guard))
+      (list (list guard expr))
+      (let ((var (if s?
+                   (funcall gpush guard)
+                   guard)))
+        (nconc (reduce-guard-1 gpush (merge-guards var test) then)
+               (if s? (reduce-guard-1 gpush var else)))))))
 
-(defun reduce-guard-1 (f guard value)
+(defun reduce-guard-1 (gpush guard value)
   (let ((expr (hs-macro-expand value)))
-    (flet ((base () (list (list guard expr))))
-      (cond
-        ((atom expr) (base))
-        ((eq (car expr) '|if|)
-          (reduce-guard-if f guard expr))
-        ((eq (car expr) '|if-bind|)
-          (reduce-guard-if-bind f guard expr))
-        (t (base))))))
+    (if (callp expr '|if|)
+      (reduce-guard-if gpush guard expr)
+      (list (list guard expr)))))
 
 (defun reduce-guards (assign defs expr)
   (let ((gs nil))
@@ -104,9 +101,7 @@
 
 (defun %define-guard (assign defs expr)
   (cond
-    ((and (consp expr)
-          (case (car expr)
-            ((|if| |if-bind|) t)))
+    ((callp expr '|if|)
       (reduce-guards assign defs expr))
     ((null defs)
       (write-string assign)
