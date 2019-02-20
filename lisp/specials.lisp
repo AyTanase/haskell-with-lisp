@@ -42,7 +42,9 @@
 (defspecial |case| (x &body xs)
   (flet ((case-val (x y)
            (%define x y " -> ")))
-    (haskells "case " x " of")
+    (write-string "case ")
+    (%define-print x)
+    (write-string " of")
     (with-indent 1
       (map-indent #'case-val xs))))
 
