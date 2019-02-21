@@ -70,14 +70,14 @@
       (-> Char QMaker NFA (ParsecT s u m NFA))))
 
 (defun quantifier (c make f)
-  (>> (char c) (liftM (flip make f) quantifier')))
+  (>> (char c) (liftM (flip make f) greediness)))
 
 
-(type quantifier'
+(type greediness
   (=> (Stream s m Char)
       (ParsecT s u m (-> NFA NFA NFA))))
 
-(define quantifier'
+(define greediness
   (alt (>> (char #\+) (return atomic))
        (>> (char #\?) (return (flip split)))
        (return split)))

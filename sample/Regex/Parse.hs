@@ -46,12 +46,12 @@ type QMaker = (NFA -> NFA -> NFA) -> NFA -> NFA
 
 quantifier :: Stream s m Char => Char -> QMaker -> NFA -> ParsecT s u m NFA
 
-quantifier c make f = char c >> liftM (flip make f) quantifier'
+quantifier c make f = char c >> liftM (flip make f) greediness
 
 
-quantifier' :: Stream s m Char => ParsecT s u m (NFA -> NFA -> NFA)
+greediness :: Stream s m Char => ParsecT s u m (NFA -> NFA -> NFA)
 
-quantifier' = (char '+' >> return atomic) <|> (char '?' >> return (flip split)) <|> return split
+greediness = (char '+' >> return atomic) <|> (char '?' >> return (flip split)) <|> return split
 
 
 makeStar, makePlus, makeOpt :: QMaker
