@@ -135,7 +135,6 @@
     `(defun ,name (,x &optional (,between ,default))
        (%rechask ,x ,fn ,between))))
 
-(defrechask rec%hask #'%haskell " ")
 (defrechask rechask #'haskell " ")
 
 
