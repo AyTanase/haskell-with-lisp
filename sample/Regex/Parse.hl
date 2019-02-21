@@ -70,10 +70,17 @@
       (-> Char QMaker NFA (ParsecT s u m NFA))))
 
 (defun quantifier (c make f)
-  (>> (char c)
-      (alt (>> (char #\+) (return (make atomic f)))
-           (>> (char #\?) (return (make (flip split) f)))
-           (return (make split f)))))
+  (>> (char c) (liftM (flip make f) quantifier')))
+
+
+(type quantifier'
+  (=> (Stream s m Char)
+      (ParsecT s u m (-> NFA NFA NFA))))
+
+(define quantifier'
+  (alt (>> (char #\+) (return atomic))
+       (>> (char #\?) (return (flip split)))
+       (return split)))
 
 
 (type (makeStar makePlus makeOpt) QMaker)
