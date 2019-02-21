@@ -1,11 +1,53 @@
-module Parse (parse) where
+{-# LANGUAGE FlexibleContexts #-}
+
+module Parse (Parse.parse) where
 import Common
+import Control.Monad
+import Text.Parsec as P
 import Data.Function (fix)
-import Data.Bifunctor (first)
 
 
-{- Q :: Quantifier -}
+parse :: String -> Op
+parse s = case P.parse regex "" s of
+  Left e -> error $ show e
+  Right r -> r Finite
+
+
+regex, rConcat :: Stream s m Char => ParsecT s u m NFA
+
+rSplit :: Stream s m Char => NFA -> ParsecT s u m NFA
+
+regex = rConcat >>= rSplit
+
+rConcat = liftM (foldr (.) id) (many rAtom)
+
+rSplit f = (char '|' >> liftM (split f) regex) <|> return f
+
+
+rAtom, rChar, rEscape, rGroup, rGroup' :: Stream s m Char => ParsecT s u m NFA
+
+rAtom = quantify =<< (rChar <|> rEscape <|> rGroup)
+
+rChar = liftM Compare $ noneOf "\\()"
+
+rEscape = char '\\' >> liftM Compare anyChar
+
+rGroup = between (char '(') (char ')') rGroup'
+
+rGroup' = (try (string "?>") >> liftM cut regex) <|> regex
+
+
+quantify :: Stream s m Char => NFA -> ParsecT s u m NFA
+
+quantify f = quantifier '*' makeStar f <|> quantifier '+' makePlus f <|> quantifier '?' makeOpt f <|> return f
+
+
 type QMaker = (NFA -> NFA -> NFA) -> NFA -> NFA
+
+quantifier :: Stream s m Char => Char -> QMaker -> NFA -> ParsecT s u m NFA
+
+quantifier c make f = char c >> ((char '+' >> return (make atomic f)) <|> (char '?' >> return (make (flip split) f)) <|> return (make split f))
+
 
 makeStar, makePlus, makeOpt :: QMaker
 
@@ -14,56 +56,3 @@ makeStar method f = fix $ \g -> method (f . g) id
 makePlus method f = f . makeStar method f
 
 makeOpt method f = method f id
-
-
-type Parser = NFA -> String -> (NFA, String)
-parse' :: Parser
-
-
-{- G :: Greediness -}
-checkG :: QMaker -> Parser
-
-checkG make f ('+':xs) = (make atomic f, xs)
-
-checkG make f ('?':xs) = (make (flip split) f, xs)
-
-checkG make f xs = (make split f, xs)
-
-
-checkQ' :: Parser
-checkQ' f ('*':xs) = checkG makeStar f xs
-checkQ' f ('+':xs) = checkG makePlus f xs
-checkQ' f ('?':xs) = checkG makeOpt f xs
-checkQ' f xs = (f, xs)
-
-checkQ :: NFA -> Parser
-checkQ f g xs = let
-  (h, ys) = checkQ' g xs
-  in parse' (f . h) ys
-
-parseChar :: NFA -> Char -> String -> (NFA, String)
-parseChar f x xs = checkQ f (Compare x) xs
-
-
-parseGroup :: String -> (NFA, String)
-
-parseGroup ('?':'>':xs) = first cut $ parse' id xs
-
-parseGroup xs = parse' id xs
-
-
-parse' f [] = (f, [])
-
-parse' f ('\\':x:xs) = parseChar f x xs
-
-parse' f ('(':xs) = uncurry (checkQ f) (parseGroup xs)
-
-parse' f (')':xs) = (f, xs)
-
-parse' f ('|':xs) = first (split f) (parse' id xs)
-
-parse' f (x:xs) = parseChar f x xs
-
-
-parse :: String -> Op
-parse xs = fst (parse' id xs) Finite

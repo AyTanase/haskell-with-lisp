@@ -1,12 +1,80 @@
+#?(defbinop >>)
+#?(defbinop |alt| :op "<|>" :zero '|empty|)
+#?(defoperator >>=)
+#?(defoperator =<<)
+
+(extension FlexibleContexts)
+
 (defpackage Parse
-  (:use Common)
+  (:use Common Control.Monad (Text.Parsec :as P))
   (:import Data.Function fix)
-  (:import Data.Bifunctor first)
-  (:export parse))
+  (:export Parse.parse))
 
 
-#{ Q :: Quantifier }
+(type parse (-> String Op))
+(defun parse (s)
+  (case (P.parse regex "" s)
+    ((Left e) (error (show e)))
+    ((Right r) (r Finite))))
+
+
+(type (regex rConcat)
+  (=> (Stream s m Char)
+      (ParsecT s u m NFA)))
+
+(type rSplit
+  (=> (Stream s m Char)
+      (-> NFA (ParsecT s u m NFA))))
+
+(define regex (>>= rConcat rSplit))
+
+(define rConcat (liftM (foldr compose id) (many rAtom)))
+
+(defun rSplit (f)
+  (alt (>> (char #\|) (liftM (split f) regex))
+       (return f)))
+
+
+(type (rAtom rChar rEscape rGroup rGroup')
+  (=> (Stream s m Char)
+      (ParsecT s u m NFA)))
+
+(define rAtom (=<< quantify (alt rChar rEscape rGroup)))
+
+(define rChar (liftM Compare (noneOf "\\()")))
+
+(define rEscape (>> (char #\\) (liftM Compare anyChar)))
+
+(define rGroup (between (char #\() (char #\)) rGroup'))
+
+(define rGroup'
+  (alt (>> (try (string "?>")) (liftM cut regex))
+       regex))
+
+
+(type quantify
+  (=> (Stream s m Char)
+      (-> NFA (ParsecT s u m NFA))))
+
+(defun quantify (f)
+  (alt (quantifier #\* makeStar f)
+       (quantifier #\+ makePlus f)
+       (quantifier #\? makeOpt f)
+       (return f)))
+
+
 (deftype QMaker (-> (-> NFA NFA NFA) NFA NFA))
+
+(type quantifier
+  (=> (Stream s m Char)
+      (-> Char QMaker NFA (ParsecT s u m NFA))))
+
+(defun quantifier (c make f)
+  (>> (char c)
+      (alt (>> (char #\+) (return (make atomic f)))
+           (>> (char #\?) (return (make (flip split) f)))
+           (return (make split f)))))
+
 
 (type (makeStar makePlus makeOpt) QMaker)
 
@@ -17,62 +85,3 @@
   (compose f (makeStar method f)))
 
 (define (makeOpt method f) (method f id))
-
-
-(deftype Parser (-> NFA String #(NFA String)))
-(type parse' Parser)
-
-
-#{ G :: Greediness }
-(type checkG (-> QMaker Parser))
-
-(define (checkG make f ?(#\+ . xs))
-  (tuple (make atomic f) xs))
-
-(define (checkG make f ?(#\? . xs))
-  (tuple (make (flip split) f) xs))
-
-(define (checkG make f xs)
-  (tuple (make split f) xs))
-
-
-(type checkQ' Parser)
-(define (checkQ' f ?(#\* . xs)) (checkG makeStar f xs))
-(define (checkQ' f ?(#\+ . xs)) (checkG makePlus f xs))
-(define (checkQ' f ?(#\? . xs)) (checkG makeOpt  f xs))
-(define (checkQ' f xs) #(f xs))
-
-(type checkQ (-> NFA Parser))
-(define (checkQ f g xs)
-  (let ((#(h ys) (checkQ' g xs)))
-    (parse' (compose f h) ys)))
-
-(type parseChar (-> NFA Char String #(NFA String)))
-(define (parseChar f x xs) (checkQ f (Compare x) xs))
-
-
-(type parseGroup (-> String #(NFA String)))
-
-(define (parseGroup ?(#\? #\> . xs))
-  (first cut (parse' id xs)))
-
-(define (parseGroup xs) (parse' id xs))
-
-
-(define (parse' f nil) #(f nil))
-
-(define (parse' f ?(#\\ x . xs)) (parseChar f x xs))
-
-(define (parse' f ?(#\( . xs))
-  (uncurry (checkQ f) (parseGroup xs)))
-
-(define (parse' f ?(#\) . xs)) #(f xs))
-
-(define (parse' f ?(#\| . xs))
-  (first (split f) (parse' id xs)))
-
-(define (parse' f ?(x . xs)) (parseChar f x xs))
-
-
-(type parse (-> String Op))
-(define (parse xs) (fst (parse' id xs) Finite))
