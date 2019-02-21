@@ -28,7 +28,7 @@ rAtom, rChar, rEscape, rGroup, rGroup' :: Stream s m Char => ParsecT s u m NFA
 
 rAtom = quantify =<< (rChar <|> rEscape <|> rGroup)
 
-rChar = liftM Compare $ noneOf "\\()"
+rChar = liftM Compare $ noneOf "\\|()"
 
 rEscape = char '\\' >> liftM Compare anyChar
 

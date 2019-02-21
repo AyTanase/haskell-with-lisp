@@ -41,7 +41,7 @@
 
 (define rAtom (=<< quantify (alt rChar rEscape rGroup)))
 
-(define rChar (liftM Compare (noneOf "\\()")))
+(define rChar (liftM Compare (noneOf "\\|()")))
 
 (define rEscape (>> (char #\\) (liftM Compare anyChar)))
 
