@@ -2,11 +2,15 @@
 #?(defbinop |alt| :op "<|>" :zero '|empty|)
 #?(defoperator >>=)
 #?(defoperator =<<)
+#?(defspecial |fmap| (x y)
+    (if (simplep y)
+      (call-next-method)
+      (print-infix '<$> x y)))
 
 (extension FlexibleContexts)
 
 (defpackage Parse
-  (:use Common Control.Monad (Text.Parsec :as P))
+  (:use Common (Text.Parsec :as P))
   (:import Data.Function fix)
   (:export Parse.parse))
 
@@ -28,10 +32,10 @@
 
 (define regex (>>= rConcat rSplit))
 
-(define rConcat (liftM (foldr compose id) (many rAtom)))
+(define rConcat (fmap (foldr compose id) (many rAtom)))
 
 (defun rSplit (f)
-  (alt (>> (char #\|) (liftM (split f) regex))
+  (alt (>> (char #\|) (fmap (split f) regex))
        (return f)))
 
 
@@ -41,14 +45,14 @@
 
 (define rAtom (=<< quantify (alt rChar rEscape rGroup)))
 
-(define rChar (liftM Compare (noneOf "\\|()")))
+(define rChar (fmap Compare (noneOf "\\|()")))
 
-(define rEscape (>> (char #\\) (liftM Compare anyChar)))
+(define rEscape (>> (char #\\) (fmap Compare anyChar)))
 
 (define rGroup (between (char #\() (char #\)) rGroup'))
 
 (define rGroup'
-  (alt (>> (try (string "?>")) (liftM cut regex))
+  (alt (>> (try (string "?>")) (fmap cut regex))
        regex))
 
 
@@ -70,7 +74,7 @@
       (-> Char QMaker NFA (ParsecT s u m NFA))))
 
 (defun quantifier (c make f)
-  (>> (char c) (liftM (flip make f) greediness)))
+  (>> (char c) (fmap (flip make f) greediness)))
 
 
 (type greediness

@@ -3,7 +3,7 @@
 module Classes where
 import Prelude hiding (pure, negate, (+), (-), (*), (/), recip)
 import qualified Prelude
-import GHC.Base (liftA2)
+import Control.Applicative (liftA2)
 
 
 class Pure f a where

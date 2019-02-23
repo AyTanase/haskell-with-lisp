@@ -11,7 +11,7 @@
 (defpackage Classes
   (:shadow Prelude pure negate + - * / recip)
   (:use (:q Prelude))
-  (:import GHC.Base liftA2))
+  (:import Control.Applicative liftA2))
 
 
 (class (Pure f a) ()

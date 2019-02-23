@@ -2,7 +2,6 @@
 
 module Parse (Parse.parse) where
 import Common
-import Control.Monad
 import Text.Parsec as P
 import Data.Function (fix)
 
@@ -19,22 +18,22 @@ rSplit :: Stream s m Char => NFA -> ParsecT s u m NFA
 
 regex = rConcat >>= rSplit
 
-rConcat = liftM (foldr (.) id) (many rAtom)
+rConcat = foldr (.) id <$> many rAtom
 
-rSplit f = (char '|' >> liftM (split f) regex) <|> return f
+rSplit f = (char '|' >> fmap (split f) regex) <|> return f
 
 
 rAtom, rChar, rEscape, rGroup, rGroup' :: Stream s m Char => ParsecT s u m NFA
 
 rAtom = quantify =<< (rChar <|> rEscape <|> rGroup)
 
-rChar = liftM Compare $ noneOf "\\|()"
+rChar = Compare <$> noneOf "\\|()"
 
-rEscape = char '\\' >> liftM Compare anyChar
+rEscape = char '\\' >> fmap Compare anyChar
 
 rGroup = between (char '(') (char ')') rGroup'
 
-rGroup' = (try (string "?>") >> liftM cut regex) <|> regex
+rGroup' = (try (string "?>") >> fmap cut regex) <|> regex
 
 
 quantify :: Stream s m Char => NFA -> ParsecT s u m NFA
@@ -46,7 +45,7 @@ type QMaker = (NFA -> NFA -> NFA) -> NFA -> NFA
 
 quantifier :: Stream s m Char => Char -> QMaker -> NFA -> ParsecT s u m NFA
 
-quantifier c make f = char c >> liftM (flip make f) greediness
+quantifier c make f = char c >> fmap (flip make f) greediness
 
 
 greediness :: Stream s m Char => ParsecT s u m (NFA -> NFA -> NFA)
