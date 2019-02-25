@@ -22,9 +22,8 @@
 (add-cl-indent-rule 'if-bind '((&whole 4 &body) &body))
 
 (let ((keywords
-        '(apl apply-left apply-right apr as
-          bind class data define defmodule enum-from
-          funcall import instance newtype type where))
+        '(as bind class data define defmodule enum-from
+          flip funcall import instance newtype type where))
       (operators
         '(+ - * / and or append compose -> => = /= <= >= < >))
       (constructors '(nil cons list* list tuple pair)))
