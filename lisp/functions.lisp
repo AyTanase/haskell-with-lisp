@@ -24,26 +24,6 @@
   (op-print-1 y))
 
 
-(definline may-op (symbol)
-  (or (gethash symbol *operators*)
-      symbol))
-
-(defpattern |apply-left| (op x)
-  (with-paren
-    (op-print-1 x)
-    (write-string " ")
-    (princ (may-op op))))
-
-(defpattern |apply-right| (op x)
-  (with-paren
-    (princ (may-op op))
-    (write-string " ")
-    (op-print-1 x)))
-
-(defsynonym |apl| |apply-left|)
-(defsynonym |apr| |apply-right|)
-
-
 (defmacro def-op-macro
     (name &key (op name) (zero `',name) (one '`(|apl| ,@expr)) (many 'expr))
   `(progn
@@ -190,15 +170,40 @@
   (%haskell (car args))
   (%funcall-1 (cdr args) nil))
 
-(defbinop |funcall| :op $
-  :many (let ((xs (mapcar #'%define-expand args)))
-          (if (and (consp (car xs))
-                   (keytypep (caar xs) 'operator)
-                   (atom (cddr xs)))
-            (haskell-tops (car xs) " $ " (cadr xs))
-            (%funcall xs))))
+(progn
+  (def-op-macro |funcall| :op $
+    :many (if (and (keytypep (car args) 'operator)
+                   (atom (cddr args)))
+            `(#1=#:funcall ,@args)
+            expr))
+  (defpattern #1# (op x)
+    (with-paren
+      (op-print-1 x)
+      (write-string " ")
+      (princ (may-op op)))))
 
-(setf (gethash '|funcall| *specials*) 'special)
+(defspecial |funcall| (&rest args)
+  (let ((xs (mapcar #'%define-expand args)))
+    (if (and (consp (car xs))
+             (keytypep (caar xs) 'operator)
+             (atom (cddr xs)))
+      (haskell-tops (car xs) " $ " (cadr xs))
+      (%funcall xs))))
+
+
+(progn
+  (defmethod/i apply-macro ((_ (eql '|flip|)) expr)
+    (let ((args (cdr expr)))
+      (if (and (consp (cdr args))
+               (atom (cddr args))
+               (keytypep (car args) 'operator))
+        `(#1=#:flip ,@args)
+        expr)))
+  (defpattern #1# (op x)
+    (with-paren
+      (princ (may-op op))
+      (write-string " ")
+      (op-print-1 x))))
 
 
 (defhasq |nil| "[]")
@@ -219,4 +224,5 @@
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote ds-bind) (quote (&lambda 4 &body)))
 ;; eval: (cl-indent-rules (quote (4 2 2 &body)) (quote def-op-macro) (quote defbinop))
+;; eval: (add-cl-indent-rule (quote with-paren) (quote (&body)))
 ;; End:

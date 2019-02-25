@@ -180,6 +180,10 @@
 (definline keytypep (key symbol)
   (eq (gethash key *specials*) symbol))
 
+(definline may-op (symbol)
+  (or (gethash symbol *operators*)
+      symbol))
+
 
 (defmethod %haskell (expr) (princ expr))
 
