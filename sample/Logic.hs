@@ -28,4 +28,4 @@ flip :: Applicative f => f (a -> b) -> a -> f b
 flip = liftA2 (.) (<*>) $ const pure
 
 join :: (a -> a -> b) -> a -> b
-join = flip (<*>) id
+join = (<*> id)

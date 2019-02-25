@@ -55,7 +55,7 @@ compose apply :: (f a -> f (b -> c)) -> f a -> f b -> f c
 liftA         :: (a -> b -> c) -> f a -> f (b -> c)
 |#
 (type liftA2 (=> (Applicative f) (-> (-> a b c) (f a) (f b) (f c))))
-(define liftA2 (compose (apl compose apply) liftA))
+(define liftA2 (compose (funcall compose apply) liftA))
 
 
 #|
