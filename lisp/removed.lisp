@@ -9,3 +9,9 @@
 
 (def-syntax-macro |if-bind| (args &rest rest)
   `(|if| (|bind| ,@args) ,@rest))
+
+(defsynonym |apply-left| |funcall|)
+(defsynonym |apl| |funcall|)
+
+(defsynonym |apply-right| |flip|)
+(defsynonym |apr| |flip|)
