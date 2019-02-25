@@ -125,10 +125,10 @@
 
 
 
-#!(define-symbol-macro 1+ (apr + 1))
+#!(define-symbol-macro 1+ (flip + 1))
 (def-syntax-macro 1+ (x) `(+ ,x 1))
 
-#!(define-symbol-macro 1- (apr + -1))
+#!(define-symbol-macro 1- (subtract 1))
 (def-syntax-macro 1- (x) `(- ,x 1))
 
 (defhasq |pair| "(,)")
