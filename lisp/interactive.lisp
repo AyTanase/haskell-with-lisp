@@ -12,19 +12,20 @@
 (defun %repl ()
   (loop for item = (read)
     until (equal item '(|exit|))
-    do (if (and (consp item)
-                (keywordp (car item)))
-         (format t ":~{~a~^ ~}~%" item)
-         (unwind-protect
+    do (write-line ":{")
+       (unwind-protect
+           (if (and (consp item)
+                    (keywordp (car item)))
              (progn
-               (write-line ":{")
-               (handler-case (eval item)
-                 ((or unbound-variable
-                      undefined-function
-                      warning)
-                     () (%define-print item))))
-           (fresh-line)
-           (write-line ":}")))))
+               (prin1 (car item))
+               (mapc (curry #'haskell-tops " ") (cdr item)))
+             (handler-case (eval item)
+               ((or unbound-variable
+                    undefined-function
+                    warning)
+                   () (%define-print item))))
+         (fresh-line)
+         (write-line ":}"))))
 
 (defun repl ()
   (let ((*package* (find-package :hs))
