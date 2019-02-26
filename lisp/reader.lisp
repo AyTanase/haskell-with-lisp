@@ -52,14 +52,9 @@
 (setf *hs-readtable* (copy-readtable))
 (setf (readtable-case *hs-readtable*) :preserve)
 
-(defun make-cl-reader (reader)
-  #'(lambda (stream &rest args)
-      (let ((*readtable* *cl-readtable*))
-        (prog1 (apply reader stream args)
-          (peek-char t stream nil nil t)))))
-
-(defmacro cl-macro-char (&rest args)
-  `(set-macro-char ,@args (make-cl-reader (get-macro-char ,@args))))
+(defun/i read-as-cl (stream &rest _)
+  (let ((*readtable* *cl-readtable*))
+    (read stream t nil t)))
 
 (defun/i read-hs-string (ins &rest _)
   (with-output-to-string (outs)
@@ -76,7 +71,7 @@
             (#\" (return))))))))
 
 (let ((*readtable* *hs-readtable*))
-  (cl-macro-char #\# #\?)
+  (set-macro-char #\# #\? #'read-as-cl)
   (set-macro-char #\' (get-macro-char #\') t)
   (set-macro-char #\" #'read-hs-string))
 
@@ -118,13 +113,23 @@
   (convert-cr stream)
   (read-hs-lf stream))
 
+(defun %lift-cl-reader (reader)
+  #'(lambda (stream &rest args)
+      (let ((*readtable* *cl-readtable*))
+        (prog1 (apply reader stream args)
+          (peek-char t stream nil nil t)))))
+
+(defmacro lift-cl-reader (&rest args)
+  `(set-macro-char ,@args (%lift-cl-reader (get-macro-char ,@args))))
+
 (let ((*readtable* *hs-toplevel*))
+  (set-macro-char #\# #\? (%lift-cl-reader #'read-as-is))
   (set-macro-char #\# #\{ #'read-hs-comment)
   (set-macro-char #\Newline #'read-hs-lf)
   (set-macro-char #\Return #'read-hs-cr)
   (set-macro-char #\( (make-hs-reader (get-macro-char #\()))
-  (cl-macro-char #\# #\|)
-  (cl-macro-char #\;))
+  (lift-cl-reader #\# #\|)
+  (lift-cl-reader #\;))
 
 
 (defun default-out (src)
