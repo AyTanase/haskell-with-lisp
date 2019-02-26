@@ -9,28 +9,28 @@
 
 (setf *debug-io* (make-two-way-stream *standard-input* *error-output*))
 
-(defun %repl ()
-  (loop for item = (read)
-    until (equal item '(|exit|))
-    do (write-line ":{")
-       (unwind-protect
-           (if (and (consp item)
-                    (keywordp (car item)))
-             (progn
-               (prin1 (car item))
-               (mapc (curry #'haskell-tops " ") (cdr item)))
-             (handler-case
-                 (let ((*error-output* #.(make-broadcast-stream)))
-                   (eval item))
-               (error () (%define-print item))))
-         (fresh-line)
-         (write-line ":}"))))
+(defun ghci-print (expr)
+  (write-line ":{")
+  (unwind-protect
+      (if (and (consp expr)
+               (keywordp (car expr)))
+        (progn
+          (prin1 (car expr))
+          (mapc (curry #'haskell-tops " ") (cdr expr)))
+        (handler-case
+            (let ((*error-output* #.(make-broadcast-stream)))
+              (eval expr))
+          (error () (%define-print expr))))
+    (fresh-line)
+    (write-line ":}")))
 
 (defun repl ()
   (let ((*package* (find-package :hs))
         (*readtable* *hs-readtable*))
-    (restart-case (%repl)
-      (abort ()
-        :report "Exit debugger, returning to GHCi."
-        (fresh-line)
-        (repl)))))
+    (loop
+      (with-simple-restart
+          (abort "Exit debugger, returning to GHCi.")
+        (let ((expr (read)))
+          (if (equal expr '(|exit|))
+            (return)
+            (ghci-print expr)))))))
