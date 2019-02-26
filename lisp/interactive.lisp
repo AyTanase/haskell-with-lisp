@@ -19,8 +19,10 @@
              (progn
                (write-line ":{")
                (handler-case (eval item)
-                 ((or unbound-variable undefined-function) ()
-                   (%define-print item))))
+                 ((or unbound-variable
+                      undefined-function
+                      warning)
+                     () (%define-print item))))
            (fresh-line)
            (write-line ":}")))))
 
