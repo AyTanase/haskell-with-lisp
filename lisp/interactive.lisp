@@ -19,11 +19,10 @@
              (progn
                (prin1 (car item))
                (mapc (curry #'haskell-tops " ") (cdr item)))
-             (handler-case (eval item)
-               ((or unbound-variable
-                    undefined-function
-                    warning)
-                   () (%define-print item))))
+             (handler-case
+                 (let ((*error-output* #.(make-broadcast-stream)))
+                   (eval item))
+               (error () (%define-print item))))
          (fresh-line)
          (write-line ":}"))))
 
