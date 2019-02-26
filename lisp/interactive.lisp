@@ -4,8 +4,6 @@
 
 (in-package :hs)
 
-(def-hs-macro |eval| (expr) `(%define-print ',expr))
-
 (defmacro |progn| (&body body) `(progn ,@body))
 
 
@@ -20,7 +18,9 @@
          (unwind-protect
              (progn
                (write-line ":{")
-               (eval item))
+               (handler-case (eval item)
+                 ((or unbound-variable undefined-function) ()
+                   (%define-print item))))
            (fresh-line)
            (write-line ":}")))))
 
