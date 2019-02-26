@@ -174,7 +174,7 @@
   (def-op-macro |funcall| :op $
     :many (if (and (keytypep (car args) 'operator)
                    (atom (cddr args)))
-            `(#1=#:funcall ,@args)
+            `(#1=#:|funcall| ,@args)
             expr))
   (defpattern #1# (op x)
     (with-paren
@@ -197,7 +197,7 @@
       (if (and (consp (cdr args))
                (atom (cddr args))
                (keytypep (car args) 'operator))
-        `(#1=#:flip ,@args)
+        `(#1=#:|flip| ,@args)
         expr)))
   (defpattern #1# (op x)
     (with-paren
