@@ -29,6 +29,7 @@
       lisp-simple-loop-indentation 2)
 
 (add-cl-indent-rule 'if '(4 &rest 2))
+(add-cl-indent-rule 'or '(&body))
 (add-cl-indent-rule 'with-open-file '(&lambda &body))
 (add-cl-indent-rule 'ftype '((&whole 4 &lambda 2) &rest 2))
 (add-cl-indent-rule 'cond 'lisp-indent-cond-method)
