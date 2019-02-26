@@ -6,7 +6,7 @@
    "macros and keywords for generating Haskell code")
   (:use :cl)
   (:shadow :compile)
-  (:export :compile :compile-all :lazy-compile))
+  (:export :compile :compile-all :lazy-compile :repl))
 
 (in-package :haskell)
 
