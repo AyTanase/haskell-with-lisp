@@ -73,4 +73,4 @@ const pure :: f (a -> b) -> a -> f a
 (define flip (liftA2 compose apply (const pure)))
 
 (type join (-> (-> a a b) a b))
-(define join (flip apply id))
+(define join (hs:flip apply id))
