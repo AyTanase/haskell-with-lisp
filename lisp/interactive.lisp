@@ -17,7 +17,8 @@
         (prin1 form)
         (mapc (curry #'haskell-tops " ") (cdr expr)))
       (handler-case
-          (let ((*error-output* #.(make-broadcast-stream)))
+          (let ((*error-output*
+                  (load-time-value (make-broadcast-stream) t)))
             (eval expr))
         (error () (%define-print expr))))))
 
