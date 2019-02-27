@@ -49,10 +49,7 @@
     (apply fn x)))
 
 
-(defpackage :|haskell|
-  (:nicknames :|hs|)
-  (:documentation
-   "shadowing keywords to use them as names in Haskell code"))
+(make-package :|haskell| :nicknames '(:|hs|))
 
 (defun shadow-haskell (x)
   (export (intern (string x) :|hs|) :|hs|))
