@@ -1,5 +1,5 @@
 (in-package :cl)
-(load (merge-pathnames "haskell" *load-truename*))
+(load (merge-pathnames "haskell.lisp" *load-truename*))
 
 (in-package :hs)
 (export 'repl)
