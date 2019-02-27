@@ -1,13 +1,11 @@
 (in-package :cl)
-
 (load (merge-pathnames "haskell" *load-truename*))
 
 (in-package :hs)
-
-(defmacro |progn| (&body body) `(progn ,@body))
-
+(export 'repl)
 
 (setf *debug-io* (make-two-way-stream *standard-input* *error-output*))
+
 
 (defun ghci-print (expr)
   (write-line ":{")
@@ -34,6 +32,9 @@
           (if (equal expr '(|exit|))
             (return)
             (ghci-print expr)))))))
+
+
+(defmacro |progn| (&body body) `(progn ,@body))
 
 (defmacro |load| (file)
   `(progn
