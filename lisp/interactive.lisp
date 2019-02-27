@@ -7,18 +7,20 @@
 (setf *debug-io* (make-two-way-stream *standard-input* *error-output*))
 
 
+(defun ghci-eval (expr)
+  (let ((form (if (consp expr) (car expr))))
+    (if (keywordp form)
+      (progn
+        (prin1 form)
+        (mapc (curry #'haskell-tops " ") (cdr expr)))
+      (handler-case
+          (let ((*error-output* #.(make-broadcast-stream)))
+            (eval expr))
+        (error () (%define-print expr))))))
+
 (defun ghci-print (expr)
   (write-line ":{")
-  (unwind-protect
-      (if (and (consp expr)
-               (keywordp (car expr)))
-        (progn
-          (prin1 (car expr))
-          (mapc (curry #'haskell-tops " ") (cdr expr)))
-        (handler-case
-            (let ((*error-output* #.(make-broadcast-stream)))
-              (eval expr))
-          (error () (%define-print expr))))
+  (unwind-protect (ghci-eval expr)
     (fresh-line)
     (write-line ":}")))
 
@@ -39,4 +41,4 @@
 (defmacro |load| (file)
   `(progn
      (lazy-compile ,(string file))
-     (format t ":load ~a~%" ',file)))
+     (ghci-eval `(:|load| ,',file))))
