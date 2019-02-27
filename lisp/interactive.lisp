@@ -1,4 +1,4 @@
-(in-package :cl)
+(in-package :cl-user)
 (load (merge-pathnames "haskell.lisp" *load-truename*))
 
 (in-package :hs)
