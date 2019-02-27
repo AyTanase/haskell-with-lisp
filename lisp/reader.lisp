@@ -135,9 +135,10 @@
 (definline change-type (src type)
   (make-pathname :type type :defaults src))
 
-(defun change-src-type (src)
-  (or (probe-file src)
-      (change-type src "hl")))
+(definline change-src-type (src)
+  (if (pathname-type src)
+    src
+    (change-type src "hl")))
 
 (defun %compile (src out)
   (let ((*package* (find-package :hs))
