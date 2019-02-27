@@ -11,6 +11,9 @@
   (let ((form (if (consp expr) (car expr))))
     (if (keywordp form)
       (progn
+        (if (eq form :|cd|)
+          (setf *default-pathname-defaults*
+                (first (directory (string (second expr))))))
         (prin1 form)
         (mapc (curry #'haskell-tops " ") (cdr expr)))
       (handler-case
