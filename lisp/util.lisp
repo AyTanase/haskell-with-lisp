@@ -6,11 +6,6 @@
            collect `(,x (gensym)))
      ,@body))
 
-(defmacro definline (name &body body)
-  `(progn
-     (declaim (inline ,name))
-     (defun ,name ,@body)))
-
 
 (defun curry (f &rest xs)
   #'(lambda (&rest ys) (apply f (append xs ys))))
