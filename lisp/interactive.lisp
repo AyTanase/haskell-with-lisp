@@ -45,4 +45,4 @@
 (defmacro |load| (file)
   `(progn
      (lazy-compile ,(string file))
-     (ghci-eval `(:|load| ,',file))))
+     (ghci-eval '(:|load| ,file))))
