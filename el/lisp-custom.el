@@ -28,13 +28,12 @@
       lisp-loop-keyword-indentation 2
       lisp-simple-loop-indentation 2)
 
-(add-cl-indent-rule 'if '(4 &rest 2))
 (add-cl-indent-rule 'or '(&body))
 (add-cl-indent-rule 'with-open-file '(&lambda &body))
 (add-cl-indent-rule 'ftype '((&whole 4 &lambda 2) &rest 2))
 (add-cl-indent-rule 'cond 'lisp-indent-cond-method)
 (add-cl-indent-rule 'case '(4 &rest (&whole 2 &body)))
-(add-cl-indent-rule 'unwind-protect '(4 &body))
+(cl-indent-rules '(4 &body) 'if 'unwind-protect)
 (cl-indent-rules '((&whole 4 &rest (&whole 1 2)) &body) 'let 'let*)
 
 (font-lock-add-keywords
