@@ -132,10 +132,14 @@
   (lift-cl-reader #\;))
 
 
-(defun default-out (src)
-  (make-pathname :type "hs" :defaults src))
+(definline change-type (src type)
+  (make-pathname :type type :defaults src))
 
-(defun compile (src &optional (out (default-out src)))
+(defun change-src-type (src)
+  (or (probe-file src)
+      (change-type src "hl")))
+
+(defun %compile (src out)
   (let ((*package* (find-package :hs))
         (*readtable* *hs-toplevel*))
     (with-open-file (*standard-output* out
@@ -143,10 +147,16 @@
                      :if-exists :supersede)
       (load src))))
 
+(definline compile (src &optional (out (change-type src "hs")))
+  (%compile (change-src-type src) out))
+
 (defmapc compile-all #'compile)
 
-(defun lazy-compile (src &optional (out (default-out src)))
+(defun %lazy-compile (src out)
   (if (or (not (probe-file out))
           (< (file-write-date out)
              (file-write-date src)))
-    (compile src out)))
+    (%compile src out)))
+
+(definline lazy-compile (src &optional (out (change-type src "hs")))
+  (%lazy-compile (change-src-type src) out))
