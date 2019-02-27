@@ -135,10 +135,15 @@
 (definline change-type (src type)
   (make-pathname :type type :defaults src))
 
-(definline change-src-type (src)
-  (if (pathname-type src)
-    src
-    (change-type src "hl")))
+(definline call-compile (fn src out)
+  (let ((src-path (true-path src)))
+    (funcall fn
+             (if (pathname-type src-path)
+               src-path
+               (change-type src-path "hl"))
+             (if out
+               (true-path out)
+               (change-type src-path "hs")))))
 
 (defun %compile (src out)
   (let ((*package* (find-package :hs))
@@ -148,8 +153,8 @@
                      :if-exists :supersede)
       (load src))))
 
-(definline compile (src &optional (out (change-type src "hs")))
-  (%compile (change-src-type src) out))
+(defun compile (src &optional out)
+  (call-compile #'%compile src out))
 
 (defmapc compile-all #'compile)
 
@@ -159,5 +164,5 @@
              (file-write-date src)))
     (%compile src out)))
 
-(definline lazy-compile (src &optional (out (change-type src "hs")))
-  (%lazy-compile (change-src-type src) out))
+(defun lazy-compile (src &optional out)
+  (call-compile #'%lazy-compile src out))
