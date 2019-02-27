@@ -34,3 +34,8 @@
           (if (equal expr '(|exit|))
             (return)
             (ghci-print expr)))))))
+
+(defmacro |load| (file)
+  `(progn
+     (lazy-compile ,(string file))
+     (format t ":load ~a~%" ',file)))
