@@ -20,7 +20,11 @@
           (let ((*error-output*
                   (load-time-value (make-broadcast-stream) t)))
             (eval expr))
-        (error () (%define-print expr))))))
+        ((or program-error cell-error) ()
+          (%define-print expr))
+        (error (condition)
+          (let ((*error-output* *debug-io*))
+            (error condition)))))))
 
 (defun ghci-print (expr)
   (write-line ":{")
