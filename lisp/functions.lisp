@@ -195,9 +195,10 @@
 (progn
   (defmethod/i apply-macro ((_ (eql '|flip|)) expr)
     (let ((args (cdr expr)))
-      (if (and (consp (cdr args))
-               (atom (cddr args))
-               (keytypep (car args) 'operator))
+      (if (ds-bind (x . xs) args
+            (and (keytypep x 'operator)
+                 (consp xs)
+                 (atom (cdr xs))))
         `(#1=#:|flip| ,@args)
         expr)))
   (defpattern #1# (op x)
