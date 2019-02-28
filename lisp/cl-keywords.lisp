@@ -5,7 +5,7 @@
 
 
 (defun defun->define (def)
-  (ds-bind (name args &body body) def
+  (ds-bind (name args . body) def
     (if (eq name '|type|) def `((,name ,@args) ,@body))))
 
 (defmacro |defun| (&body body)
@@ -16,7 +16,7 @@
 
 
 (defun defpac-import (opt)
-  (ds-bind (key &rest args) opt
+  (ds-bind (key . args) opt
     (case key
       (:|use| `(progn ,@(mapcar (curry #'list '|import|) args)))
       (:|import| `(|import| ,(car args) ,(cdr args)))

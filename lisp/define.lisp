@@ -17,8 +17,7 @@
   (let ((expr (hs-macro-expand x)))
     (if (atom expr)
       expr
-      (let ((spec (car expr))
-            (args (cdr expr)))
+      (ds-bind (spec . args) expr
         (case (gethash spec *specials*)
           ((special pattern) expr)
           (operator (cons spec (mapcar #'%define-expand args)))

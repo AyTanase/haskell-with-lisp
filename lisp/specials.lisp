@@ -81,14 +81,13 @@
   (with-square-brackets
     (haskell-top expr)
     (loop
-      for xs on args
-      for x = (car xs)
+      for (x . xs) on args
       until (eq x :|to|)
       do (haskell-tops "," x)
       finally
          (write-string "..")
-         (if (consp (cdr xs))
-           (haskell-top (cadr xs))))))
+         (if (consp xs)
+           (haskell-top (car xs))))))
 
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote with-square-brackets) (quote (&body)))

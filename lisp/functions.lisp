@@ -142,7 +142,7 @@
 (defun funcall-last (expr)
   (if (eq (car expr) '|funcall|)
     (let ((args (mapcar #'%define-expand (cdr expr))))
-      (ds-bind (f x &rest xs) args
+      (ds-bind (f x . xs) args
         (cond
           ((or xs (simplep x))
             (write-string " $ ")
@@ -154,7 +154,7 @@
 
 (defun %funcall-1 (args paren?)
   (if args
-    (ds-bind (x &rest xs) args
+    (ds-bind (x . xs) args
       (flet ((recurse (p)
                (%haskells " " x)
                (%funcall-1 xs p)))

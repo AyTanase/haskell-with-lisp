@@ -28,7 +28,7 @@
 
 (defun %class-derive (args)
   (if (consp args)
-    (ds-bind (key &rest rest) args
+    (ds-bind (key . rest) args
       (if (keywordp key)
         (progn
           (format t "{-# ~@:(~a~) #-} " key)
