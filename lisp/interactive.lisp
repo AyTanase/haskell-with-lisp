@@ -19,7 +19,8 @@
       (handler-case
           (let ((*error-output*
                   (load-time-value (make-broadcast-stream) t)))
-            (eval expr))
+            (prin1 (eval expr) *debug-io*)
+            (fresh-line *debug-io*))
         ((or program-error cell-error) ()
           (%define-print expr))
         (error (condition)
