@@ -3,10 +3,10 @@
 (defun %op-print-1 (expr)
   (if (atom expr)
     (%haskell expr)
-    (let ((spec (car expr)))
+    (ds-bind (spec . args) expr
       (cond
         ((eq spec '|funcall|)
-          (%rechask (cdr expr)
+          (%rechask args
                     (compose #'%haskell #'%define-expand)
                     " "))
         ((keytypep spec 'operator)
@@ -42,7 +42,7 @@
   `(progn
      (def-op-macro ,name
        :op ,op
-       :many (ds-bind (x y &rest rest) args
+       :many (ds-bind (x y . rest) args
                (if rest
                  `((,',name ,x ,y) ,@rest)
                  expr)))
@@ -111,9 +111,9 @@
 
 (defun expand-ord-op (op args)
   (let ((var (genvar)))
-    `(let ((,var ,(cadr args)))
-       (and (,op ,(car args) ,var)
-            (,op ,var ,@(cddr args))))))
+    (ds-bind (x y . ys) args
+      `(let ((,var ,y))
+         (and (,op ,x ,var) (,op ,var ,@ys))))))
 
 (defmacro def-ord-op (op)
   `(defrelation ,op (expand-ord-op ',op args)))
@@ -184,11 +184,12 @@
 
 (defspecial |funcall| (&rest args)
   (let ((xs (mapcar #'%define-expand args)))
-    (if (and (consp (car xs))
-             (keytypep (caar xs) 'operator)
-             (atom (cddr xs)))
-      (haskell-tops (car xs) " $ " (cadr xs))
-      (%funcall xs))))
+    (ds-bind (x y . ys) xs
+      (if (and (consp x)
+               (keytypep (car x) 'operator)
+               (atom ys))
+        (haskell-tops x " $ " y)
+        (%funcall xs)))))
 
 
 (progn
