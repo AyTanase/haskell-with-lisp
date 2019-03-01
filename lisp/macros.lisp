@@ -53,11 +53,10 @@
 
 
 (defun module-names (svar names)
-  (labels ((print-1 (x)
-             (%rechask x #'tuple " "))
-           (print-names (args)
-             (with-paren
-               (%rechask args #'print-1 ", "))))
+  (flet ((print-names (args)
+           (with-paren
+             (%map-hs (curry #'%map-hs #'tuple " ")
+                      ", " args))))
     (when svar
       (write-string " ")
       (if (callp names :|hide|)
@@ -91,7 +90,8 @@
            (callp (cdr body) :|name|))
     (progn
       (haskell-tops (car body) " { ")
-      (%rechask (cddr body) (curry #'apply #'%type) ", ")
+      (%map-hs (curry #'apply #'%type)
+               ", " (cddr body))
       (write-string " }"))
     (haskell-top body)))
 
@@ -99,7 +99,7 @@
   (format t "~a " key)
   (haskell-tops name " = ")
   (if (callp body '|or|)
-    (%rechask (cdr body) #'%data-body " | ")
+    (%map-hs #'%data-body " | " (cdr body))
     (%data-body body))
   (when deriving
     (write-string " deriving ")

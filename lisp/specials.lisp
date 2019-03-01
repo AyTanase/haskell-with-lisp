@@ -63,7 +63,7 @@
 
 (defspecial |lambda| (args expr)
   (write-char #\\)
-  (rechask args)
+  (map-hs args)
   (write-string " -> ")
   (%define-print expr))
 

@@ -6,9 +6,8 @@
     (ds-bind (spec . args) expr
       (cond
         ((eq spec '|funcall|)
-          (%rechask args
-                    (compose #'%haskell #'%define-expand)
-                    " "))
+          (%map-hs (compose #'%haskell #'%define-expand)
+                   " " args))
         ((keytypep spec 'operator)
           (%haskell expr))
         (t (%haskell-top expr))))))
@@ -16,7 +15,7 @@
 (definline op-print-1 (expr)
   (%op-print-1 (hs-macro-expand expr)))
 
-(defrechask rec-op-1 #'op-print-1 "")
+(def-map-hs map-op-1 #'op-print-1 "")
 
 (defun print-infix (op x y)
   (op-print-1 x)
@@ -55,7 +54,7 @@
   `(progn
      (def-op-macro ,name :op ,op :zero ,zero :one ,one)
      (defsyntax ,name (&rest args)
-       ,(or many `(rec-op-1 args ,(format nil " ~a " op))))))
+       ,(or many `(map-op-1 args ,(format nil " ~a " op))))))
 
 (defbinop + :zero 0)
 (defbinop - :one `(|negate| ,(car args)))
@@ -74,7 +73,7 @@
       (%haskell expr)
       (%haskell-top expr))))
 
-(defbinop -> :many (%rechask args #'->-print-1 " -> "))
+(defbinop -> :many (%map-hs #'->-print-1 " -> " args))
 
 
 (defsynonym let |let|)
@@ -220,8 +219,8 @@
 
 (defbinop |list*| :op |:|
   :many (if (every #'simplep args)
-          (rec-op-1 args ":")
-          (rec-op-1 args " : ")))
+          (map-op-1 args ":")
+          (map-op-1 args " : ")))
 
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote ds-bind) (quote (&lambda 4 &body)))

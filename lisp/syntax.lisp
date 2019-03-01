@@ -118,27 +118,27 @@
 (defmapc haskells #'haskell)
 
 
-(defun %rechask (x fn between)
+(defun %map-hs (fn sep expr)
   (flet ((call-1 (xs)
            (funcall fn (car xs))
            (if (cdr xs)
-             (write-string between))))
-    (if (listp x)
-      (mapl #'call-1 x)
-      (funcall fn x))))
+             (write-string sep))))
+    (if (listp expr)
+      (mapl #'call-1 expr)
+      (funcall fn expr))))
 
-(defmacro defrechask (name fn default)
-  (with-gensyms (x between)
-    `(defun ,name (,x &optional (,between ,default))
-       (%rechask ,x ,fn ,between))))
+(defmacro def-map-hs (name fn default)
+  (with-gensyms (expr sep)
+    `(defun ,name (,expr &optional (,sep ,default))
+       (%map-hs ,fn ,sep ,expr))))
 
-(defrechask rechask #'haskell " ")
+(def-map-hs map-hs #'haskell " ")
 
 
 (defgeneric apply-syntax (spec expr))
 
 (defmethod/i apply-syntax (_ expr)
-  (rechask expr))
+  (map-hs expr))
 
 (defshadow defsyntax (name args &body body)
   (with-gensyms (expr)
@@ -157,7 +157,7 @@
 (defmapc %haskell-tops #'%haskell-top)
 (defmapc haskell-tops #'haskell-top)
 
-(defrechask arrange #'haskell-top ", ")
+(def-map-hs arrange #'haskell-top ", ")
 
 
 (defvar *specials* (make-hash-table :test 'eq))
