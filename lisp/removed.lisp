@@ -1,9 +1,17 @@
 (in-package :hs)
 
+(definline %rechask (expr fn sep)
+  (%map-hs fn sep expr))
+
+(defmacro defrechask (&rest args)
+  `(def-map-hs ,@args))
+
+(defrechask rechask #'haskell " ")
+(defrechask rec%hask #'%haskell " ")
+(defrechask rec-op-1 #'op-print-1 "")
+
 (defspecial |curry| (&rest args)
   (rechask args))
-
-(defrechask rec%hask #'%haskell " ")
 
 (defsynonym |setf| |bind|)
 
