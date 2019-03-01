@@ -22,9 +22,7 @@
             (format *debug-io* "~&~s~&" (eval expr)))
         ((or program-error cell-error) ()
           (%define-print expr))
-        (error (condition)
-          (let ((*error-output* *debug-io*))
-            (error condition)))))))
+        (error (condition) (error condition))))))
 
 (defun ghci-print (expr)
   (write-line ":{")
