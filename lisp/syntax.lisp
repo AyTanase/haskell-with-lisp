@@ -2,14 +2,10 @@
 
 
 (defun collect-decs (body)
-  (loop
-    for xs on body
-    for x = (car xs)
-    while (typecase x
-            (cons (eq (car x) 'declare))
-            (string (cdr xs)))
-    collect x into decs
-    finally (return (values decs xs))))
+  (mv-bind (remain decl doc)
+      (parse-body body :documentation t)
+    (values (if doc (cons doc decl) decl)
+            remain)))
 
 
 (defmacro def-hs-macro (name args &body body)
