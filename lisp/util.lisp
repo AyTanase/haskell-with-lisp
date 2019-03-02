@@ -1,23 +1,6 @@
 (in-package :hs)
 
 
-(defmacro with-gensyms (args &body body)
-  `(let ,(loop for x in args
-           collect `(,x (gensym)))
-     ,@body))
-
-
-(defun curry (f &rest xs)
-  #'(lambda (&rest ys) (apply f (append xs ys))))
-
-(define-compiler-macro curry (f &rest xs)
-  (with-gensyms (ys)
-    `#'(lambda (&rest ,ys) (apply ,f ,@xs ,ys))))
-
-(definline compose (f g)
-  #'(lambda (x) (funcall f (funcall g x))))
-
-
 (definline %partition (test xs)
   (loop for x in xs
     if (funcall test x) collect x into ys

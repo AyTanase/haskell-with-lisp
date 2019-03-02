@@ -1,10 +1,12 @@
 (in-package :cl-user)
 
+(require :alexandria)
+
 (defpackage :haskell
   (:nicknames :hs)
   (:documentation
    "macros and keywords for generating Haskell code")
-  (:use :cl)
+  (:use :cl :alexandria)
   (:shadow :compile)
   (:export :compile :compile-all :lazy-compile))
 
