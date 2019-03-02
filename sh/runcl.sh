@@ -1,1 +1,1 @@
-sbcl --noinform --load $* --eval "(sb-ext:exit)"
+ros sun --load $* --quit
