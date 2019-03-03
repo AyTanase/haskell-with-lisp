@@ -76,8 +76,7 @@
 (defpattern |enum-from| (expr &rest args)
   (with-square-brackets
     (haskell-top expr)
-    (loop
-      for (x . xs) on args
+    (loop for (x . xs) on args
       until (eq x :|to|)
       do (haskell-tops "," x)
       finally
