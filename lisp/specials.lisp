@@ -86,7 +86,7 @@
       do (haskell-tops "," x)
       finally
          (write-string "..")
-         (if (consp xs)
+         (when (consp xs)
            (haskell-top (car xs))))))
 
 ;; Local Variables:

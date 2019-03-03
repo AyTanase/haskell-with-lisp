@@ -27,13 +27,13 @@
 
 
 (defun %class-derive (args)
-  (if (consp args)
+  (when (consp args)
     (ds-bind (key . rest) args
-      (if (keywordp key)
-        (progn
+      (cond
+        ((keywordp key)
           (format t "{-# ~@:(~a~) #-} " key)
           (=>-left rest))
-        (=>-left args)))))
+        (t (=>-left args))))))
 
 (defun %class (key name derive defs)
   (format t "~a " key)
@@ -59,11 +59,11 @@
                       ", " args))))
     (when svar
       (write-string " ")
-      (if (callp names :|hide|)
-        (progn
+      (cond
+        ((callp names :|hide|)
           (write-string "hiding ")
           (print-names (cdr names)))
-        (print-names names)))))
+        (t (print-names names))))))
 
 (def-hs-macro |defmodule| (module &optional (names nil svar))
   `(progn
@@ -86,14 +86,14 @@
 
 
 (defun %data-body (body)
-  (if (and (consp body)
-           (callp (cdr body) :|name|))
-    (progn
+  (cond
+    ((and (consp body)
+          (callp (cdr body) :|name|))
       (haskell-tops (car body) " { ")
       (%map-hs (curry #'apply #'%type)
                ", " (cddr body))
       (write-string " }"))
-    (haskell-top body)))
+    (t (haskell-top body))))
 
 (defun %data (key name body deriving)
   (format t "~a " key)

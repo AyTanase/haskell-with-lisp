@@ -10,20 +10,20 @@
 
 (defun ghci-eval (expr)
   (let ((form (if (consp expr) (car expr))))
-    (if (keywordp form)
-      (progn
-        (if (eq form :|cd|)
+    (cond
+      ((keywordp form)
+        (when (eq form :|cd|)
           (setf *default-pathname-defaults*
                 (first (directory (string (second expr))))))
         (prin1 form)
         (mapc (curry #'haskell-tops " ") (cdr expr)))
-      (handler-case
-          (let ((*error-output*
-                  (load-time-value (make-broadcast-stream) t)))
-            (format *debug-io* "~&~s~&" (eval expr)))
-        ((or program-error cell-error) ()
-          (%define-print expr))
-        (error (condition) (error condition))))))
+      (t (handler-case
+             (let ((*error-output*
+                     (load-time-value (make-broadcast-stream) t)))
+               (format *debug-io* "~&~s~&" (eval expr)))
+           ((or program-error cell-error) ()
+             (%define-print expr))
+           (error (condition) (error condition)))))))
 
 (defun ghci-print (expr)
   (write-line ":{")

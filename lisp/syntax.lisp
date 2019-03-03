@@ -110,7 +110,7 @@
 (defun %map-hs (fn sep expr)
   (flet ((call-1 (xs)
            (funcall fn (car xs))
-           (if (cdr xs)
+           (when (cdr xs)
              (write-string sep))))
     (if (listp expr)
       (mapl #'call-1 expr)
