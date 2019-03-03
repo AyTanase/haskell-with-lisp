@@ -15,16 +15,6 @@
   (merge-pathnames path (get-truename)))
 
 
-(definline %partition (test xs)
-  (loop for x in xs
-    if (funcall test x) collect x into ys
-    else collect x into ns
-    finally (return (values ys ns))))
-
-(definline partition (test xs &key (key #'identity))
-  (%partition (compose test key) xs))
-
-
 (definline genvar () (gentemp "v"))
 
 (defun genvars (n)

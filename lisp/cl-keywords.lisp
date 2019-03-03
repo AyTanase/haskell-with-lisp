@@ -15,7 +15,7 @@
   `(|where| ,(mapcar #'defun->define fs) ,@body))
 
 
-(defun defpac-import (opt)
+(defun defpack-import (opt)
   (ds-bind (key . args) opt
     (case key
       (:|use| `(progn ,@(mapcar (curry #'list '|import|) args)))
@@ -23,10 +23,10 @@
       (:|shadow| `(|import| ,(car args) (:|hide| ,@(cdr args)))))))
 
 (defmacro |defpackage| (name &rest args)
-  (mv-bind (exs ins) (partition (curry #'eq :|export|) args :key #'car)
+  (let ((exs (remove-if-not (curry #'eq :|export|) args :key #'car)))
     `(progn
        (|defmodule| ,name ,@(if exs (list (mapcan #'cdr exs))))
-       ,@(mapcar #'defpac-import ins))))
+       ,@(mapcar #'defpack-import args))))
 
 ;; Local Variables:
 ;; eval: (cl-indent-rules (quote (&lambda 4 &body)) (quote ds-bind) (quote mv-bind))
