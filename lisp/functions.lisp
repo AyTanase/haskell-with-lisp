@@ -76,9 +76,6 @@
 (defbinop -> :many (%map-hs #'->-print-1 " -> " args))
 
 
-(defsynonym let |let|)
-(defsynonym and |and|)
-
 (defmacro defrelation (name many &optional (op name))
   `(progn
      (def-op-macro ,name :op ,op
@@ -92,8 +89,8 @@
 (defun expand-= (args)
   (let ((v (genvar)))
     (flet ((expand-1 (w) `(= ,w ,v)))
-      `(let ((,v ,(car args)))
-         (and ,@(mapcar #'expand-1 (cdr args)))))))
+      `(|let| ((,v ,(car args)))
+         (|and| ,@(mapcar #'expand-1 (cdr args)))))))
 
 (defrelation = (expand-= args) ==)
 
@@ -103,16 +100,16 @@
              (loop for w in vs
                until (eq v w)
                collect `(/= ,w ,v))))
-      `(let ,(mapcar #'list vs args)
-         (and ,@(mapcan #'expand-1 vs))))))
+      `(|let| ,(mapcar #'list vs args)
+         (|and| ,@(mapcan #'expand-1 vs))))))
 
 (defrelation /= (expand-/= args))
 
 (defun expand-ord-op (op args)
   (let ((var (genvar)))
     (ds-bind (x y . ys) args
-      `(let ((,var ,y))
-         (and (,op ,x ,var) (,op ,var ,@ys))))))
+      `(|let| ((,var ,y))
+         (|and| (,op ,x ,var) (,op ,var ,@ys))))))
 
 (defmacro def-ord-op (op)
   `(defrelation ,op (expand-ord-op ',op args)))
@@ -226,4 +223,5 @@
 ;; eval: (add-cl-indent-rule (quote ds-bind) (quote (&lambda 4 &body)))
 ;; eval: (cl-indent-rules (quote (4 2 2 &body)) (quote def-op-macro) (quote defbinop))
 ;; eval: (add-cl-indent-rule (quote with-paren) (quote (&body)))
+;; eval: (add-cl-indent-rule (quote |let|) (quote (4 &body)))
 ;; End:
