@@ -15,10 +15,10 @@
 
 
 (defun convert-cr (stream)
-  (if (eql (peek-char nil stream nil nil t)
-           #\Newline)
-    (read-char stream t nil t)
-    #\Newline))
+  (when (eql (peek-char nil stream nil nil t)
+             #\Newline)
+    (read-char stream))
+  #\Newline)
 
 (defun read-not-cr (stream)
   (let ((char (read-char stream t nil t)))
