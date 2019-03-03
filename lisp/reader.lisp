@@ -14,17 +14,17 @@
          char args))
 
 
-(defun convert-cr (stream)
-  (when (eql (peek-char nil stream nil nil t)
-             #\Newline)
-    (read-char stream))
-  #\Newline)
+(defun drop-char (char stream)
+  (when (eql char (peek-char nil stream nil nil))
+    (read-char stream)))
 
 (defun read-not-cr (stream)
   (let ((char (read-char stream t nil t)))
-    (if (char= char #\Return)
-      (convert-cr stream)
-      char)))
+    (cond
+      ((char= char #\Return)
+        (drop-char #\Newline stream)
+        #\Newline)
+      (t char))))
 
 
 (defvar *cl-readtable* *readtable*
@@ -110,7 +110,7 @@
     (read stream nil nil t)))
 
 (defun/i read-hs-cr (stream &rest _)
-  (convert-cr stream)
+  (drop-char #\Newline stream)
   (read-hs-lf stream))
 
 (defun %lift-cl-reader (reader)
