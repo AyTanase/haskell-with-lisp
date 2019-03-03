@@ -8,7 +8,7 @@
   :components ((:module "lisp"
                 :serial t
                 :components ((:file "package")
-                             (:file "util")
+                             (:file "utils")
                              (:file "reader")
                              (:file "syntax")
                              (:file "define")
