@@ -15,7 +15,7 @@
 (definline op-print-1 (expr)
   (%op-print-1 (hs-macro-expand expr)))
 
-(def-map-hs map-op-1 #'op-print-1 "")
+(def-map-hs map-op-1 #'op-print-1)
 
 (defun print-infix (op x y)
   (op-print-1 x)

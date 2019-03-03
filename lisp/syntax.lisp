@@ -123,7 +123,8 @@
       (mapl #'call-1 expr)
       (funcall fn expr))))
 
-(defmacro def-map-hs (name fn default)
+(defmacro def-map-hs
+    (name fn &optional (default `(error "~s: no separator" ',name)))
   (with-gensyms (expr sep)
     `(defun ,name (,expr &optional (,sep ,default))
        (%map-hs ,fn ,sep ,expr))))
