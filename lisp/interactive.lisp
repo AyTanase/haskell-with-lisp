@@ -45,7 +45,6 @@
 
 (defmacro |progn| (&body body) `(progn ,@body))
 
-(defmacro |load| (file)
-  `(progn
-     (lazy-compile ,(string file))
-     (ghci-eval '(:|load| ,file))))
+(defun |require| (file)
+  (lazy-compile (string file))
+  (ghci-eval `(:|load| ,file)))
