@@ -8,7 +8,7 @@
 
 (defrechask rechask #'haskell " ")
 (defrechask rec%hask #'%haskell " ")
-(defrechask rec-op-1 #'op-print-1 "")
+(defrechask rec-op-1 #'op-print-1)
 
 (defspecial |curry| (&rest args)
   (rechask args))
