@@ -103,9 +103,12 @@
     ,(with-output-to-string (outs)
        (read-hs-comment-1 ins outs))))
 
+(definline eol-p (char)
+  (or (eql char #\Newline)
+      (eql char #\Return)))
+
 (defun/i read-hs-lf (stream &rest _)
-  (if (case (peek-char nil stream nil nil t)
-        ((#\Newline #\Return) t))
+  (if (eol-p (peek-char nil stream nil nil t))
     '(terpri)
     (read stream nil nil t)))
 
