@@ -1,5 +1,19 @@
 (in-package :hs)
 
+(defmacro definline (name &body body)
+  `(progn
+     (declaim (inline ,name))
+     (defun ,name ,@body)))
+
+
+(definline get-truename ()
+  (or *compile-file-truename*
+      *load-truename*
+      *default-pathname-defaults*))
+
+(definline true-path (path)
+  (merge-pathnames path (get-truename)))
+
 
 (definline %partition (test xs)
   (loop for x in xs

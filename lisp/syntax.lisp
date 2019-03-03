@@ -1,11 +1,11 @@
 (in-package :hs)
 
-
-(defun collect-decs (body)
-  (mv-bind (remain decl doc)
-      (parse-body body :documentation t)
-    (values (if doc (cons doc decl) decl)
-            remain)))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defun collect-decs (body)
+    (mv-bind (remain decl doc)
+        (parse-body body :documentation t)
+      (values (if doc (cons doc decl) decl)
+              remain))))
 
 
 (defmacro def-hs-macro (name args &body body)
@@ -45,7 +45,8 @@
     (apply fn x)))
 
 
-(make-package :|haskell| :nicknames '(:|hs|))
+(unless (find-package :|hs|)
+  (make-package :|haskell| :nicknames '(:|hs|)))
 
 (defun shadow-haskell (x)
   (export (intern (string x) :|hs|) :|hs|))
@@ -208,13 +209,6 @@
      (write-string ,string)))
 
 (defhasq nil "()")
-
-
-(load-relative "define.lisp")
-(load-relative "macros.lisp")
-(load-relative "specials.lisp")
-(load-relative "cl-keywords.lisp")
-(load-relative "functions.lisp")
 
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote mv-bind) (quote (&lambda 4 &body)))

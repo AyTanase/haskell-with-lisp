@@ -1,6 +1,5 @@
-basedir=$(dirname $0)
 cl-eval() {
-    $basedir/runcl.sh $basedir/../lisp/haskell.lisp --eval $1
+    ros run -e "(load\"$(dirname $0)/../haskell-with-lisp.asd\")" -e "(require\"haskell-with-lisp\")" -e $1 -q
 }
 
 if test $1 = "all"; then

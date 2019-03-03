@@ -1,5 +1,6 @@
 (in-package :cl-user)
-(load (merge-pathnames "haskell.lisp" *load-truename*))
+(load (merge-pathnames "../haskell-with-lisp.asd" *load-truename*))
+(require "haskell-with-lisp")
 
 (in-package :hs)
 (export 'repl)

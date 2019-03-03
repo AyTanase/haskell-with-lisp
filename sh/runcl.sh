@@ -1,1 +1,1 @@
-ros sun --load $* --quit
+ros run --load $* --quit
