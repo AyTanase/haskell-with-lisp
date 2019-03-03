@@ -166,7 +166,7 @@
     (if (and accept (symbolp expr))
       (cond
         ((member expr found)
-          (let ((var (gentemp (string expr))))
+          (let ((var (genvar (string expr))))
             (push `(= ,expr ,var) bound)
             (haskell var)))
         (t (push expr found)

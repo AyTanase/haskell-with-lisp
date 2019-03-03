@@ -15,7 +15,8 @@
   (merge-pathnames path (get-truename)))
 
 
-(definline genvar () (gentemp "v"))
+(definline genvar (&optional (prefix "v"))
+  (gentemp prefix))
 
 (defun genvars (n)
   (loop repeat n collect (genvar)))
