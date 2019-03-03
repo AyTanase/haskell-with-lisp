@@ -19,11 +19,14 @@
       expr
       (ds-bind (spec . args) expr
         (case (gethash spec *specials*)
-          ((special pattern) expr)
-          (operator (cons spec (mapcar #'%define-expand args)))
-          (t (if (atom args)
-               (%define-expand spec)
-               `(|funcall| ,@expr))))))))
+          ((special pattern)
+            expr)
+          ((operator)
+            (cons spec (mapcar #'%define-expand args)))
+          (otherwise
+            (if (atom args)
+              (%define-expand spec)
+              `(|funcall| ,@expr))))))))
 
 (definline %define-print (expr)
   (%haskell-top (%define-expand expr)))
@@ -161,13 +164,13 @@
       `(|and| ,@(nreverse bound))))
   (defpattern question (expr)
     (if (and accept (symbolp expr))
-      (if (member expr found :test #'eq)
-        (let ((var (genvar)))
-          (push `(= ,expr ,var) bound)
-          (haskell var))
-        (progn
-          (push expr found)
-          (haskell expr)))
+      (cond
+        ((member expr found)
+          (let ((var (gentemp (string expr))))
+            (push `(= ,expr ,var) bound)
+            (haskell var)))
+        (t (push expr found)
+           (haskell expr)))
       (haskell expr))))
 
 (defun %define (var val &optional (assign " = "))
