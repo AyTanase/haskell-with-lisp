@@ -1,17 +1,16 @@
 (in-package :hs)
 
 
-(defspecial |let| (defs val)
-  (if defs
+(defspecial |let| (defs &optional (val nil svar))
+  (when defs
     (with-indent 1
       (write-string "let")
       (map-indent #'%define defs)
-      (indent)
-      (write-string "in ")
-      (%define-print val))
-    (progn
-      (write-string "let in ")
-      (%define-print val))))
+      (when svar
+        (indent)
+        (write-string "in "))))
+  (when svar
+    (%define-print val)))
 
 
 (shadow-haskell '|where|)
