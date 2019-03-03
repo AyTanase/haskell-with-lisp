@@ -31,10 +31,13 @@
   `(let ((*indent* (+ *indent* ,n)))
      ,@body))
 
-(defun map-indent (fn xs &optional (n *indent*))
+(defun map-indent
+    (fn xs &key (apply t) (width *indent*))
   (dolist (x xs)
-    (indent n)
-    (apply fn x)))
+    (indent width)
+    (if apply
+      (apply fn x)
+      (funcall fn x))))
 
 
 (unless (find-package :|hs|)

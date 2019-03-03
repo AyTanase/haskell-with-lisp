@@ -55,9 +55,7 @@
 (defspecial |do| (&body body)
   (write-string "do")
   (with-indent 1
-    (dolist (expr body)
-      (indent)
-      (%define-print expr))))
+    (map-indent #'%define-print body :apply nil)))
 
 
 (defspecial |lambda| (args expr)
@@ -90,4 +88,5 @@
 
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote with-square-brackets) (quote (&body)))
+;; eval: (add-cl-indent-rule (quote ds-bind) (quote (&lambda 4 &body)))
 ;; End:
