@@ -33,6 +33,7 @@
 (add-cl-indent-rule 'ftype '((&whole 4 &lambda 2) &rest 2))
 (add-cl-indent-rule 'cond 'lisp-indent-cond-method)
 (add-cl-indent-rule 'case '(4 &rest (&whole 2 &body)))
+(add-cl-indent-rule 'defsystem '(4 &rest (&whole 2 &lambda)))
 (cl-indent-rules '(4 &body) 'if 'unwind-protect)
 (cl-indent-rules '((&whole 4 &rest (&whole 1 2)) &body) 'let 'let*)
 
