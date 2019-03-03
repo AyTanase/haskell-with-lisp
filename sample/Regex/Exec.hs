@@ -6,8 +6,8 @@ exec :: Num a => Op -> String -> Maybe a
 exec s = fmap fst . exec' s 0
   where
     exec' Finite n xs = Just (n, xs)
-    exec' (Compare x p) n (v1:xs)
-      | x == v1 = exec' p (n + 1) xs
+    exec' (Compare x p) n (x1:xs)
+      | x == x1 = exec' p (n + 1) xs
     exec' (If p q r) n xs = maybe (exec' r n xs) (uncurry $ exec' q) (exec' p n xs)
     exec' _ _ _ = Nothing
 
