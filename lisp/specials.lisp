@@ -22,20 +22,19 @@
 
 
 (defspecial |if| (&rest args)
-  (ds-bind (x y &optional (z nil svar))
+  (ds-bind (test then &optional (else nil else-supplied-p))
       (mapcar #'%define-expand args)
     (cond
-      ((not svar)
-        (assert (truep x) () "if: missing the else-form")
-        (%haskell-top y))
-      ((and (atom y) (atom z))
-        (%haskell-tops "if " x " then " y " else " z))
-      (t (with-indent 1
-           (%haskell-tops "if " x)
-           (indent)
-           (%haskell-tops "then " y)
-           (indent)
-           (%haskell-tops "else " z))))))
+      (else-supplied-p
+        (let ((indentp (or (consp then) (consp else))))
+          (with-indent 1
+            (%haskell-tops "if " test)
+            (indent-if indentp)
+            (%haskell-tops "then " then)
+            (indent-if indentp)
+            (%haskell-tops "else " else))))
+      ((truep test) (%haskell-top then))
+      (t (error "if: Missing the else-form.")))))
 
 
 (defspecial |case| (x &body xs)

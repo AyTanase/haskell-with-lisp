@@ -27,6 +27,11 @@
   (loop repeat n
     do (write-string "  ")))
 
+(definline indent-if (test &optional (n *indent*))
+  (if test
+    (indent n)
+    (write-char #\Space)))
+
 (defmacro with-indent (n &body body)
   `(let ((*indent* (+ *indent* ,n)))
      ,@body))
