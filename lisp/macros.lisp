@@ -3,8 +3,7 @@
 
 (defun tuple (xs)
   (if (listp xs)
-    (with-paren
-      (arrange xs))
+    (with-paren (arrange xs))
     (haskell-top xs)))
 
 (defpattern |tuple| (&rest xs)
@@ -58,7 +57,7 @@
              (%map-hs (curry #'%map-hs #'tuple " ")
                       ", " args))))
     (when svar
-      (write-string " ")
+      (write-char #\Space)
       (cond
         ((callp names :|hide|)
           (write-string "hiding ")

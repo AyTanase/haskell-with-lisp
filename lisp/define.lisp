@@ -50,7 +50,7 @@
   (flet ((print-1 (g v)
            (write-string "| ")
            (print-guard-1 g)
-           (write-string assign)
+           (princ assign)
            (%define-print v)))
     (with-indent 1
       (map-indent #'print-1 gvs))
@@ -106,7 +106,7 @@
     ((callp expr '|if|)
       (reduce-guards assign defs expr))
     ((null defs)
-      (write-string assign)
+      (princ assign)
       (%define-print expr))
     (t (write-string assign)
        (with-indent 1

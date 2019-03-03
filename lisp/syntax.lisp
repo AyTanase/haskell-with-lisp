@@ -11,9 +11,9 @@
   (with-gensyms (body)
     `(defmacro ,name (&body ,body)
        `(progn
-          (write-string ,,open)
+          (princ ,,open)
           ,@,body
-          (write-string ,,close)))))
+          (princ ,,close)))))
 
 (defparen with-paren "(" ")")
 (defparen with-square-brackets "[" "]")
@@ -118,8 +118,7 @@
 (defun %map-hs (fn sep expr)
   (flet ((call-1 (xs)
            (funcall fn (car xs))
-           (when (cdr xs)
-             (write-string sep))))
+           (when (cdr xs) (princ sep))))
     (if (listp expr)
       (mapl #'call-1 expr)
       (funcall fn expr))))
@@ -204,9 +203,9 @@
       (%haskell-top expr))))
 
 
-(defshadow defhasq (name string)
+(defshadow defhasq (name expr)
   `(defmethod/i %haskell ((_ (eql ',name)))
-     (write-string ,string)))
+     (princ ,expr)))
 
 (defhasq nil "()")
 

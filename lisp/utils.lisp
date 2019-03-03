@@ -22,7 +22,8 @@
 
 
 (definline callp (expr symbol)
-  (and (consp expr) (eq (car expr) symbol)))
+  (and (consp expr)
+       (eq (car expr) symbol)))
 
 (defmacro ds-bind (&body body)
   `(destructuring-bind ,@body))

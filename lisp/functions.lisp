@@ -178,7 +178,7 @@
   (defpattern #1# (op x)
     (with-paren
       (op-print-1 x)
-      (write-string " ")
+      (write-char #\Space)
       (princ (may-op op)))))
 
 (defspecial |funcall| (&rest args)
@@ -203,7 +203,7 @@
   (defpattern #1# (op x)
     (with-paren
       (princ (may-op op))
-      (write-string " ")
+      (write-char #\Space)
       (op-print-1 x))))
 
 
