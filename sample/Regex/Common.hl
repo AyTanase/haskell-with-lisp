@@ -17,4 +17,4 @@
 
 (type safeTail (-> (list a) (Maybe (list a))))
 (define (safeTail nil) Nothing)
-(define (safeTail xs) (Just (tail xs)))
+(define (safeTail ?(_ . xs)) (Just xs))

@@ -15,4 +15,4 @@ cut f x = If (f Finite) x Cut
 
 safeTail :: [a] -> Maybe [a]
 safeTail [] = Nothing
-safeTail xs = Just $ tail xs
+safeTail (_:xs) = Just xs
