@@ -1,17 +1,9 @@
 (in-package :hs)
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defun collect-decs (body)
-    (mv-bind (remain decl doc)
-        (parse-body body :documentation t)
-      (values (if doc (cons doc decl) decl)
-              remain))))
-
-
 (defmacro def-hs-macro (name args &body body)
-  (mv-bind (decs rest) (collect-decs body)
+  (mv-bind (decls rest) (collect-decls body)
     `(defmacro ,name ,args
-       ,@decs
+       ,@decls
        `(progn ,(progn ,@rest) (fresh-line)))))
 
 
@@ -52,9 +44,9 @@
   (export (intern (string x) :|hs|) :|hs|))
 
 (defmacro defshadow (macro args &body body)
-  (mv-bind (decs rest) (collect-decs body)
+  (mv-bind (decls rest) (collect-decls body)
     `(defmacro ,macro ,args
-       ,@decs
+       ,@decls
        `(progn
           (shadow-haskell ',name)
           ,(progn ,@rest)))))

@@ -56,6 +56,12 @@
   (apply #'%def*/i 'defmethod args))
 
 
+(defun collect-decls (body)
+  (mv-bind (rest decls doc)
+      (parse-body body :documentation t)
+    (values (if doc (cons doc decls) decls)
+            rest)))
+
 (defmacro defmapc (name fn)
   (with-gensyms (args)
     `(defun ,name (&rest ,args) (mapc ,fn ,args))))
