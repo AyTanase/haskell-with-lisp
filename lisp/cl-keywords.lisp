@@ -4,15 +4,17 @@
   `(|if| ,@x ,@(if xs `((|cond| ,@xs)))))
 
 
-(defun defun->define (def)
+(defun defun-to-define (def)
   (ds-bind (name args . body) def
-    (if (eq name '|type|) def `((,name ,@args) ,@body))))
+    (if (eq name '|type|)
+      def
+      `((,name ,@args) ,@body))))
 
 (defmacro |defun| (&body body)
-  `(|define| ,@(defun->define body)))
+  `(|define| ,@(defun-to-define body)))
 
 (def-syntax-macro |labels| (fs &body body)
-  `(|where| ,(mapcar #'defun->define fs) ,@body))
+  `(|where| ,(mapcar #'defun-to-define fs) ,@body))
 
 
 (defun defpack-import (opt)
