@@ -43,8 +43,6 @@
             (ghci-print expr)))))))
 
 
-(defmacro |progn| (&body body) `(progn ,@body))
-
 (defun |require| (file)
   (lazy-compile (string file))
   (ghci-eval `(:|load| ,file)))
