@@ -3,7 +3,7 @@
 (defpackage :haskell
   (:nicknames :hs)
   (:documentation
-   "macros and keywords for generating Haskell code")
+   "macros and keywords for generating Haskell code, and utilities to define them")
   (:use :cl :alexandria)
   (:shadow :compile)
   (:export
