@@ -3,7 +3,7 @@
 (require "haskell-with-lisp")
 
 (in-package :hs)
-(export '(repl |require|))
+(export '(repl |exit| |require|))
 
 (setf *debug-io* (make-two-way-stream *standard-input* *error-output*))
 
