@@ -18,7 +18,7 @@ rSplit :: Stream s m Char => NFA -> ParsecT s u m NFA
 
 regex = rConcat >>= rSplit
 
-rConcat = foldr (.) id <$> many rAtom
+rConcat = fmap (foldr (.) id) (many rAtom)
 
 rSplit f = (char '|' >> fmap (split f) regex) <|> return f
 
@@ -27,7 +27,7 @@ rAtom, rChar, rEscape, rGroup, rGroup' :: Stream s m Char => ParsecT s u m NFA
 
 rAtom = quantify =<< (rChar <|> rEscape <|> rGroup)
 
-rChar = Compare <$> noneOf "\\|()"
+rChar = fmap Compare $ noneOf "\\|()"
 
 rEscape = char '\\' >> fmap Compare anyChar
 

@@ -1,8 +1,3 @@
-#?(defspecial |fmap| (x y)
-    (if (simplep y)
-      (call-next-method)
-      (print-infix "<$>" x y)))
-
 (extension FlexibleContexts)
 
 (defpackage Parse
