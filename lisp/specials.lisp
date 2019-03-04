@@ -2,14 +2,14 @@
 
 
 (defspecial |let| (defs &optional (val nil svar))
-  (when defs
+  (if defs
     (with-indent 1
       (write-string "let")
       (map-indent #'%define defs)
       (when svar
         (indent)
-        (write-string "in "))))
-  (when svar
+        (write-string "in ")
+        (%define-print val)))
     (%define-print val)))
 
 
