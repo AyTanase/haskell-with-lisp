@@ -56,7 +56,7 @@
     `(defmacro ,macro ,args
        ,@decls
        `(progn
-          (shadow-haskell ',name)
+          (shadow-haskell ',,(first args))
           ,(progn ,@rest)))))
 
 
