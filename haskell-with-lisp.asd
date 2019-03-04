@@ -7,7 +7,7 @@
   :depends-on (:alexandria)
   :components ((:module "lisp"
                 :serial t
-                :components ((:file "package")
+                :components ((:file "packages")
                              (:file "utils")
                              (:file "reader")
                              (:file "syntax")
