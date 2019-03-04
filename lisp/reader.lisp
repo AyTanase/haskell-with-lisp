@@ -149,7 +149,7 @@
                (change-type src-path "hs")))))
 
 (defun %compile (src out)
-  (let ((*package* (find-package :hs))
+  (let ((*package* (find-package :hs-user))
         (*readtable* *hs-toplevel*))
     (with-open-file (*standard-output* out
                      :direction :output

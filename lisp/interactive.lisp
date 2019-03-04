@@ -3,7 +3,7 @@
 (require "haskell-with-lisp")
 
 (in-package :hs)
-(export 'repl)
+(export '(repl |require|))
 
 (setf *debug-io* (make-two-way-stream *standard-input* *error-output*))
 
@@ -32,7 +32,7 @@
     (write-line ":}")))
 
 (defun repl ()
-  (let ((*package* (find-package :hs))
+  (let ((*package* (find-package :hs-user))
         (*readtable* *hs-readtable*))
     (loop
       (with-simple-restart
