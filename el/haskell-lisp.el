@@ -19,7 +19,6 @@
 (cl-indent-rules '(4 &lambda &rest (&whole 2 &body)) 'class 'instance)
 (add-cl-indent-rule 'where '((&whole 4 &rest (&whole 1 &body)) &body))
 (add-cl-indent-rule 'do '(&body))
-(add-cl-indent-rule 'if-bind '((&whole 4 &body) &body))
 
 (let ((keywords
         '(as bind class data define defmodule enum-from
