@@ -219,6 +219,17 @@
           (map-op-1 args ":")
           (map-op-1 args " : ")))
 
+
+(defoperator |apply| "<*>")
+(defbinop |progn| :op "*>")
+(defbinop |prog1| :op "<*")
+
+(defbinop |alt| :op "<|>" :zero "empty")
+
+(defbinop >>=)
+(defbinop =<<)
+(defbinop >>)
+
 ;; Local Variables:
 ;; eval: (add-cl-indent-rule (quote ds-bind) (quote (&lambda 4 &body)))
 ;; eval: (cl-indent-rules (quote (4 2 2 &body)) (quote def-op-macro) (quote defbinop))

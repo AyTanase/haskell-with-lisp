@@ -63,7 +63,10 @@
    :simplep
    :|funcall|
    :|flip|
-   :|nil| :|cons| :|list*|))
+   :|nil| :|cons| :|list*|
+   :|apply| :|progn| :|prog1|
+   :|alt|
+   :>>= :=<< :>>))
 
 (defpackage :haskell-user
   (:nicknames :hs-user)
