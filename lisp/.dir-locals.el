@@ -13,7 +13,3 @@
   (eval cl-indent-rules
         '(&lambda 4 &body)
         'mv-bind 'ds-bind)))
-
-
-
-
