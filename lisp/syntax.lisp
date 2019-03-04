@@ -157,31 +157,36 @@
 (def-map-hs arrange #'haskell-top ", ")
 
 
-(defvar *specials* (make-hash-table :test 'eq))
+(defvar *keytypes* (make-hash-table :test 'eq))
 
 (defvar *operators* (make-hash-table :test 'eq))
 
+(declaim (inline get-keytype (setf get-keytype)))
+(defaccessor get-keytype (key)
+  (gethash key *keytypes*))
+
+(definline keytypep (key type)
+  (eq (get-keytype key) type))
+
 (defmacro defspecial (name &body body)
   `(progn
-     (setf (gethash ',name *specials*) 'special)
+     (setf (get-keytype ',name) 'special)
      (defsyntax ,name ,@body)))
 
 (defmacro defpattern (name &body body)
   `(progn
-     (setf (gethash ',name *specials*) 'pattern)
+     (setf (get-keytype ',name) 'pattern)
      (defsyntax ,name ,@body)))
 
-(definline keytypep (key symbol)
-  (eq (gethash key *specials*) symbol))
-
-(definline get-operator (symbol)
-  (gethash symbol *operators*))
+(declaim (inline get-operator (setf get-operator)))
+(defaccessor get-operator (key)
+  (gethash key *operators*))
 
 
 (defmethod %haskell (expr) (princ expr))
 
 (defmethod %haskell ((expr symbol))
-  (let ((op (gethash expr *operators*)))
+  (let ((op (get-operator expr)))
     (if op
       (with-paren (princ op))
       (princ expr))))

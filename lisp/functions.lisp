@@ -26,8 +26,8 @@
 (defmacro def-op-macro
     (name &key (op name) (zero `',name) (one '`(|funcall| ,@expr)) (many 'expr))
   `(progn
-     (setf (gethash ',name *specials*) 'operator)
-     (setf (gethash ',name *operators*) ',op)
+     (setf (get-keytype ',name) 'operator)
+     (setf (get-operator ',name) ',op)
      (defmethod/i apply-macro ((_ (eql ',name)) expr)
        (let ((args (cdr expr)))
          (cond

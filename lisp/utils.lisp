@@ -5,6 +5,13 @@
      (declaim (inline ,name))
      (defun ,name ,@body)))
 
+(defmacro defaccessor (name args expr)
+  (with-gensyms (value)
+    `(progn
+       (defun ,name ,args ,expr)
+       (defun (setf ,name) (,value ,@args)
+         (setf ,expr ,value)))))
+
 
 (definline get-truename ()
   (or *compile-file-truename*

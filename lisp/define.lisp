@@ -18,7 +18,7 @@
     (if (atom expr)
       expr
       (ds-bind (spec . args) expr
-        (case (gethash spec *specials*)
+        (case (get-keytype spec)
           ((special pattern)
             expr)
           ((operator)
