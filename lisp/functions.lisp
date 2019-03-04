@@ -176,7 +176,7 @@
     (with-paren
       (op-print-1 x)
       (write-char #\Space)
-      (princ (may-op op)))))
+      (princ (get-operator op)))))
 
 (defspecial |funcall| (&rest args)
   (let ((xs (mapcar #'%define-expand args)))
@@ -199,7 +199,7 @@
         expr)))
   (defpattern #1# (op x)
     (with-paren
-      (princ (may-op op))
+      (princ (get-operator op))
       (write-char #\Space)
       (op-print-1 x))))
 

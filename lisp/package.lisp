@@ -22,7 +22,7 @@
    :%map-hs :def-map-hs :map-hs
    :defsyntax
    :haskell-top :haskell-tops :arrange
-   :defspecial :defpattern :keytypep :may-op
+   :defspecial :defpattern :keytypep :get-operator
    :defhasq
    ;; define.lisp
    :|type|

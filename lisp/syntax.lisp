@@ -174,9 +174,8 @@
 (definline keytypep (key symbol)
   (eq (gethash key *specials*) symbol))
 
-(definline may-op (symbol)
-  (or (gethash symbol *operators*)
-      symbol))
+(definline get-operator (symbol)
+  (gethash symbol *operators*))
 
 
 (defmethod %haskell (expr) (princ expr))

@@ -13,6 +13,10 @@
 (defrechask rechask #'haskell " ")
 (defrechask rec-op-1 #'op-print-1)
 
+(declaim (inline may-op))
+(defun may-op (symbol)
+  (or (get-operator symbol) symbol))
+
 (defspecial |curry| (&rest args)
   (rechask args))
 
