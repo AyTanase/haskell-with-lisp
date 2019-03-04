@@ -1,5 +1,3 @@
-#?(defoperator |apply| <*>)
-
 (defpackage Logic
   (:import Prelude (Applicative (pure apply))))
 
