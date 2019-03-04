@@ -14,7 +14,7 @@
    :def-hs-macro
    :defparen :with-paren :with-square-brackets
    :indent :indent-if :with-indent :map-indent
-   :shadow-haskell :defshadow
+   :shadow-haskell :defshadow :name
    :def-syntax-macro :|defsynonym|
    :|define-symbol-macro|
    :hs-macro-expand
