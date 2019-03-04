@@ -69,7 +69,7 @@
     `(defmethod/i apply-macro ((_ (eql ',name)) ,expr)
        (hs-macro-expand (ds-bind ,args (cdr ,expr) ,@body)))))
 
-(defmacro defsynonym (synonym original)
+(defmacro |defsynonym| (synonym original)
   `(def-syntax-macro ,synonym (&rest args)
      `(,',original ,@args)))
 

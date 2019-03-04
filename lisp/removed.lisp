@@ -1,5 +1,8 @@
 (in-package :hs)
 
+(defmacro defsynonym (&rest args)
+  `(|defsynonym| ,@args))
+
 (definline %rechask (expr fn sep)
   (%map-hs fn sep expr))
 
@@ -13,13 +16,13 @@
 (defspecial |curry| (&rest args)
   (rechask args))
 
-(defsynonym |setf| |bind|)
+#!(defsynonym setf bind)
 
 (def-syntax-macro |if-bind| (args &rest rest)
   `(|if| (|bind| ,@args) ,@rest))
 
-(defsynonym |apply-left| |funcall|)
-(defsynonym |apl| |funcall|)
+#!(defsynonym apply-left funcall)
+#!(defsynonym apl funcall)
 
-(defsynonym |apply-right| |flip|)
-(defsynonym |apr| |flip|)
+#!(defsynonym apply-right flip)
+#!(defsynonym apr flip)
