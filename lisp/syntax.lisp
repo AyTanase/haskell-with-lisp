@@ -92,7 +92,7 @@
       expr)))
 
 (defmethod hs-macro-expand ((expr real))
-  (if (< expr 0)
+  (if (minusp expr)
     `(|negate| ,(- expr))
     expr))
 
