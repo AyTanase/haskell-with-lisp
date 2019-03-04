@@ -19,7 +19,7 @@
 
 (defun print-infix (op x y)
   (op-print-1 x)
-  (format t " ~a " op)
+  (format t " ~A " op)
   (op-print-1 y))
 
 
@@ -54,7 +54,7 @@
   `(progn
      (def-op-macro ,name :op ,op :zero ,zero :one ,one)
      (defsyntax ,name (&rest args)
-       ,(or many `(map-op-1 args ,(format nil " ~a " op))))))
+       ,(or many `(map-op-1 args ,(format nil " ~A " op))))))
 
 (defbinop + :zero 0)
 (defbinop - :one `(|negate| ,(car args)))

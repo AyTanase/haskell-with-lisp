@@ -124,7 +124,7 @@
       (funcall fn expr))))
 
 (defmacro def-map-hs
-    (name fn &optional (default `(error "~s: no separator" ',name)))
+    (name fn &optional (default `(error "~S: no separator" ',name)))
   (with-gensyms (expr sep)
     `(defun ,name (,expr &optional (,sep ,default))
        (%map-hs ,fn ,sep ,expr))))
@@ -198,8 +198,8 @@
     ((char= expr #\\)
       (write-string "'\\\\'"))
     ((graphic-char-p expr)
-      (format t "'~c'" expr))
-    (t (format t "'\\x~x'" (char-code expr)))))
+      (format t "'~C'" expr))
+    (t (format t "'\\x~X'" (char-code expr)))))
 
 (defmethod %haskell ((expr cons))
   (if (keytypep (car expr) 'pattern)

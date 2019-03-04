@@ -30,12 +30,12 @@
     (ds-bind (key . rest) args
       (cond
         ((keywordp key)
-          (format t "{-# ~@:(~a~) #-} " key)
+          (format t "{-# ~@:(~A~) #-} " key)
           (=>-left rest))
         (t (=>-left args))))))
 
 (defun %class (key name derive defs)
-  (format t "~a " key)
+  (format t "~A " key)
   (%class-derive derive)
   (haskell-top name)
   (when defs
@@ -95,7 +95,7 @@
     (t (haskell-top body))))
 
 (defun %data (key name body deriving)
-  (format t "~a " key)
+  (format t "~A " key)
   (haskell-tops name " = ")
   (if (callp body '|or|)
     (%map-hs #'%data-body " | " (cdr body))
@@ -113,4 +113,4 @@
 
 
 (def-hs-macro |extension| (&rest args)
-  `(format t "{-# LANGUAGE ~{~a~^, ~} #-}" ',args))
+  `(format t "{-# LANGUAGE ~{~A~^, ~} #-}" ',args))
