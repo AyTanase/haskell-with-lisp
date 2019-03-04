@@ -29,7 +29,7 @@
    ;; define.lisp
    :|type|
    :%define-expand :%define-print
-   :%define-right
+   :%define-right :|True| :|otherwise|
    :%define-left
    :%define :|define|
    ;; macros.lisp
