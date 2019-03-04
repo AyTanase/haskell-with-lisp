@@ -182,8 +182,3 @@
 
 (def-hs-macro |define| (var val)
   `(%define ',var ',val))
-
-;; Local Variables:
-;; eval: (add-cl-indent-rule (quote ds-bind) (quote (&lambda 4 &body)))
-;; eval: (add-cl-indent-rule (quote with-paren) (quote (&body)))
-;; End:

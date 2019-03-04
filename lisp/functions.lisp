@@ -229,10 +229,3 @@
 (defbinop >>=)
 (defbinop =<<)
 (defbinop >>)
-
-;; Local Variables:
-;; eval: (add-cl-indent-rule (quote ds-bind) (quote (&lambda 4 &body)))
-;; eval: (cl-indent-rules (quote (4 2 2 &body)) (quote def-op-macro) (quote defbinop))
-;; eval: (add-cl-indent-rule (quote with-paren) (quote (&body)))
-;; eval: (add-cl-indent-rule (quote |let|) (quote (4 &body)))
-;; End:

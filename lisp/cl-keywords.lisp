@@ -29,7 +29,3 @@
     `(progn
        (|defmodule| ,name ,@(if exs (list (mapcan #'cdr exs))))
        ,@(mapcar #'defpack-import args))))
-
-;; Local Variables:
-;; eval: (cl-indent-rules (quote (&lambda 4 &body)) (quote ds-bind) (quote mv-bind))
-;; End:

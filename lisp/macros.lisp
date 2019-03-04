@@ -114,8 +114,3 @@
 
 (def-hs-macro |extension| (&rest args)
   `(format t "{-# LANGUAGE ~{~a~^, ~} #-}" ',args))
-
-;; Local Variables:
-;; eval: (add-cl-indent-rule (quote ds-bind) (quote (&lambda 4 &body)))
-;; eval: (add-cl-indent-rule (quote with-paren) (quote (&body)))
-;; End:

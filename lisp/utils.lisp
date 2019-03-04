@@ -74,7 +74,3 @@
 (defmacro defmapc (name fn)
   (with-gensyms (args)
     `(defun ,name (&rest ,args) (mapc ,fn ,args))))
-
-;; Local Variables:
-;; eval: (add-cl-indent-rule (quote mv-bind) (quote (&lambda 4 &body)))
-;; End:

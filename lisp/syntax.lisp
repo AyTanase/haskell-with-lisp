@@ -213,8 +213,3 @@
      (princ ,expr)))
 
 (defhasq nil "()")
-
-;; Local Variables:
-;; eval: (add-cl-indent-rule (quote mv-bind) (quote (&lambda 4 &body)))
-;; eval: (add-cl-indent-rule (quote with-paren) (quote (&body)))
-;; End:

@@ -83,8 +83,3 @@
          (write-string "..")
          (when (consp xs)
            (haskell-top (car xs))))))
-
-;; Local Variables:
-;; eval: (add-cl-indent-rule (quote with-square-brackets) (quote (&body)))
-;; eval: (add-cl-indent-rule (quote ds-bind) (quote (&lambda 4 &body)))
-;; End:
