@@ -61,10 +61,10 @@
 (defbinop * :zero 1)
 (defbinop / :one `(|recip| ,(car args)))
 
-(defbinop |and|     :op &&   :zero '|True|)
+(defbinop |and|     :op "&&" :zero '|True|)
 (defbinop |or|      :op "||" :zero '|False|)
-(defbinop |append|  :op ++   :zero '|nil|)
-(defbinop |compose| :op |.|  :zero '|id|)
+(defbinop |append|  :op "++" :zero '|nil|)
+(defbinop |compose| :op "."  :zero '|id|)
 
 
 (defun ->-print-1 (x)
@@ -167,7 +167,7 @@
   (%funcall-1 (cdr args) nil))
 
 (progn
-  (def-op-macro |funcall| :op $
+  (def-op-macro |funcall| :op "$"
     :many (if (and (keytypep (car args) 'operator)
                    (atom (cddr args)))
             `(#1=#:|funcall| ,@args)
@@ -206,7 +206,7 @@
 
 (defhasq |nil| "[]")
 
-(def-op-macro |cons| :op |:|)
+(def-op-macro |cons| :op ":")
 (defsyntax |cons| (x y)
   (op-print-1 x)
   (if (and (simplep x) (simplep y))
@@ -214,7 +214,7 @@
     (write-string " : "))
   (op-print-1 y))
 
-(defbinop |list*| :op |:|
+(defbinop |list*| :op ":"
   :many (if (every #'simplep args)
           (map-op-1 args ":")
           (map-op-1 args " : ")))
@@ -224,7 +224,7 @@
 (defbinop |progn| :op "*>")
 (defbinop |prog1| :op "<*")
 
-(defbinop |alt| :op "<|>" :zero "empty")
+(defbinop |alt| :op "<|>" :zero '|empty|)
 
 (defbinop >>=)
 (defbinop =<<)
