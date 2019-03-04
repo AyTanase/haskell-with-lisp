@@ -25,7 +25,9 @@
         '(as bind class data define defmodule enum-from
           flip funcall import instance newtype type where))
       (operators
-        '(+ - * / and or append compose -> => = /= <= >= < >))
+        '(+ - * / and or append compose
+          -> => = /= <= >= < >
+          progn prog1 alt >>= =<< >>))
       (constructors '(nil cons list* list tuple pair)))
   (font-lock-add-keywords
    'haskell-lisp-mode
