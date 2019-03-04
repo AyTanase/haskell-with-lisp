@@ -8,7 +8,7 @@
         ((eq spec '|funcall|)
           (%map-hs (compose #'%haskell #'%define-expand)
                    " " args))
-        ((keytypep spec 'operator)
+        ((get-keytype spec)
           (%haskell expr))
         (t (%haskell-top expr))))))
 
