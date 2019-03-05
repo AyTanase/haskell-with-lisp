@@ -49,6 +49,11 @@
 
 (define-key lisp-mode-map (kbd "C-c C-c") 'runcl-this)
 
-(add-hook 'lisp-mode-hook (lambda () (set-buffer-file-coding-system 'utf-8-unix)))
+
+(defun set-coding-system-unix ()
+  (set-buffer-file-coding-system 'utf-8-unix)
+  (save-buffer))
+
+(add-hook 'lisp-mode-hook 'set-coding-system-unix)
 
 (provide 'lisp-custom)
