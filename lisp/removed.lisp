@@ -1,10 +1,10 @@
 (in-package :hs-user)
+(use-package :hs-utils)
 
 (defmacro defsynonym (&rest args)
   `(|defsynonym| ,@args))
 
-(declaim (inline %rechask))
-(defun %rechask (expr fn sep)
+(definline %rechask (expr fn sep)
   (%map-hs fn sep expr))
 
 (defmacro defrechask (&rest args)
@@ -13,15 +13,13 @@
 (defrechask rechask #'haskell " ")
 (defrechask rec-op-1 #'op-print-1)
 
-(declaim (inline may-op))
-(defun may-op (symbol)
+(definline may-op (symbol)
   (or (get-operator symbol) symbol))
 
 (shadow "import" :hs-user)
 (defmacro |import| (&rest args)
   (let ((last (car (last args))))
-    (if (and (consp last)
-             (eq (car last) :|hide|))
+    (if (callp last :|hide|)
       `(hs:|import| ,@(butlast args) :|hiding| ,(cdr last))
       `(hs:|import| ,@args))))
 
