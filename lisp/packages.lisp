@@ -1,10 +1,28 @@
 (in-package :cl-user)
 
+(defpackage :hs-utils
+  (:export
+   ;; utils.lisp
+   :definline
+   :defaccessor
+   :get-truename :true-path
+   :callp
+   :ds-bind :mv-bind
+   :subst-wild-cards
+   :%def*/i :defun/i :defmethod/i
+   :collect-decls
+   :defmapc
+   ;; reader.lisp
+   :get-macro-char :set-macro-char
+   :drop-char :read-not-cr
+   :eol-p
+   :change-type))
+
 (defpackage :haskell
   (:nicknames :hs)
   (:documentation
    "macros and keywords for generating Haskell code, and utilities to define them")
-  (:use :cl :alexandria)
+  (:use :cl :alexandria :hs-utils)
   (:shadow :compile)
   (:export
    ;; utils.lisp
