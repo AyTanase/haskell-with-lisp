@@ -48,8 +48,8 @@
 (unless (find-package :|hs|)
   (make-package :|haskell| :nicknames '(:|hs|)))
 
-(defun shadow-haskell (x)
-  (export (intern (string x) :|hs|) :|hs|))
+(defun shadow-haskell (symbol)
+  (export (intern (string symbol) :|hs|) :|hs|))
 
 (defmacro defshadow (macro args &body body)
   (mv-bind (decls rest) (collect-decls body)
