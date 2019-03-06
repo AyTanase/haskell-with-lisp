@@ -1,7 +1,7 @@
 (require 'lisp-custom)
 
 (defun symbol-regexp-opt (symbols &optional paren)
-  (regexp-opt (mapcar #'symbol-name symbols) paren))
+  (regexp-opt (mapcar 'symbol-name symbols) paren))
 
 (defun lisp-to-haskell (file-name)
   (interactive "sFile Name: ")
