@@ -19,27 +19,27 @@
 (defparen with-square-brackets "[" "]")
 
 
-(defvar *indent* 0
-  "the current indentation level")
+(defvar *indent-depth* 0
+  "the current indentation depth")
 
-(defun indent (&optional (n *indent*))
+(defun indent (&optional (depth *indent-depth*))
   (fresh-line)
-  (loop repeat n
+  (loop repeat depth
     do (write-string "  ")))
 
-(definline indent-if (test &optional (n *indent*))
+(definline indent-if (test &optional (depth *indent-depth*))
   (if test
-    (indent n)
+    (indent depth)
     (write-char #\Space)))
 
-(defmacro with-indent (n &body body)
-  `(let ((*indent* (+ *indent* ,n)))
+(defmacro with-indent (depth &body body)
+  `(let ((*indent-depth* (+ *indent-depth* ,depth)))
      ,@body))
 
 (defun map-indent
-    (fn xs &key (apply t) (width *indent*))
+    (fn xs &key (apply t) (depth *indent-depth*))
   (dolist (x xs)
-    (indent width)
+    (indent depth)
     (if apply
       (apply fn x)
       (funcall fn x))))
