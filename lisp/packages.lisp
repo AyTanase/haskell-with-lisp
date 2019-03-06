@@ -6,6 +6,8 @@
    :definline
    :defaccessor
    :get-truename :true-path
+   :call-when
+   :call-car :call-cdr :call-nth
    :callp
    :ds-bind :mv-bind
    :subst-wild-cards

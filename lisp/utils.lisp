@@ -29,9 +29,25 @@
   (loop repeat length collect (genvar)))
 
 
+(definline call-when (test fn item)
+  (if (funcall test item)
+    (funcall fn item)
+    (values nil t)))
+
+(definline call-car (fn item)
+  (call-when #'consp (compose fn #'car) item))
+
+(definline call-cdr (fn item)
+  (call-when #'consp (compose fn #'cdr) item))
+
+(defun call-nth (fn n list)
+  (if (<= n 0)
+    (call-car fn list)
+    (call-cdr (curry #'call-nth fn (1- n)) list)))
+
 (definline callp (expr symbol)
-  (and (consp expr)
-       (eq (car expr) symbol)))
+  (call-car (curry #'eq symbol) expr))
+
 
 (defmacro ds-bind (&body body)
   `(destructuring-bind ,@body))
