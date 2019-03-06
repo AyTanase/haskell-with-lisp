@@ -40,6 +40,12 @@
 (definline call-cdr (fn item)
   (call-when #'consp (compose fn #'cdr) item))
 
+(defmacro with-car ((var item) &body body)
+  `(call-car #'(lambda (,var) ,@body) ,item))
+
+(defmacro with-cdr ((var item) &body body)
+  `(call-cdr #'(lambda (,var) ,@body) ,item))
+
 (definline callp (expr symbol)
   (call-car (curry #'eq symbol) expr))
 
