@@ -83,5 +83,4 @@
       do (haskell-tops "," x)
       finally
          (write-string "..")
-         (when (consp xs)
-           (haskell-top (car xs))))))
+         (call-car #'haskell-top xs))))
