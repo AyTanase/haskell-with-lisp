@@ -116,12 +116,11 @@
 
 
 (defun %map-hs (fn sep expr)
-  (flet ((call-1 (xs)
-           (funcall fn (car xs))
-           (when (cdr xs) (princ sep))))
-    (if (listp expr)
-      (mapl #'call-1 expr)
-      (funcall fn expr))))
+  (if (listp expr)
+    (loop for (x . xs) on expr
+      do (funcall fn x)
+         (when (consp xs) (princ sep)))
+    (funcall fn expr)))
 
 (defmacro def-map-hs
     (name fn &optional (default `(error "~S: no separator" ',name)))
