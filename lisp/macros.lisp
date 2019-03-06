@@ -51,29 +51,32 @@
 (def-class-macro |instance|)
 
 
-(defun module-names (svar names)
-  (flet ((print-names (args)
-           (with-paren
-             (%map-hs (curry #'%map-hs #'tuple " ")
-                      ", " args))))
-    (when svar
-      (write-char #\Space)
-      (cond
-        ((callp names :|hide|)
-          (write-string "hiding ")
-          (print-names (cdr names)))
-        (t (print-names names))))))
+(defun module-names (names)
+  (write-char #\Space)
+  (with-paren
+    (%map-hs (curry #'%map-hs #'tuple " ")
+             ", " names)))
+
+(defun %defmodule (module svar names)
+  (haskell-tops "module " module)
+  (when svar
+    (module-names names))
+  (write-string " where"))
 
 (def-hs-macro |defmodule| (module &optional (names nil svar))
-  `(progn
-     (haskell-tops "module " ',module)
-     (module-names ,svar ',names)
-     (write-string " where")))
+  `(%defmodule ',module ,svar ',names))
+
+(defun %import (module svar names)
+  (haskell-tops "import " module)
+  (when svar
+    (cond
+      ((callp names :|hide|)
+        (write-string " hiding")
+        (module-names (cdr names)))
+      (t (module-names names)))))
 
 (def-hs-macro |import| (module &optional (names nil svar))
-  `(progn
-     (haskell-tops "import " ',module)
-     (module-names ,svar ',names)))
+  `(%import ',module ,svar ',names))
 
 (defhasq :|m| "module")
 (defhasq :|q| "qualified")
