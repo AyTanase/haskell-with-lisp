@@ -17,6 +17,15 @@
 (defun may-op (symbol)
   (or (get-operator symbol) symbol))
 
+(shadow "import" :hs-user)
+(defmacro |import| (&rest args)
+  (let ((last (car (last args))))
+    (if (and (consp last)
+             (eq (car last) :|hide|))
+      `(hs:|import| ,@(butlast args) :|hiding| ,(cdr last))
+      `(hs:|import| ,@args))))
+
+
 (defspecial |curry| (&rest args)
   (rechask args))
 
