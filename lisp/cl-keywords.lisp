@@ -22,7 +22,7 @@
     (case key
       (:|use| `(progn ,@(mapcar (curry #'list '|import|) args)))
       (:|import| `(|import| ,(car args) ,(cdr args)))
-      (:|shadow| `(|import| ,(car args) (:|hide| ,@(cdr args)))))))
+      (:|shadow| `(|import| ,(car args) :|hiding| ,(cdr args))))))
 
 (defmacro |defpackage| (name &rest args)
   (let ((exs (remove-if-not (curry #'eq :|export|) args :key #'car)))
