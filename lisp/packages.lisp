@@ -7,6 +7,8 @@
   (:use :cl :alexandria)
   (:shadow :compile)
   (:export
+   ;; utils.lisp
+   :genvar :genvars
    ;; reader.lisp
    :*cl-readtable* :*hs-readtable* :*hs-toplevel*
    :compile :compile-all :lazy-compile
