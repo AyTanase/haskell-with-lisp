@@ -61,11 +61,9 @@
 (defun %import (key args)
   (format t "~A " key)
   (haskell-top (car args))
-  (loop for (x . xs) on (cdr args)
-    do (write-char #\Space)
-       (cond
-         ((consp xs) (haskell x))
-         (t (module-names x)))))
+  (dolist (x (cdr args))
+    (write-char #\Space)
+    (module-names x)))
 
 (def-hs-macro |import| (&rest args)
   `(%import "import" ',args))
