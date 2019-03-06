@@ -192,8 +192,7 @@
     (let ((args (cdr expr)))
       (if (ds-bind (x . xs) args
             (and (keytypep x 'operator)
-                 (consp xs)
-                 (atom (cdr xs))))
+                 (call-cdr #'atom xs)))
         `(#1=#:|flip| ,@args)
         expr)))
   (defpattern #1# (op x)
