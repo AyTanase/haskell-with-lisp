@@ -40,11 +40,6 @@
 (definline call-cdr (fn item)
   (call-when #'consp (compose fn #'cdr) item))
 
-(defun call-nth (fn n list)
-  (if (<= n 0)
-    (call-car fn list)
-    (call-cdr (curry #'call-nth fn (1- n)) list)))
-
 (definline callp (expr symbol)
   (call-car (curry #'eq symbol) expr))
 

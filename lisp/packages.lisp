@@ -7,7 +7,7 @@
    :defaccessor
    :get-truename :true-path
    :call-when
-   :call-car :call-cdr :call-nth
+   :call-car :call-cdr
    :callp
    :ds-bind :mv-bind
    :subst-wild-cards
