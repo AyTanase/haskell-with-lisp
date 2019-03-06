@@ -149,7 +149,7 @@
     (%haskell-tops " $ " expr)))
 
 (defun %funcall-1 (args paren?)
-  (if args
+  (when args
     (ds-bind (x . xs) args
       (flet ((recurse (p)
                (%haskells " " x)
@@ -181,8 +181,7 @@
 (defspecial |funcall| (&rest args)
   (let ((xs (mapcar #'%define-expand args)))
     (ds-bind (x y . ys) xs
-      (if (and (consp x)
-               (keytypep (car x) 'operator)
+      (if (and (call-car (rcurry #'keytypep 'operator) x)
                (atom ys))
         (haskell-tops x " $ " y)
         (%funcall xs)))))
