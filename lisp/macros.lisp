@@ -58,27 +58,22 @@
       (%map-hs (curry #'%map-hs #'tuple " ")
                ", " names))))
 
-(defun %defmodule (module svar names)
-  (haskell-tops "module " module)
-  (when svar
-    (write-char #\Space)
-    (module-names names))
-  (write-string " where"))
-
-(def-hs-macro |defmodule| (module &optional (names nil svar))
-  `(%defmodule ',module ,svar ',names))
-
-(defun %import (module args)
-  (haskell-tops "import " module)
-  (loop for (x . xs) on args
+(defun %import (key args)
+  (format t "~A " key)
+  (haskell-top (car args))
+  (loop for (x . xs) on (cdr args)
     do (write-char #\Space)
        (cond
-         ((consp xs)
-           (haskell x))
+         ((consp xs) (haskell x))
          (t (module-names x)))))
 
-(def-hs-macro |import| (module &rest args)
-  `(%import ',module ',args))
+(def-hs-macro |import| (&rest args)
+  `(%import "import" ',args))
+
+(def-hs-macro |defmodule| (&rest args)
+  `(progn
+     (%import "module" ',args)
+     (write-string " where")))
 
 (defhasq :|m| "module")
 (defhasq :|q| "qualified")
