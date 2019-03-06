@@ -95,7 +95,7 @@
 (defrelation = (expand-= args) ==)
 
 (defun expand-/= (args)
-  (let ((vs (genvars (length args))))
+  (let ((vs (make-genvar-list (length args))))
     (flet ((expand-1 (v)
              (loop for w in vs
                until (eq v w)

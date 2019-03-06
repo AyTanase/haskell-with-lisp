@@ -25,8 +25,8 @@
 (definline genvar (&optional (prefix "v"))
   (gentemp prefix))
 
-(defun genvars (n)
-  (loop repeat n collect (genvar)))
+(defun make-genvar-list (length)
+  (loop repeat length collect (genvar)))
 
 
 (definline callp (expr symbol)

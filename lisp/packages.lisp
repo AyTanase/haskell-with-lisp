@@ -8,7 +8,7 @@
   (:shadow :compile)
   (:export
    ;; utils.lisp
-   :genvar :genvars
+   :genvar :make-genvar-list
    ;; reader.lisp
    :*cl-readtable* :*hs-readtable* :*hs-toplevel*
    :compile :compile-all :lazy-compile
