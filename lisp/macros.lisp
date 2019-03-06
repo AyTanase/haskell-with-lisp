@@ -52,9 +52,11 @@
 
 
 (defun module-names (names)
-  (with-paren
-    (%map-hs (curry #'%map-hs #'tuple " ")
-             ", " names)))
+  (if (atom names)
+    (haskell names)
+    (with-paren
+      (%map-hs (curry #'%map-hs #'tuple " ")
+               ", " names))))
 
 (defun %defmodule (module svar names)
   (haskell-tops "module " module)
