@@ -9,7 +9,7 @@
 
 
 (defun ghci-eval (expr)
-  (let ((form (if (consp expr) (car expr))))
+  (let ((form (call-car #'identity expr)))
     (cond
       ((keywordp form)
         (when (eq form :|cd|)
@@ -31,16 +31,20 @@
     (fresh-line)
     (write-line ":}")))
 
-(defun repl ()
-  (let ((*package* (find-package :hs-user))
-        (*readtable* *hs-readtable*))
-    (loop
-      (with-simple-restart
-          (abort "Exit debugger, returning to GHCi.")
-        (let ((expr (read)))
-          (if (equal expr '(|exit|))
-            (return)
-            (ghci-print expr)))))))
+(progn
+  (defun ghci-read ()
+    (restart-case (read)
+      (abort ()
+        :report #1="Exit debugger, returning to GHCi."
+        (terpri)
+        (ghci-read))))
+  (defun repl ()
+    (let ((*package* (find-package :hs-user))
+          (*readtable* *hs-readtable*))
+      (loop for expr = (ghci-read)
+        until (equal expr '(|exit|))
+        do (with-simple-restart (abort #1#)
+             (ghci-print expr))))))
 
 
 (defun |require| (file)
