@@ -66,14 +66,12 @@
 (defbinop |append|  :op "++" :zero '|nil|)
 (defbinop |compose| :op "."  :zero '|id|)
 
-
-(defun ->-print-1 (x)
-  (let ((expr (hs-macro-expand x)))
-    (if (callp expr '->)
-      (%haskell expr)
-      (%haskell-top expr))))
-
-(defbinop -> :many (%map-hs #'->-print-1 " -> " args))
+(defbinop -> :many
+  (do-haskell (x args " -> ")
+    (let ((expr (hs-macro-expand x)))
+      (if (callp expr '->)
+        (%haskell expr)
+        (%haskell-top expr)))))
 
 
 (defmacro defrelation (name many &optional (op name))

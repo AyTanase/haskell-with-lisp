@@ -125,6 +125,9 @@
          (when (consp xs) (princ sep)))
     (funcall fn expr)))
 
+(defmacro do-haskell ((arg list sep) &body body)
+  `(%map-hs #'(lambda (,arg) ,@body) ,sep ,list))
+
 (defmacro def-map-hs
     (name fn &optional (default `(error "~S: no separator" ',name)))
   (with-gensyms (expr sep)

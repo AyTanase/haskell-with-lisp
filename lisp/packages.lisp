@@ -42,7 +42,8 @@
    :|define-symbol-macro|
    :hs-macro-expand
    :haskell :haskells
-   :%map-hs :def-map-hs :map-hs
+   :%map-hs :do-haskell
+   :def-map-hs :map-hs
    :defsyntax
    :haskell-top :haskell-tops :arrange
    :get-keytype :keytypep
