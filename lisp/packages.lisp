@@ -78,7 +78,7 @@
    :|defpackage|
    ;; functions.lisp
    :op-print-1 :map-op-1 :print-infix
-   :def-op-macro
+   :def-op-macro :expr :args
    :defoperator
    :defbinop
    :|and| :|or|
