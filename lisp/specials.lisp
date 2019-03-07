@@ -40,13 +40,12 @@
 
 
 (defspecial |case| (x &body xs)
-  (flet ((case-val (x y)
-           (%define x y " -> ")))
-    (write-string "case ")
-    (%define-print x)
-    (write-string " of")
-    (with-indent 1
-      (map-indent #'case-val xs))))
+  (write-string "case ")
+  (%define-print x)
+  (write-string " of")
+  (with-indent 1
+    (do-indent ((x y) xs)
+      (%define x y " -> "))))
 
 
 (defspecial |bind| (x y)

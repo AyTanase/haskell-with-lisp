@@ -47,14 +47,13 @@
     (haskell-top expr)))
 
 (defun print-guards (assign gvs defs)
-  (flet ((print-1 (g v)
-           (write-string "| ")
-           (print-guard-1 g)
-           (princ assign)
-           (%define-print v)))
-    (with-indent 1
-      (map-indent #'print-1 gvs))
-    (where defs)))
+  (with-indent 1
+    (do-indent ((g v) gvs)
+      (write-string "| ")
+      (print-guard-1 g)
+      (princ assign)
+      (%define-print v)))
+  (where defs))
 
 
 (definline truep (x)

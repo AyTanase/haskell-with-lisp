@@ -44,6 +44,9 @@
       (apply fn x)
       (funcall fn x))))
 
+(defmacro do-indent ((args &rest rest) &body body)
+  `(map-indent #'(lambda ,args ,@body) ,@rest))
+
 
 (unless (find-package :|hs|)
   (make-package :|haskell| :nicknames '(:|hs|)))
