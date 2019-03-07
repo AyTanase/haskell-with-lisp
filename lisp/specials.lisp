@@ -34,7 +34,7 @@
             (indent-if indentp)
             (%haskell-tops "else " else))))
       ((truep test) (%haskell-top then))
-      (t (error "if: The else-form is required because ~
+      (t (error "if: ELSE is required because ~
                      the test-form ~S is neither ~S nor ~S."
                 test '|True| '|otherwise|)))))
 
