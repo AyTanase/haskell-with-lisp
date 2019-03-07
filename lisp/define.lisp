@@ -34,7 +34,7 @@
 
 (declaim (ftype function %define))
 (defun where (defs)
-  (if defs
+  (when defs
     (with-indent 1
       (indent)
       (write-string "where")
