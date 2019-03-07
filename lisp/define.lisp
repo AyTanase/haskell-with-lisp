@@ -19,9 +19,9 @@
       expr
       (ds-bind (spec . args) expr
         (case (get-keytype spec)
-          ((special pattern)
+          ((:special :pattern)
             expr)
-          ((operator)
+          ((:operator)
             (cons spec (mapcar #'%define-expand args)))
           (otherwise
             (if (atom args)

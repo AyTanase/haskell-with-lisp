@@ -26,7 +26,7 @@
 (defmacro def-op-macro
     (name &key (op name) (zero `',name) (one '`(|funcall| ,@expr)) (many 'expr))
   `(progn
-     (setf (get-keytype ',name) 'operator)
+     (setf (get-keytype ',name) :operator)
      (setf (get-operator ',name) ',op)
      (defmethod/i apply-macro ((_ (eql ',name)) expr)
        (let ((args (cdr expr)))
@@ -132,7 +132,7 @@
 
 (definline simplep (expr)
   (or (atom expr)
-      (keytypep (car expr) 'pattern)))
+      (keytypep (car expr) :pattern)))
 
 (declaim (ftype function %funcall))
 (defun funcall-last (expr)
@@ -168,7 +168,7 @@
 
 (progn
   (def-op-macro |funcall| :op "$"
-    :many (if (and (keytypep (car args) 'operator)
+    :many (if (and (keytypep (car args) :operator)
                    (atom (cddr args)))
             `(#1=#:|funcall| ,@args)
             expr))
@@ -181,7 +181,7 @@
 (defspecial |funcall| (&rest args)
   (let ((xs (mapcar #'%define-expand args)))
     (ds-bind (x y . ys) xs
-      (if (and (call-car (rcurry #'keytypep 'operator) x)
+      (if (and (call-car (rcurry #'keytypep :operator) x)
                (atom ys))
         (haskell-tops x " $ " y)
         (%funcall xs)))))
@@ -191,7 +191,7 @@
   (defmethod/i apply-macro ((_ (eql '|flip|)) expr)
     (let ((args (cdr expr)))
       (if (ds-bind (x . xs) args
-            (and (keytypep x 'operator)
+            (and (keytypep x :operator)
                  (call-cdr #'atom xs)))
         `(#1=#:|flip| ,@args)
         expr)))

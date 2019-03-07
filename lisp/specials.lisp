@@ -15,7 +15,7 @@
 
 (shadow-haskell '|where|)
 
-(setf (get-keytype '|where|) 'special)
+(setf (get-keytype '|where|) :special)
 
 (defmethod apply-syntax ((spec (eql '|where|)) expr)
   (apply-syntax '|let| expr))

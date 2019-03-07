@@ -169,12 +169,12 @@
 
 (defmacro defspecial (name &body body)
   `(progn
-     (setf (get-keytype ',name) 'special)
+     (setf (get-keytype ',name) :special)
      (defsyntax ,name ,@body)))
 
 (defmacro defpattern (name &body body)
   `(progn
-     (setf (get-keytype ',name) 'pattern)
+     (setf (get-keytype ',name) :pattern)
      (defsyntax ,name ,@body)))
 
 (declaim (inline get-operator (setf get-operator)))
@@ -201,7 +201,7 @@
     (t (format t "'\\x~X'" (char-code expr)))))
 
 (defmethod %haskell ((expr cons))
-  (if (keytypep (car expr) 'pattern)
+  (if (keytypep (car expr) :pattern)
     (%haskell-top expr)
     (with-paren
       (%haskell-top expr))))
