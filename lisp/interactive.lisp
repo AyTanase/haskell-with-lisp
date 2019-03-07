@@ -20,10 +20,11 @@
       (t (handler-case
              (let ((*error-output*
                      (load-time-value (make-broadcast-stream) t)))
-               (format *debug-io* "~&~s~&" (eval expr)))
+               (format *debug-io* "~&~S~&" (eval expr)))
            ((or program-error cell-error) ()
              (%define-print expr))
-           (error (condition) (error condition)))))))
+           (error (condition)
+             (error condition)))))))
 
 (defun ghci-print (expr)
   (write-line ":{")
