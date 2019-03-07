@@ -44,8 +44,10 @@
       (apply fn x)
       (funcall fn x))))
 
-(defmacro do-indent ((args &rest rest) &body body)
-  `(map-indent #'(lambda ,args ,@body) ,@rest))
+(defmacro do-indent
+    ((args list &optional (depth '*indent-depth*)) &body body)
+  `(map-indent #'(lambda ,(ensure-list args) ,@body)
+               ,list :apply ,(listp args) :depth ,depth))
 
 
 (unless (find-package :|hs|)
