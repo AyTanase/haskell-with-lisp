@@ -1,0 +1,21 @@
+(defmodule Fact)
+
+(type (fact0 fact1) (=> ((Num a) (Eq a)) (-> a a)))
+
+(define (fact0 0) 1)
+(define (fact0 n) (* n (fact0 (1- n))))
+
+(define fact1
+  (labels ((fact' (p 0) p)
+           (fact' (p n)
+             (fact' (* p n) (1- n))))
+    (fact' 1)))
+
+
+(type fact2 (=> ((Num a) (Enum a)) (-> a a)))
+(defun fact2 (n)
+  (product (enum-from 1 :to n)))
+
+(type fact3 (=> ((Num a) (Enum a)) (-> Int a)))
+(defun fact3 (n)
+  (product (take n (enum-from 1))))

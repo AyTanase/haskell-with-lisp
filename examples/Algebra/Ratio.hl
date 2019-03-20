@@ -1,0 +1,55 @@
+#?(defoperator |ratio| |:%|)
+
+(extension FlexibleInstances
+           MonoLocalBinds
+           MultiParamTypeClasses
+           UndecidableInstances)
+
+(defpackage Ratio
+  (:shadow Prelude pure negate + - *)
+  (:use (:q Prelude) Classes)
+  (:export (Ratio :all)))
+
+
+(data (Ratio a) (ratio a a) Show)
+
+(instance (Eq (Ratio a)) ((Eq a) (Action a a))
+  ((= (ratio u v) (ratio x y)) (= (* u y) (* v x))))
+
+
+(instance (Pure Ratio a) (:overlapping (Ring a))
+  (pure (flip ratio unit)))
+
+(type rmap (-> (-> a a) (Ratio a) (Ratio a)))
+(define (rmap f (ratio x y)) (ratio (f x) y))
+
+
+(instance (Group (Ratio r)) (:overlapping (Ring r))
+  (zero (pure zero))
+  (negate (rmap negate))
+  ((+ (ratio u v) (ratio x y))
+    (ratio (+ (* u y) (* v x)) (* v y))))
+
+
+(instance (Action a (Ratio b)) (:overlapping (Action a b))
+  (* (compose rmap *)))
+
+(instance (Action (Ratio a) (Ratio b))
+    (:overlapping (Action a b))
+  ((* (ratio u v) (ratio x y)) (ratio (* u x) (* v y))))
+
+
+(instance (Div a (Ratio b)) (:overlapping (Action a b))
+  ((/ (ratio x y) z) (ratio x (* z y))))
+
+(instance (Div (Ratio a) (Ratio b))
+    (:overlapping (Action a b))
+  ((/ r (ratio x y)) (* (ratio y x) r)))
+
+
+(instance (Num (Ratio a)) ((Num a))
+  (+ +) (- -) (* *)
+  (negate negate)
+  ((abs (ratio x y)) (ratio (abs x) (abs y)))
+  ((signum (ratio x y)) (pure (* (signum x) (signum y))))
+  (fromInteger (compose pure fromInteger)))

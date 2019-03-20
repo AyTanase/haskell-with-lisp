@@ -1,0 +1,90 @@
+#?(defoperator |Prelude.+|)
+#?(defoperator |Prelude.-|)
+#?(defoperator |Prelude.*|)
+#?(defoperator |Prelude./|)
+
+(extension FlexibleInstances
+           MonoLocalBinds
+           MultiParamTypeClasses
+           UndecidableInstances)
+
+(defpackage Classes
+  (:shadow Prelude pure negate + - * / recip)
+  (:use (:q Prelude))
+  (:import Control.Applicative liftA2))
+
+
+(class (Pure f a) ()
+  (type pure (-> a (f a))))
+
+(instance (Pure f a) ((Applicative f))
+  (pure Prelude.pure))
+
+
+(class (Group g) ()
+  (type zero g)
+  (type negate (-> g g))
+  (type (+ -) (-> g g g))
+  (negate (funcall - zero))
+  ((- x y) (+ x (- y))))
+
+(instance (Group a) ((Num a))
+  (zero 0)
+  (negate Prelude.negate)
+  (+ Prelude.+)
+  (- Prelude.-))
+
+(instance (Group (f g))
+    (:overlapping (Group g) (Applicative f))
+  (zero (pure zero))
+  (negate (fmap negate))
+  (+ (liftA2 +))
+  (- (liftA2 -)))
+
+
+(class (Action a b) ()
+  (type * (-> a b b)))
+
+(instance (Action a a) (:incoherent (Num a))
+  (* Prelude.*))
+
+(instance (Action a (f b)) ((Action a b) (Functor f))
+  (* (compose fmap *)))
+
+(instance (Action (f a) (f b))
+    (:overlapping (Action a b) (Applicative f))
+  (* (liftA2 *)))
+
+
+(class (Ring r) ((Group r) (Action r r))
+  (type unit r))
+
+(instance (Ring a) ((Num a)) (unit 1))
+
+(instance (Ring (f r))
+    ((Ring r) (Group (f r)) (Action (f r) (f r)) (Pure f r))
+  (unit (pure unit)))
+
+
+(class (Div a b) ((Action a b))
+  (type / (-> b a b)))
+
+(instance (Div a a) (:incoherent (Fractional a))
+  (/ Prelude./))
+
+(instance (Div a (f b)) ((Div a b) (Functor f))
+  (/ (flip (compose fmap (flip /)))))
+
+(instance (Div (f a) (f b)) ((Div a b) (Applicative f))
+  (/ (liftA2 /)))
+
+
+(class (Field k) ((Ring k) (Div k k)))
+
+(instance (Field k) ((Ring k) (Div k k)))
+
+(type recip (=> (Field k) (-> k k)))
+(define recip (funcall / unit))
+
+(instance (Div k a) ((Action k a) (Field k))
+  ((/ x y) (* (/ y) x)))

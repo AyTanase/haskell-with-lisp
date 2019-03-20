@@ -1,4 +1,0 @@
-(defpackage Algebra
-  (:shadow Prelude pure (Num :all) (Fractional :all))
-  (:use Classes Poly Complex Ratio)
-  (:export (:m Classes) (:m Poly) (:m Complex) (:m Ratio)))

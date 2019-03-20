@@ -1,0 +1,48 @@
+#?(defoperator |c+| |:+|)
+
+(extension FlexibleInstances MultiParamTypeClasses)
+
+(defpackage Complex
+  (:shadow Prelude pure negate + - * (Fractional :all))
+  (:use (:q Prelude) Classes)
+  (:export (Complex :all)))
+
+
+(data (Complex a) (c+ a a) (Eq Show))
+
+(instance (Pure Complex a) (:overlapping (Group a))
+  (pure (flip c+ zero)))
+
+(type cmap (-> (-> a b) (Complex a) (Complex b)))
+(define (cmap f (c+ x y)) (c+ (f x) (f y)))
+
+
+(instance (Group (Complex a)) (:overlapping (Group a))
+  (zero (pure zero))
+  (negate (cmap negate))
+  ((+ (c+ u v) (c+ x y)) (c+ (+ u x) (+ v y))))
+
+
+(instance (Action a (Complex b)) (:overlapping (Action a b))
+  (* (compose cmap *)))
+
+(instance (Action (Complex a) (Complex b))
+    (:overlapping (Action a b) (Group b))
+  ((* (c+ u v) (c+ x y))
+    (c+ (- (* u x) (* v y)) (+ (* u y) (* v x)))))
+
+
+(instance (Div a (Complex b)) (:overlapping (Div a b))
+  (/ (flip (compose cmap (flip /)))))
+
+(instance (Div (Complex a) (Complex b))
+    (:overlapping (Div a b) (Ring a) (Group b))
+  ((/ z (c+ x y)) (/ (* (c+ x (- y)) z) (+ (* x x) (* y y)))))
+
+
+(instance (Num (Complex a)) ((Num a))
+  (+ +) (- -) (* *)
+  (negate negate)
+  (abs undefined)
+  (signum undefined)
+  (fromInteger (compose pure fromInteger)))

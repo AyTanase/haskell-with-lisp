@@ -1,0 +1,23 @@
+(defpackage Exec
+  (:use Common)
+  (:import Control.Applicative alt))
+
+(type exec (=> (Num a) (-> Op String (Maybe a))))
+(define (exec s)
+  (labels ((exec' (Finite n xs)
+             (Just #(n xs)))
+           (exec' ((Compare ?x p) n ?(?x . xs))
+             (exec' p (1+ n) xs))
+           (exec' ((If p q r) n xs)
+             (maybe (exec' r n xs)
+                    (uncurry (exec' q))
+                    (exec' p n xs)))
+           (exec' (_ _ _) Nothing))
+    (compose (fmap fst) (exec' s 0))))
+
+(type match (=> (Num a) (-> Op String (Maybe #(a a)))))
+(define match
+  (labels ((match' (n r xs)
+             (alt (fmap (pair n) (exec r xs))
+                  (=<< (match' (1+ n) r) (safeTail xs)))))
+    (match' 0)))
