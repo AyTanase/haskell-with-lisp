@@ -3,7 +3,7 @@ if %~1==all (call :compile-all) else (call :run "(hs:compile \"%~1\")")
 exit /b
 
 :run
-ros run -e "(load \"%~dp0\..\haskell-with-lisp.asd\")" -e "(require \"haskell-with-lisp\")" -e %1 -q
+ros run --eval "(load \"%~dp0\..\haskell-with-lisp.asd\")" --eval "(require \"haskell-with-lisp\")" --eval %1 --quit
 exit /b
 
 :compile-all
