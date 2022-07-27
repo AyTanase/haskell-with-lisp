@@ -29,3 +29,4 @@ flip = liftA2 (.) (<*>) $ const pure
 
 join :: (a -> a -> b) -> a -> b
 join = flip (<*>) id
+

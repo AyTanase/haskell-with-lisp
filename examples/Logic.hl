@@ -72,3 +72,5 @@ const pure :: f (a -> b) -> a -> f a
 
 (type join (-> (-> a a b) a b))
 (define join (hs:flip apply id))
+
+; 参考文献: 安井邦夫 『現代論理学』, 世界思想社, 1991.

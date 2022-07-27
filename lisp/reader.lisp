@@ -1,6 +1,5 @@
 (in-package :hs)
 
-
 (definline get-macro-char (char &rest args)
   (apply (if (char= char #\#)
            #'get-dispatch-macro-character
@@ -111,30 +110,39 @@
 (defun/i read-hs-lf (stream &rest _)
   (if (eol-p (peek-char nil stream nil nil t))
     '(terpri)
-    (read stream nil nil t)))
+    (values)))
 
 (defun/i read-hs-cr (stream &rest _)
   (drop-char #\Newline stream)
   (read-hs-lf stream))
 
-(defun %lift-cl-reader (reader)
+(defun make-cl-reader (reader)
   #'(lambda (stream &rest args)
       (let ((*readtable* *cl-readtable*))
         (prog1 (apply reader stream args)
           (peek-char t stream nil nil t)))))
 
-(defmacro lift-cl-reader (&rest args)
-  `(set-macro-char ,@args (%lift-cl-reader (get-macro-char ,@args))))
+(defun make-cl-comment-reader (reader)
+  #'(lambda (stream &rest args)
+      (let ((*readtable* *cl-readtable*))
+        (apply reader stream args)
+        (peek-char t stream nil nil t)
+        (values))))
+
+(defmacro lift-cl-comment-reader (&rest args)
+  `(set-macro-char ,@args (make-cl-comment-reader (get-macro-char ,@args))))
 
 (let ((*readtable* *hs-toplevel*))
-  (set-macro-char #\# #\? (%lift-cl-reader #'read-as-is))
+  (set-macro-char #\# #\? (make-cl-reader #'read-as-is))
   (set-macro-char #\# #\{ #'read-hs-comment)
   (set-macro-char #\Newline #'read-hs-lf)
   (set-macro-char #\Return #'read-hs-cr)
   (set-macro-char #\( (make-hs-reader (get-macro-char #\()))
-  (lift-cl-reader #\# #\|)
-  (lift-cl-reader #\;))
+  (lift-cl-comment-reader #\# #\|)
+  (lift-cl-comment-reader #\;))
 
+
+(defparameter *external-format* :utf-8)
 
 (definline change-type (src type)
   (make-pathname :type type :defaults src))
@@ -154,8 +162,9 @@
         (*readtable* *hs-toplevel*))
     (with-open-file (*standard-output* out
                      :direction :output
-                     :if-exists :supersede)
-      (load src))))
+                     :if-exists :supersede
+                     :external-format *external-format*)
+      (load src :external-format *external-format*))))
 
 (defun compile (src &optional out)
   (call-compile #'%compile src out))
