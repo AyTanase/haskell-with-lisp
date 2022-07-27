@@ -31,7 +31,7 @@
    :genvar :make-genvar-list
    ;; reader.lisp
    :*cl-readtable* :*hs-readtable* :*hs-toplevel*
-   :compile :compile-all :lazy-compile
+   :*external-format* :compile :compile-all :lazy-compile
    ;; syntax.lisp
    :def-hs-macro
    :defparen :with-paren :with-square-brackets
